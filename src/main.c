@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(){
-    start();
+int main(int argc, char **argv){
+    WINDOW *console;
+    start(console);
+    run(console);
     pause();
     return 0;
 }

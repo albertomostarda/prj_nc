@@ -1,17 +1,16 @@
 #include "features.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ncurses.h>
 
 static char *logo[]={
-
-"     __  .__  __         .__          ",
-"  _/  |_|__|/  |_  ____ |  |   ____  ",
-" \\   __\\  \\   __\\/  _ \\|  |  /  _ \\ ",
+"  __  .__  __         .__          ",
+"_/  |_|__|/  |_  ____ |  |   ____  ",
+"\\   __\\  \\   __\\/  _ \\|  |  /  _ \\ ",
 " |  | |  ||  | (  <_> )  |_(  <_> )",
-"|__| |__||__|  \\____/|____/\\____/ "                                  
+" |__| |__||__|  \\____/|____/\\____/ "                                  
 };
-
 
 void pause(void){
     printw("Premi INVIO per continuare . . .");
@@ -19,25 +18,47 @@ void pause(void){
     getchar();
 }
 
-void start(){
+void run(WINDOW *win){
+    int isRun=1, status=1;
+    while(isRun){
+        switch(status){
+            case 1:
+                menu(win);
+        }
+    }
+}
+void start(WINDOW *win){
     bool isRes;
     system("resize -s 40 160 >/dev/null");
     initscr();
-    WINDOW *win=newwin(40,160,0,0);
+    win=newwin(0,0,40,160);
     refresh();
-    box(win, 0 ,0);
-    // isRes=is_term_resized(30,80);
-    // if(isRes)
-    //     mvwprintw(win, 1, 1, "Si puo fare");
-    // else
-    //     mvwprintw(win, 1, 1, "No");
-    wrefresh(win);
-    for(int i=0;i<5;i++){
-        mvwprintw(win, i+1,i+1, "%s",logo[i]);
+}
+
+void Hprint(WINDOW *tmp, char *pText){
+    int hSize= getmaxx(tmp)-getbegx(tmp);
+    if(strlen(pText)>hSize){
         
     }
-    wrefresh(win);
-    getch();
-    endwin();
     
+
+}
+
+void artHprint(WINDOW *tmp, int hSize, char **draw, int dHeight){
+    int avgL=0, cStart=0, curY=0;
+
+    for(int i=0;i<dHeight;i++){
+        if(strlen(draw[i])>avgL){
+            avgL=strlen(draw[i]);
+        }
+    }
+    cStart=(hSize-avgL)/2;
+    curY=getcury(tmp);
+    for(int i=0;i<dHeight;i++){
+        if(curY==0)
+            mvwprintw(tmp, curY+i+1,cStart, "%s",draw[i]);
+        else
+            mvwprintw(tmp, curY+i,cStart, "%s", draw[i]);
+    }
+    wrefresh(tmp);
 }
