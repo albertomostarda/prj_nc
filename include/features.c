@@ -12,6 +12,8 @@ static char *logo[]={
 " |__| |__||__|  \\____/|____/\\____/ "                                  
 };
 
+static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD. Buona Programmazione";
+
 void pause(void){
     printw("Premi INVIO per continuare . . .");
     refresh();
@@ -33,15 +35,27 @@ void start(WINDOW *win){
     initscr();
     win=newwin(0,0,40,160);
     refresh();
+    Hprint(win, )
 }
 
-void Hprint(WINDOW *tmp, char *pText){
+void Hprint(WINDOW *tmp, char *pText, int padding){
     int hSize= getmaxx(tmp)-getbegx(tmp);
-    if(strlen(pText)>hSize){
-        
+    if(strlen(pText)>(hSize-padding){
+        int fstSpc=csearch(pText,strlen(pText)/2,' ');
+        char *halfStr
     }
-    
+}
 
+int csearch(char *sample, int start, char find){
+    int idxFound=0, isFound=0;
+
+    for(int i=start;i<strlen(sample)&&isFound!=0;i++){
+        if(sample[i]==find){
+            idxFound=i;
+            isFound=1;
+        }
+    }
+    return idxFound;
 }
 
 void artHprint(WINDOW *tmp, int hSize, char **draw, int dHeight){

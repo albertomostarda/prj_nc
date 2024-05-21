@@ -7,8 +7,9 @@ void pause(void);
 void start(WINDOW *win);
 void run(WINDOW *win);
 void artHprint(WINDOW *tmp, int hSize, char**draw, int dHeight);
-void Hprint(WINDOW *tmp, char *pText);
+void Hprint(WINDOW *tmp, char *pText, int padding);
 void Cprint();
-int search();
+int csearch(char *sample,int start, char find);
+char *strcopy(char *sample, int start, int cpSize);
 
 #endif
