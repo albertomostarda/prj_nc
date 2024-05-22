@@ -6,6 +6,12 @@
 #include <ncurses.h>
 #include <time.h>
 #include <signal.h>
+#include <setjmp.h> //Probabilmente non lo utilizzero'
+//Per tornare a un punto specifico dopo il signal potrei utilizzare il setjmp e longjmp implementando la libreria setjmp.h
+//Mi devo ricordare di implementare una var globale per tenere traccia dello funzione in cui si trova il programma
+//
+state_t curState;
+WINDOW *win;
 
 static char *logo[]={
 "  __  .__  __         .__          ",
@@ -17,6 +23,7 @@ static char *logo[]={
 
 static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD. Buona Programmazione";
 static char *pContinue="Premi INVIO per continuare";
+static char *sizeWarn="Perfavore evita di ridimensionare la finestra del terminale";
 
 void nclearBuff(){
     int buff;
@@ -26,14 +33,21 @@ void nclearBuff(){
 
 }
 
-void handle_resize(int sig);
+void handle_resize(int sig){
+    if(curState==fSTART){
+        //ipotetica chiamata del salto
+    }
+    else if(curState==fRUN){
+
+    }
+}
 void pause(void){
     printw("Premi INVIO per continuare . . .");
     refresh();
     getch();
 }
 
-void run(WINDOW *win){
+void run(){
     int isRun=1, status=1;
     while(isRun){
         switch(status){
@@ -43,7 +57,7 @@ void run(WINDOW *win){
         }
     }
 }
-void start(WINDOW *win){
+void start(){
     time_t start_time;
     system("resize -s 40 160 >/dev/null");
     initscr();
@@ -56,7 +70,7 @@ void start(WINDOW *win){
     wrefresh(win);
     Hprint(win, initTxt,20,1);
     Hprint(win, pContinue,20,0);
-    wrefresh(win);
+    SBHprint(win,sizeWarn,20);
     start_time=time(NULL);
     nodelay(stdscr,true);
     while(getch()!='\n'&&(time(NULL)-start_time)<10);
@@ -66,8 +80,7 @@ void start(WINDOW *win){
 
 void Hprint(WINDOW *tmp, char *pText, int padding, int forceNL){
     int hSize= getmaxx(tmp)-getbegx(tmp);
-    int cStart=0;
-    int curY=getcury(tmp);
+    int cStart=0, curY=getcury(tmp);
     int textLength = strlen(pText);
     if(curY==0){
         curY=1;
@@ -89,20 +102,29 @@ void Hprint(WINDOW *tmp, char *pText, int padding, int forceNL){
         free(newTxt);
         free(halfStr);
     } else {
-        cStart=(hSize/2)-(strlen(pText)/2);
+        cStart=(hSize/2)-(textLength/2);
         mvwprintw(tmp, curY, cStart,"%s", pText);
         wrefresh(tmp);
         wmove(tmp,curY+1,getbegx(tmp)+1);
     }
 }
 
-void Cprint(WINDOW *tmp, char *pText, int Hpad, int vPad, int fNL){
+void Cprint(WINDOW *tmp, char *pText, int hPad, int vPad, int fNL){
     int hSize= getmaxx(tmp)-getbegx(tmp);
     int vSize= getmaxy(tmp)-getbegy(tmp);
     int hStart=0;
     int curY=getcury(tmp);
     int textLength = strlen(pText);
 
+}
+
+void SBHprint(WINDOW *tmp, char *pText, int padding){
+    int hSize= getmaxx(tmp)-getbegx(tmp), txtLenght=strlen(pText);
+    int cStart=0, curY=getmaxy(tmp)-2;
+    cStart=(hSize/2)-(txtLenght/2);
+    mvwprintw(tmp, curY, cStart, "%s", pText);
+    wmove(tmp, getbegy(tmp)+1, getmaxx(tmp)+1);
+    wrefresh(tmp);
 }
 
 int csearch(char *sample, int start, char find) {

@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 int main(int argc, char **argv){
-    WINDOW *console;
-    tcgetsize();
-    //start(console);
-    //run(console);
+    start();
+    //run();
+    werase(win);
+    wrefresh(win);
     pause();
     return 0;
 }
