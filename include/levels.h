@@ -2,5 +2,5 @@
 #define LEVELS_H
 #include <ncurses.h>
 
-void menu(WINDOW *cWin, int *cwHeight,int *cwWidht);
+void menu(WINDOW *cWin);
 #endif

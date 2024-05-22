@@ -5,3 +5,6 @@
 #include <string.h>
 #include <ncurses.h>
 
+void menu(WINDOW *cWin){
+    return;
+}

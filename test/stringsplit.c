@@ -23,22 +23,21 @@ void Hprint(int maxspc, char *pText, int padding, int forceNL) {
         
         strncpy(newTxt, pText, fstSpc);
         newTxt[fstSpc] = '\0'; // Termina correttamente la stringa
-        
         strcpy(halfStr, pText + fstSpc + 1);
-        
-        printf("%s\n", newTxt);
+        Hprint(maxspc, newTxt, padding,0);
         Hprint(maxspc, halfStr, padding, 0);
+        
         
         free(newTxt);
         free(halfStr);
     } else {
-        printf("%s", pText);
+        printf("%s\n", pText);
     }
 }
-static char *pre = "freccette direzionali sia i tasti WASD. Buona Programmazione";
+static char *pre = "Per navigare durante tutto il gioco si possono utilizzare sia le";
 int main() {
     static char *initTxt = "Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD. Buona Programmazione";
-    Hprint(160, initTxt, 20, 0);
+    Hprint(63, initTxt, 20, 0);
     getchar();
     return 0;
 }
