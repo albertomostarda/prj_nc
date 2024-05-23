@@ -1,5 +1,6 @@
 #include "features.h"
 #include "levels.h"
+#include "test.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +60,7 @@ void run(){
 }
 void start(){
     time_t start_time;
+    int txtLines=0;
     system("resize -s 40 160 >/dev/null");
     initscr();
     cbreak();
@@ -68,55 +70,80 @@ void start(){
     win=newwin(40,160,0,0);
     box(win,0,0);
     wrefresh(win);
-    Hprint(win, initTxt,20,1);
-    Hprint(win, pContinue,20,0);
+    Hprint(win, initTxt,20,1,&txtLines);
+    txtLines=0;
+    Hprint(win, pContinue,20,0,&txtLines);
     SBHprint(win,sizeWarn,20);
     start_time=time(NULL);
     nodelay(stdscr,true);
-    while(getch()!='\n'&&(time(NULL)-start_time)<10);
+    while(getch()!='\n'/*&&(time(NULL)-start_time)<10*/);
     nodelay(stdscr,false);
     nclearBuff();
 }
 
-void Hprint(WINDOW *tmp, char *pText, int padding, int forceNL){
-    int hSize= getmaxx(tmp)-getbegx(tmp);
-    int cStart=0, curY=getcury(tmp);
-    int textLength = strlen(pText);
-    if(curY==0){
-        curY=1;
-    }
-    if (textLength > (hSize - padding) || forceNL) {
-        forceNL=0;
-        int fstSpc = csearch(pText, textLength / 2, ' ');
-        if (fstSpc == -1) {
-            fstSpc = textLength / 2;
-        }
-        char *newTxt = (char *)malloc((fstSpc + 1) * sizeof(char));
-        char *halfStr = (char *)malloc((textLength - fstSpc) * sizeof(char));
-        strncpy(newTxt, pText, fstSpc);
-        newTxt[fstSpc] = '\0';
-        strcpy(halfStr, pText + fstSpc + 1);
-        halfStr[(textLength - fstSpc)-1]='\0';
-        Hprint(tmp, newTxt, padding,0);
-        Hprint(tmp, halfStr, padding, 0);
-        free(newTxt);
-        free(halfStr);
-    } else {
-        cStart=(hSize/2)-(textLength/2);
-        mvwprintw(tmp, curY, cStart,"%s", pText);
-        wrefresh(tmp);
-        wmove(tmp,curY+1,getbegx(tmp)+1);
-    }
-}
+// void Hprint(WINDOW *tmp, char *pText, int padding, int forceNL){
+//     int hSize= getmaxx(tmp)-getbegx(tmp);
+//     int cStart=0, curY=getcury(tmp);
+//     int textLength = strlen(pText);
+//     if(curY==0){
+//         curY=1;
+//     }
+//     if (textLength > (hSize - padding) || forceNL) {
+//         forceNL=0;
+//         int fstSpc = csearch(pText, textLength / 2, ' ');
+//         if (fstSpc == -1) {
+//             fstSpc = textLength / 2;
+//         }
+//         char *newTxt = (char *)malloc((fstSpc + 1) * sizeof(char));
+//         char *halfStr = (char *)malloc((textLength - fstSpc) * sizeof(char));
+//         strncpy(newTxt, pText, fstSpc);
+//         newTxt[fstSpc] = '\0';
+//         strcpy(halfStr, pText + fstSpc + 1);
+//         halfStr[(textLength - fstSpc)-1]='\0';
+//         Hprint(tmp, newTxt, padding,0);
+//         Hprint(tmp, halfStr, padding, 0);
+//         free(newTxt);
+//         free(halfStr);
+//     } else {
+//         cStart=(hSize/2)-(textLength/2);
+//         mvwprintw(tmp, curY, cStart,"%s", pText);
+//         wrefresh(tmp);
+//         wmove(tmp,curY+1,getbegx(tmp)+1);
+//     }
+// }
 
-void Cprint(WINDOW *tmp, char *pText, int hPad, int vPad, int fNL){
-    int hSize= getmaxx(tmp)-getbegx(tmp);
-    int vSize= getmaxy(tmp)-getbegy(tmp);
-    int hStart=0;
-    int curY=getcury(tmp);
-    int textLength = strlen(pText);
-
-}
+// void Cprint(WINDOW *tmp, char *pText, int hPad, int vPad, int fNL, int nHline){
+//     int hSize= getmaxx(tmp)-getbegx(tmp);
+//     int vSize= getmaxy(tmp)-getbegy(tmp);
+//     int hStart=0;
+//     int curY=getcury(tmp);
+//     int textLength = strlen(pText);
+//     if(curY<=vPad){
+//         curY=vPad+1;
+//     }
+//     if (textLength > (hSize - hPad) || fNL) {
+//         fNL=0;
+//         int fstSpc = csearch(pText, textLength / 2, ' ');
+//         if (fstSpc == -1) {
+//             fstSpc = textLength / 2;
+//         }
+//         char *newTxt = (char *)malloc((fstSpc + 1) * sizeof(char));
+//         char *halfStr = (char *)malloc((textLength - fstSpc) * sizeof(char));
+//         strncpy(newTxt, pText, fstSpc);
+//         newTxt[fstSpc] = '\0';
+//         strcpy(halfStr, pText + fstSpc + 1);
+//         halfStr[(textLength - fstSpc)-1]='\0';
+//         Cprint(tmp, newTxt, hPad,vPad, 0, nHline++);
+//         Cprint(tmp, halfStr, hPad,vPad, 0, nHline++);
+//         free(newTxt);
+//         free(halfStr);
+//     } else {
+//         hStart=(hSize/2)-(textLength/2);
+//         mvwprintw(tmp, curY, cStart,"%s", pText);
+//         wrefresh(tmp);
+//         wmove(tmp,curY+1,getbegx(tmp)+1);
+//     }
+// }
 
 void SBHprint(WINDOW *tmp, char *pText, int padding){
     int hSize= getmaxx(tmp)-getbegx(tmp), txtLenght=strlen(pText);
