@@ -3,9 +3,11 @@
 #include <ncurses.h>
 
 void afterSignal();
-void print_menu(WINDOW *cWin);
-void menu(WINDOW *cWin);
-void print_settings(WINDOW *cWin);
-void settings(WINDOW *cWin);
+void print_menu();
+void menu();
+void print_settings();
+void settings();
+void printLvl1();
+void level1();
 
 #endif

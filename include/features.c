@@ -53,32 +53,38 @@ void pause(void){
 void start(){
     time_t start_time;
     int halfContinue=strlen(pContinue)/2;
-    system("resize -s 40 160 >/dev/null");
+    system("resize -s 35 160 >/dev/null");
     initscr();
     cbreak();
     noecho();
     refresh();
     signal(SIGWINCH, handle_resize);
-    win=newwin(40,160,0,0);
+    win=newwin(35,160,0,0);
     box(win,0,0);
     wrefresh(win);
-    Cprint(win,testBible,20,0,1);
+    Cprint(win,initTxt,20,0,1);
     //Hprint(win, pContinue,20,0);
-    mvwprintw(win,28,(getmaxx(win)/2)-halfContinue,"%s", pContinue);
-    wmove(win,29,11);
+    mvwprintw(win,24,(getmaxx(win)/2)-halfContinue,"%s", pContinue);
+    wmove(win,25,11);
     SBHprint(win,sizeWarn,20);
     start_time=time(NULL);
     nodelay(stdscr,true);
-    while(getch()!='\n'/*&&(time(NULL)-start_time)<10*/);
+    while(getch()!='\n'&&(time(NULL)-start_time)<10);
     nodelay(stdscr,false);
     nclearBuff();
+    delwin(win);
 }
 void run(){
-    int isRun=1, status=1;
+    int isRun=1, status=2;
     while(isRun){
         switch(status){
             case 1:
                 menu(win);
+                break;
+            case 2:
+                printLvl1();
+                level1();
+                isRun=0;
                 break;
         }
     }
