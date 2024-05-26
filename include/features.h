@@ -5,6 +5,7 @@
 typedef enum fStatus{fSTART, fRUN} state_t;
 //typedef enum customPos{custDEFAULT, custTOP, custBOT} custPos;
 extern WINDOW *win;
+extern const int max_path;
 
 
 void pause(void);
@@ -17,5 +18,8 @@ char** Hsplit(int HSIZE, char *pText, char **split_txt, int padding, int forceNL
 void Cprint(WINDOW *tmp, char *pText, int Hpad, int vPad, int fNL);
 void SBHprint(WINDOW *tmp, char *pText, int padding);
 int csearch(char *sample,int start, char find);
+char* getPath();
+int fCountLines(FILE *tmpFile);
+int fCountCols(FILE *tmpFile);
 
 #endif

@@ -5,15 +5,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ncurses.h>
+#include <unistd.h>
 #include <time.h>
 #include <signal.h>
 #include <setjmp.h> //Probabilmente non lo utilizzero'
 //Per tornare a un punto specifico dopo il signal potrei utilizzare il setjmp e longjmp implementando la libreria setjmp.h
 //Mi devo ricordare di implementare una var globale per tenere traccia dello funzione in cui si trova il programma
-
 state_t curState;
 WINDOW *win;
 
+const int max_path=4096;
 static char *logo[]={
 "  __  .__  __         .__          ",
 "_/  |_|__|/  |_  ____ |  |   ____  ",
@@ -35,6 +36,16 @@ void nclearBuff(){
     nodelay(stdscr, FALSE);
 
 }
+char *getPath(){
+    char path[max_path];
+    ssize_t len= readlink("proc/sel/exe", path, sizeof(path)-1);
+    if(len == -1){
+        printw("Impossibile ricavare il percorso");
+        return NULL;
+    }
+    path[len]='\0';
+    return path;
+}
 
 void handle_resize(int sig){
     if(curState==fSTART){
@@ -53,37 +64,36 @@ void pause(void){
 void start(){
     time_t start_time;
     int halfContinue=strlen(pContinue)/2;
-    system("resize -s 35 160 >/dev/null");
+    system("resize -s 35 160 >/dev/null"); //per windows;
+    signal(SIGWINCH, handle_resize);
     initscr();
     cbreak();
     noecho();
     refresh();
-    signal(SIGWINCH, handle_resize);
-    win=newwin(35,160,0,0);
-    box(win,0,0);
-    wrefresh(win);
-    Cprint(win,initTxt,20,0,1);
+    //win=newwin(35,160,0,0);
+    box(stdscr,0,0);
+    wrefresh(stdscr);
+    Cprint(stdscr,initTxt,20,0,1);
     //Hprint(win, pContinue,20,0);
-    mvwprintw(win,24,(getmaxx(win)/2)-halfContinue,"%s", pContinue);
-    wmove(win,25,11);
-    SBHprint(win,sizeWarn,20);
+    mvwprintw(stdscr,24,(getmaxx(win)/2)-halfContinue,"%s", pContinue);
+    wmove(stdscr,25,11);
+    SBHprint(stdscr,sizeWarn,20);
     start_time=time(NULL);
     nodelay(stdscr,true);
     while(getch()!='\n'&&(time(NULL)-start_time)<10);
     nodelay(stdscr,false);
     nclearBuff();
-    delwin(win);
 }
 void run(){
     int isRun=1, status=2;
     while(isRun){
         switch(status){
             case 1:
-                menu(win);
+                menu();
                 break;
             case 2:
-                printLvl1();
-                level1();
+                printLvl_one();
+                level_one();
                 isRun=0;
                 break;
         }
