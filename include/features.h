@@ -11,6 +11,7 @@ extern chtype walls;
 extern chtype enemy;
 extern chtype road;
 extern chtype goal;
+extern int sLevel;
 
 void nclearBuff(void);
 void myPause(void);

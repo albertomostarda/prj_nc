@@ -6,6 +6,9 @@
 #include <string.h>
 #include <ncurses.h>
 
+char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
+Pos choicePos[4];
+
 char** print_map(int sLevel, int lPad, int uPad){
     FILE *fp;
     char *exePath=getPath();
@@ -110,10 +113,102 @@ void printcolor_char(WINDOW *tWin,char cch){
     }
 }
 
-void init_action(int sLevel, int lPad, int uPad){
+void init_action(int lPad, int uPad){
+    int vSize=0,hSize=0;
     action_buffer=(int *)realloc(action_buffer, 2*sizeof(int));
+    getmaxyx(action,vSize,hSize);
     action_buffer[0]=action_START;
+    switch (sLevel)
+    {
+        case 1:
+            action_buffer[1]=action_VAR+2;
+            mvwprintw(action, uPad+1, lPad+3, "int nPassi= %d;", action_buffer[1]-action_VAR);
+            break;
+        default:
+            break;
+    }
     mvwprintw(action, uPad, lPad, "INIZIO");
-    wmove(action, uPad+2, lPad+3);
+    choicePos[0].y=vSize-2;
+    choicePos[1].y=vSize-2;
+    choicePos[2].y=vSize-4;
+    choicePos[3].y=vSize-2;
+    choicePos[0].x=uPad+5;
+    choicePos[1].x=uPad+22;
+    choicePos[2].x=uPad+22;
+    choicePos[3].x=uPad+37;
+    mvwprintw(action, choicePos[0].y, choicePos[0].x, "%s", action_choice[0]);
+    mvwprintw(action, choicePos[1].y, choicePos[1].x, "%s", action_choice[1]);
+    mvwprintw(action, choicePos[2].y, choicePos[2].x, "%s", action_choice[2]);
+    mvwprintw(action, choicePos[3].y, choicePos[3].x, "%s", action_choice[3]);
     wrefresh(action);
+}
+
+void action_run(){
+    int choice=0, highlight=0, fBreak=1;
+    keypad(action, TRUE);
+    //nodelay(action, TRUE);
+    while(fBreak){
+        for(int i=0;i<4;i++){
+            if(i==highlight){
+                wattron(action, A_REVERSE);
+                mvwprintw(action, choicePos[i].y,choicePos[i].x,"%s",action_choice[i]);
+                wattroff(action, A_REVERSE);
+            }else{
+                mvwprintw(action, choicePos[i].y,choicePos[i].x,"%s",action_choice[i]);
+            }
+        }
+        choice=wgetch(action);
+        nclearBuff();
+        switch(choice){
+            case 'a':
+            case 'A':
+            case KEY_LEFT:
+                if(highlight==0){
+                    highlight=3;
+                }else{
+                    highlight--;
+                }
+                break;
+            case 'd':
+            case 'D':
+            case KEY_RIGHT:
+                if(highlight==3){
+                    highlight=0;
+                }else{
+                    highlight++;
+                }
+                break;
+            case '\n':
+                action_subrun(highlight,&fBreak);
+                break;
+        }
+    }
+    //nodelay(action, FALSE);
+}
+
+void action_subrun(int status,int *EXITflag){
+    switch (status)
+    {
+        default:
+            return;
+            break;
+        case 0:
+            action_add();
+        case 3:
+            *EXITflag=0;
+            break;
+    }
+    return ;
+}
+
+void action_add(){
+    switch(sLevel){
+        case 1:
+            addone();
+            return;
+            break;
+    }
+}
+void addone(){
+    
 }

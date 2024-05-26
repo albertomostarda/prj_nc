@@ -28,6 +28,8 @@ static char *pContinue="Premi INVIO per continuare";
 static char *sizeWarn="Per favore evita di ridimensionare la finestra del terminale";
 // Giacomo 5-1, avevo la necessita di un testo abbastanza grande per il testing;
 static char *testBible="Ora a voi, ricchi: piangete e gridate per le sciagure che cadranno su di voi! Le vostre ricchezze sono marce, i vostri vestiti sono mangiati dalle tarme. Il vostro oro e il vostro argento sono consumati dalla ruggine, la loro ruggine si alzerà ad accusarvi e divorerà le vostre carni come un fuoco.";
+int sLevel;
+
 
 void nclearBuff(void){
     int buff;
@@ -115,6 +117,7 @@ void run(){
                 menu();
                 break;
             case 2:
+                sLevel=1;
                 printLvl_one();
                 level_one();
                 isRun=0;

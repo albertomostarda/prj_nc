@@ -16,7 +16,7 @@ typedef enum actionCode{
         action_ENDFUNC,
         action_ENDSTART,
         //action_FUNC,
-        action_VARIABLES =30
+        action_VAR=30
 }actionCode;
 
 typedef struct Position{
