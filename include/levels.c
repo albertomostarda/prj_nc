@@ -1,5 +1,6 @@
 #include "levels.h"
 #include "features.h"
+#include "levelsfunctions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,40 +10,23 @@
 WINDOW *map;
 WINDOW *action;
 WINDOW *dialogue;
+char **mapArr;
+Hero pg1;
+chtype blank=219|COLOR_PAIR(5);
+chtype walls=219|COLOR_PAIR(2);
+chtype enemy=219|COLOR_PAIR(3);
+chtype road=219|COLOR_PAIR(4);
+chtype goal=219|COLOR_PAIR(6);
+
 
 void menu(){
     return;
 }
-void print_map(int sLevel){
-    FILE *fp;
-    char *exePath=getPath();
-    char fileName[13];
-    char fullpath[max_path];
-    int fLines=0, fCols=0;
-    switch (sLevel)
-    {
-        case 1:
-            strcpy(fileName, "levelone.txt\0");
-            break;
-    }
-    strcat(fullpath, exePath);
-    if (strlen(fullpath)-1!='/')
-    {
-        fullpath[strlen(fullpath)-1]='/';
-        strcat(fullpath,fileName);
-    }else{
-        strcat(fullpath,fileName);
-    }
-    fp=fopen(fullpath,"r");
-    fLines=fCountLines(fp);
-    fCols=fCountCols(fp);
-    char **Mmap=(char**)malloc(fLines*sizeof(char*));
-    
-}
+
 void printLvl_one(){
     time_t wait;
     map=newwin(24,110,0,0);
-    action=newwin(35,60,0,110);
+    action=newwin(35,50,0,110);
     dialogue=newwin(11,110,24,0);
     wrefresh(map);
     wrefresh(action);
@@ -53,8 +37,10 @@ void printLvl_one(){
     wrefresh(map);
     wrefresh(action);
     wrefresh(dialogue);
+    pg1.icon=94|COLOR_PAIR(7);
+    mapArr=print_map(1,30,1);
+    init_action(1, 5, 3);
     getch();
-    
 }
 void level_one(){
     

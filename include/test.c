@@ -61,7 +61,3 @@ void Hprint(WINDOW *tmp, char *pText, int padding, int forceNL) {
     }
     free(final_txt);
 }
-
-
-//////////////////////////////////////////
-/////////////////////////////////////////

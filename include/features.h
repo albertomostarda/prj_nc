@@ -6,9 +6,14 @@ typedef enum fStatus{fSTART, fRUN} state_t;
 //typedef enum customPos{custDEFAULT, custTOP, custBOT} custPos;
 extern WINDOW *win;
 extern const int max_path;
+extern chtype blank;
+extern chtype walls;
+extern chtype enemy;
+extern chtype road;
+extern chtype goal;
 
-
-void pause(void);
+void nclearBuff(void);
+void myPause(void);
 void handle_resize(int sig);
 void start();
 void run();
@@ -21,5 +26,6 @@ int csearch(char *sample,int start, char find);
 char* getPath();
 int fCountLines(FILE *tmpFile);
 int fCountCols(FILE *tmpFile);
+void initColors();
 
 #endif

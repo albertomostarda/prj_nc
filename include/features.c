@@ -29,22 +29,34 @@ static char *sizeWarn="Per favore evita di ridimensionare la finestra del termin
 // Giacomo 5-1, avevo la necessita di un testo abbastanza grande per il testing;
 static char *testBible="Ora a voi, ricchi: piangete e gridate per le sciagure che cadranno su di voi! Le vostre ricchezze sono marce, i vostri vestiti sono mangiati dalle tarme. Il vostro oro e il vostro argento sono consumati dalla ruggine, la loro ruggine si alzerà ad accusarvi e divorerà le vostre carni come un fuoco.";
 
-void nclearBuff(){
+void nclearBuff(void){
     int buff;
     nodelay(stdscr, TRUE);
     while((buff=getch())!=ERR);
     nodelay(stdscr, FALSE);
 
 }
-char *getPath(){
-    char path[max_path];
-    ssize_t len= readlink("proc/sel/exe", path, sizeof(path)-1);
-    if(len == -1){
-        printw("Impossibile ricavare il percorso");
+char *getPath() {
+    int j=0;
+    char *path = (char *)malloc(max_path * sizeof(char));
+    if (path == NULL) {
+        printw("Percorso non allocato");
+        refresh();
+        napms(5000);
         return NULL;
     }
-    path[len]='\0';
-    return path;
+    ssize_t len = readlink("/proc/self/exe", path, max_path - 1);
+    for (ssize_t i = len - 1; i >= 0; i--) {
+        if (path[i] == '/') {
+            path[i] = '\0';
+            break;
+        }
+    }
+
+    // Alloca e restituisce il percorso
+    char *exePath = (char *)malloc(strlen(path) + 1); // +1 per il terminatore NULL
+    strcpy(exePath, path);
+    return exePath;
 }
 
 void handle_resize(int sig){
@@ -55,7 +67,7 @@ void handle_resize(int sig){
 
     }
 }
-void pause(void){
+void myPause(void){
     printw("Premi INVIO per continuare . . .");
     refresh();
     getch();
@@ -69,6 +81,8 @@ void start(){
     initscr();
     cbreak();
     noecho();
+    start_color();
+    initColors();
     refresh();
     //win=newwin(35,160,0,0);
     box(stdscr,0,0);
@@ -78,11 +92,20 @@ void start(){
     mvwprintw(stdscr,24,(getmaxx(win)/2)-halfContinue,"%s", pContinue);
     wmove(stdscr,25,11);
     SBHprint(stdscr,sizeWarn,20);
+    if(!has_colors()){
+        mvwprintw(stdscr,1,1,"Non supporta i colori");
+        getch();
+    }else{
+        mvwprintw(stdscr,1,1,"supporta i colori");
+        getch();
+    }
     start_time=time(NULL);
     nodelay(stdscr,true);
     while(getch()!='\n'&&(time(NULL)-start_time)<10);
     nodelay(stdscr,false);
     nclearBuff();
+    werase(stdscr);
+    refresh();
 }
 void run(){
     int isRun=1, status=2;
@@ -253,4 +276,35 @@ void artHprint(WINDOW *tmp, int hSize, char **draw, int dHeight){
             mvwprintw(tmp, curY+i,cStart, "%s", draw[i]);
     }
     wrefresh(tmp);
+}
+
+int fCountLines(FILE *tmpFile){
+    int fLines=0;
+    char eFlag='\0';
+    while((eFlag=fgetc(tmpFile))!=EOF){
+        if(eFlag=='\n'){
+            fLines++;
+        }
+    }
+    rewind(tmpFile);
+    return fLines;
+}
+
+int fCountCols(FILE *tmpFile){
+    int fCols=0;
+    char eFlag='\0';
+    while((eFlag=fgetc(tmpFile))!='\n'){
+        fCols++;
+    }
+    rewind(tmpFile);
+    return fCols;
+}
+void initColors(){
+    init_pair(1, COLOR_WHITE, COLOR_BLACK); //testo normale
+    init_pair(2, COLOR_WHITE, COLOR_WHITE); // per #
+    init_pair(3, COLOR_RED,COLOR_RED);    // per eventuali nemici
+    init_pair(4, COLOR_YELLOW, COLOR_YELLOW); // per il percorso utilizzabile 2
+    init_pair(5,COLOR_BLACK,COLOR_BLACK); // per lo spazio vuoto 0
+    init_pair(6, COLOR_GREEN, COLOR_GREEN); // per il traguardo 9
+    init_pair(7, COLOR_CYAN, COLOR_CYAN);
 }
