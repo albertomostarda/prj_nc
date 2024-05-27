@@ -4,20 +4,31 @@
 
 typedef enum heroRot{UP,DOWN,RIGHT,LEFT}pgRot;
 typedef enum actionCode{
-        action_START,
-        action_IF,
-        action_ENDIF,
-        action_COND,
-        action_WHILE,
-        action_DO,
-        action_FOR,
-        action_FORSTRUCT,
-        action_ENDCICLE,
-        action_ENDFUNC,
-        action_ENDSTART,
+        action_START,       //0
+        action_IF,          //1
+        action_ENDIF,       //2
+        action_SCOND,       //3
+        action_ECOND,       //4
+        action_WHILE,       //5
+        action_DO,          //6
+        action_FOR,         //7
+        action_FORSTRUCT,   //8
+        action_ENDCICLE,    //9
+        action_ENDFUNC,     //10
+        action_SPARAM,      //11
+        action_EPARAM,      //12
+        action_WALK,        //13
+        action_LROTATE,     //14
+        action_RROTATE,     //15
+        action_ENDSTART,    //16
         //action_FUNC,
-        action_VAR=30
+        action_VAR=40       //
 }actionCode;
+
+typedef struct fullact{
+    actionCode id;
+    char *name;
+} fullAction;
 
 typedef struct Position{
     int y;

@@ -39,7 +39,7 @@ void printLvl_one(){
     wrefresh(dialogue);
     pg1.icon=94|COLOR_PAIR(7);
     mapArr=print_map(1,30,1);
-    init_action(5, 3);
+    init_action();
     action_run();
     getch();
 }

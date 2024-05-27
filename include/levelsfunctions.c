@@ -7,7 +7,10 @@
 #include <ncurses.h>
 
 char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
+fullAction correctAction[18];
 Pos choicePos[4];
+int alPad=5, auPad=3;
+int curAction_pos, curAction_size;
 
 char** print_map(int sLevel, int lPad, int uPad){
     FILE *fp;
@@ -87,7 +90,6 @@ char** print_map(int sLevel, int lPad, int uPad){
    
     return Mmap;
 }
-
 void printcolor_str(WINDOW *tWin,char *colStr, int pLines){
     for(int i=0;i<pLines;i++){
         printcolor_char(tWin,colStr[i]);
@@ -112,37 +114,82 @@ void printcolor_char(WINDOW *tWin,char cch){
             break;
     }
 }
-
-void init_action(int lPad, int uPad){
+void bond_action(){
+    actionCode i=0;
+    for(int idx=0;idx<18;i++,idx++){
+        correctAction[idx].id=i;
+    }
+    
+    correctAction[0].name="INIZIO";
+    correctAction[1].name="IF";
+    correctAction[2].name="FINE_IF";
+    correctAction[3].name="(";
+    correctAction[4].name=")";
+    correctAction[5].name="WHILE";
+    correctAction[6].name="DO";
+    correctAction[7].name="FOR";
+    correctAction[8].name="provvisorio";
+    correctAction[9].name="FINE_CICLO";
+    correctAction[10].name="FINE_FUNZIONE";
+    correctAction[11].name="(";
+    correctAction[12].name=")";
+    correctAction[13].name="cammina";
+    correctAction[14].name="ruota_antiorario";
+    correctAction[15].name="ruota_orario";
+    correctAction[16].name="FINE_PROGRAMMA";
+    correctAction[17].name="Variabile";
+    wprintw(dialogue, "%d %s", correctAction[1].id, correctAction[1].name);
+    wrefresh(dialogue);
+}
+void init_action(){
     int vSize=0,hSize=0;
-    action_buffer=(int *)realloc(action_buffer, 2*sizeof(int));
+    curAction_size=2;
+    action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+    curAction_pos=0;
     getmaxyx(action,vSize,hSize);
+    bond_action();
     action_buffer[0]=action_START;
+    curAction_pos++;
     switch (sLevel)
     {
         case 1:
             action_buffer[1]=action_VAR+2;
-            mvwprintw(action, uPad+1, lPad+3, "int nPassi= %d;", action_buffer[1]-action_VAR);
+            mvwprintw(action, auPad+1, alPad+3, "int nPassi= %d;", action_buffer[1]-action_VAR);
+            curAction_pos++;
             break;
         default:
             break;
     }
-    mvwprintw(action, uPad, lPad, "INIZIO");
+    mvwprintw(action, auPad, alPad, "INIZIO");
     choicePos[0].y=vSize-2;
     choicePos[1].y=vSize-2;
     choicePos[2].y=vSize-4;
     choicePos[3].y=vSize-2;
-    choicePos[0].x=uPad+5;
-    choicePos[1].x=uPad+22;
-    choicePos[2].x=uPad+22;
-    choicePos[3].x=uPad+37;
+    choicePos[0].x=auPad+5;
+    choicePos[1].x=auPad+22;
+    choicePos[2].x=auPad+22;
+    choicePos[3].x=auPad+37;
     mvwprintw(action, choicePos[0].y, choicePos[0].x, "%s", action_choice[0]);
     mvwprintw(action, choicePos[1].y, choicePos[1].x, "%s", action_choice[1]);
     mvwprintw(action, choicePos[2].y, choicePos[2].x, "%s", action_choice[2]);
     mvwprintw(action, choicePos[3].y, choicePos[3].x, "%s", action_choice[3]);
     wrefresh(action);
 }
-
+void print_action(){
+    for(int i=0;i<curAction_size;i++){
+        if(i!=0){
+            if(action_buffer[i]>=action_VAR){
+                mvwprintw(action, auPad+i, alPad+3,"int nPassi= %d;", action_buffer[i]-action_VAR);
+            }else{
+                mvwprintw(action, auPad+i, alPad+3,"%s", correctAction[action_buffer[i]].name);
+            }
+        }
+        else{
+            mvwprintw(action, auPad+i, alPad,"%s", correctAction[action_buffer[i]].name);
+        }
+    }
+    wrefresh(action);
+}
 void action_run(){
     int choice=0, highlight=0, fBreak=1;
     keypad(action, TRUE);
@@ -185,7 +232,6 @@ void action_run(){
     }
     //nodelay(action, FALSE);
 }
-
 void action_subrun(int status,int *EXITflag){
     switch (status)
     {
@@ -200,7 +246,6 @@ void action_subrun(int status,int *EXITflag){
     }
     return ;
 }
-
 void action_add(){
     switch(sLevel){
         case 1:
@@ -210,5 +255,64 @@ void action_add(){
     }
 }
 void addone(){
-    
+    int addBreak=1, limitAction_size, onFocus=0, addchoice=0;
+    //int limited_action[]={1, 2, 13, 14, 15, 16}; 
+    int limited_action[]={action_IF,action_ENDIF,action_WALK,action_LROTATE,action_RROTATE,action_ENDSTART};
+    limitAction_size=sizeof(limited_action)/sizeof(limited_action[0]);
+    print_add(limited_action, limitAction_size);
+    while(addBreak){
+        for(int i=0;i<limitAction_size;i++){
+            if(onFocus==i){
+                wattron(action, A_REVERSE);
+                mvwprintw(action, auPad+i, alPad, "%s",correctAction[limited_action[i]].name);
+                wattroff(action, A_REVERSE);
+            }else{
+                mvwprintw(action, auPad+i, alPad, "%s",correctAction[limited_action[i]].name);;
+            }
+        }
+        addchoice=wgetch(action);
+        nclearBuff();
+        switch(addchoice){
+            case 'w':
+            case 'W':
+            case KEY_UP:
+                if(onFocus==0){
+                    onFocus=limitAction_size-1;
+                }else{
+                    onFocus--;
+                }
+                break;
+            case 's':
+            case 'S':
+            case KEY_DOWN:
+                if(onFocus==limitAction_size-1){
+                    onFocus=0;
+                }else{
+                    onFocus++;
+                }
+                break;
+            case '\n':
+                werase(action);
+                curAction_size++;
+                action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                action_buffer[curAction_size-1]=correctAction[limited_action[onFocus]].id;
+                print_action();
+                wrefresh(action);
+                addBreak=0;
+                break;
+        }
+    }
+}
+void print_add(int *limitact, int limit_size){
+    werase(action);
+    int isFound=1;
+    for(int aidx=0;aidx<limit_size;aidx++){
+        for(int i=0;i<18&&isFound;i++){
+            if(limitact[aidx]==correctAction[i].id){
+                mvwprintw(action, auPad+aidx,alPad,"%s", correctAction[i].name);
+            }
+        }
+        isFound=1;
+    }
+    wrefresh(action);
 }
