@@ -1,5 +1,5 @@
-#ifndef LEVELFUNCTIONS_H
-#define LEVELFUNCTIONS_H
+#ifndef INITLEVELS_H
+#define INITLEVELS_H
 #include "features.h"
 #include "levels.h"
 #include <stdio.h>
@@ -8,21 +8,21 @@
 #include <ncurses.h>
 
 extern char *action_choice[];
+extern char *lastVarname;
 extern Pos choicePos[4];
 extern char *action_codename[];
+extern int curAction_size;
+extern fullAction correctAction[18];
+extern int auPad, alPad;
 
+char** init_map(int sLevel, int lPad, int uPad );
 
-char** print_map(int sLevel, int lPad, int uPad );
-void printcolor_str(WINDOW *tWin, char *colStr, int pLines);
-void printcolor_char(WINDOW *tWin,char ch);
 void init_action();
 void bond_action();
-void print_action();
+void conditionError();
 void action_run();
 void action_subrun(int status,int *EXITflag);
-void print_add(int *limitact, int limit_size);
-void action_add();
-void addone();
+
 
 
 #endif

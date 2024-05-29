@@ -54,9 +54,7 @@ char *getPath() {
             break;
         }
     }
-
-    // Alloca e restituisce il percorso
-    char *exePath = (char *)malloc(strlen(path) + 1); // +1 per il terminatore NULL
+    char *exePath = (char *)malloc(strlen(path) + 1);
     strcpy(exePath, path);
     return exePath;
 }
@@ -126,14 +124,14 @@ void run(){
     }
 }
 
-void Cprint(WINDOW *tmp,char *pText, int hPad, int vPad, int fNL){
+void Cprint(WINDOW *tmp,const char *pText, int hPad, int vPad, int fNL){
     //da aggiustare in vista di righe pari
     int hSize=getmaxx(tmp)-getbegx(tmp), vSize=getmaxy(tmp)-getbegy(tmp);
     int lidx=0, ridx=0, nStr=0, hStart=0,txtLength=0, midoff=0;
     char **final_txt=Hsplit(hSize,pText,NULL,hPad,fNL,&nStr);
     lidx=ridx=nStr/2;
     if(nStr==0||final_txt==NULL){
-        printw("Errore nella stampa del Testo");
+        mvwprintw(tmp,1,1,"Errore nella stampa del Testo");
     }
     else if(nStr<3){
         int midStr=nStr / 2;
@@ -192,7 +190,7 @@ void Cprint(WINDOW *tmp,char *pText, int hPad, int vPad, int fNL){
     wrefresh(tmp);
 }
 
-char** Hsplit(int HSIZE, char *pText, char **split_txt,int padding, int forceNL, int *nLines) {
+char** Hsplit(int HSIZE,const char *pText, char **split_txt,int padding, int forceNL, int *nLines) {
     int textLength = strlen(pText);
 
     if (textLength > (HSIZE - padding) || forceNL) {
@@ -221,7 +219,7 @@ char** Hsplit(int HSIZE, char *pText, char **split_txt,int padding, int forceNL,
 
     return split_txt;
 }
-void Hprint(WINDOW *tmp, char *pText, int padding, int forceNL) {
+void Hprint(WINDOW *tmp,const char *pText, int padding, int forceNL) {
     int hSize = getmaxx(tmp) - getbegx(tmp);
     int curY = getcury(tmp);
     int textLength = strlen(pText);
@@ -254,7 +252,7 @@ void SBHprint(WINDOW *tmp, char *pText, int padding){
     wmove(tmp, getbegy(tmp)+1, getmaxx(tmp)+1);
     wrefresh(tmp);
 }
-int csearch(char *sample, int start, char find) {
+int csearch(const char *sample, int start, char find) {
     for (int i = start; i < strlen(sample); i++) {
         if (sample[i] == find) {
             return i;
