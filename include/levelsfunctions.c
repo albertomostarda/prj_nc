@@ -27,6 +27,7 @@ void printcolor_char(WINDOW *tWin,char cch){
             break;
     }
 }
+
 void print_action(){
     int conLenght=0, actY=0, indent=1, canGo=1;
     werase(action);
@@ -40,7 +41,6 @@ void print_action(){
                 break;
             case action_IF:
                 mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
-                indent++;
                 break;
             case action_SPARENT:
                 conLenght=strlen(correctAction[action_buffer[i-1]].name)+alPad+(3*indent);
@@ -53,6 +53,7 @@ void print_action(){
                     mvwprintw(action,auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
                     conLenght=0;
                     actY++;
+                    indent++;
                 }else{
                     actY--;
                 }
@@ -64,14 +65,16 @@ void print_action(){
                 break;
             default:
                 if(action_buffer[i]>=action_VAR){
-                    mvwprintw(action, auPad+i, alPad+(3*indent),"int nPassi= %d;", action_buffer[i]-action_VAR);
+                    mvwprintw(action, auPad+actY, alPad+(3*indent),"int nPassi= %d;", action_buffer[i]-action_VAR);
                     actY++;
-                }else if(action_buffer[i]>action_ENDSTART||action_buffer[i]<action_VAR){
+                }else if(action_buffer[i]>action_ENDSTART&&action_buffer[i]<action_VAR)/*caso delle condizioni*/{
                     conLenght+=strlen(correctAction[action_buffer[i-1]].name);
-                    mvwprintw(action, auPad+i-2, conLenght,"%s", correctAction[action_buffer[i]].name);
-                    break;
+                    mvwprintw(action, auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
+                }else if(conLenght!=0){
+                    conLenght+=strlen(correctAction[action_buffer[i-1]].name);
+                    mvwprintw(action, auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
                 }else{
-                    mvwprintw(action, auPad+i, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
+                    mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
                     actY++;
                 }
                 break;
@@ -101,7 +104,17 @@ int check_Econdition(int lastPos){
         wrefresh(dialogue);
         curAction_size-=2;
         action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
-        getch();
+        print_action();
+        return 0;
+    }else if(action_buffer[lastPos-1]==action_SPARENT){
+        werase(dialogue);
+        box(dialogue, 0,0);
+        mvwprintw(dialogue, 1,1, "Nella struttura '%s' non e' presente la condizione.", correctAction[action_buffer[lastPos-2]].name);
+        mvwprintw(dialogue, 2,1, "Per favore inseriscine una o elimina la struttura.");
+        wmove(dialogue, 3,1);
+        wrefresh(dialogue);
+        curAction_size--;
+        action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
         print_action();
         return 0;
     }else{
@@ -111,6 +124,7 @@ int check_Econdition(int lastPos){
 
 void print_add(int *limitact, int limit_size){
     werase(action);
+    box(action, 0,0);
     int isFound=1;
     for(int aidx=0;aidx<limit_size;aidx++){
         for(int i=0;i<18&&isFound;i++){

@@ -307,5 +307,5 @@ void initColors(){
     init_pair(4, COLOR_YELLOW, COLOR_YELLOW); // per il percorso utilizzabile 2
     init_pair(5,COLOR_BLACK,COLOR_BLACK); // per lo spazio vuoto 0
     init_pair(6, COLOR_GREEN, COLOR_GREEN); // per il traguardo 9
-    init_pair(7, COLOR_CYAN, COLOR_CYAN);
+    init_pair(7, COLOR_WHITE, COLOR_BLUE);   // per il personaggio
 }
