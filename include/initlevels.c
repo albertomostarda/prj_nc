@@ -201,6 +201,9 @@ void action_subrun(int status,int *EXITflag){
         case 0:
             action_add();
             break;
+        case 2:
+            delete_action();
+            break;
         case 3:
             *EXITflag=0;
             break;

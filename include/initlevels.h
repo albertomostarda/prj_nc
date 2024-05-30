@@ -19,7 +19,6 @@ char** init_map(int sLevel, int lPad, int uPad );
 
 void init_action();
 void bond_action();
-void conditionError();
 void action_run();
 void action_subrun(int status,int *EXITflag);
 
