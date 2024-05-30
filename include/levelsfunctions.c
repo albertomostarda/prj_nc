@@ -71,7 +71,7 @@ void print_action(){
                         actY++;
                     }
                 default:
-                    if(isCond&&(action_buffer[i]>action_ENDSTART&&action_buffer[i]<action_VAR)){
+                    if(isCond||(action_buffer[i]>action_ENDSTART&&action_buffer[i]<action_VAR)){
                         canGo=conditionError(i);
                         if(canGo){
                             isCond=0;
@@ -117,9 +117,9 @@ int conditionError(int lastPos){
         int halfY=getmaxy(dialogue)/2, halfX=getmaxx(dialogue)/2, txtLen=0;
         werase(dialogue);
         box(dialogue, 0, 0);
-        txtLen=strlen("Nella struttura '%s' non e' presente una condizione valida.");
+        txtLen=strlen("Nella struttura '%s' non e' presente una condizione valida.")/2;
         mvwprintw(dialogue, halfY-1, halfX-txtLen, "Nella struttura '%s' non e' presente una condizione valida.",correctAction[action_buffer[lastPos-1]].name);
-        txtLen=strlen("Per favore inseriscine una valida.");
+        txtLen=strlen("Per favore inseriscine una valida.")/2;
         mvwprintw(dialogue,halfY+1, halfX-txtLen, "Per favore inseriscine una valida.");
         wmove(dialogue, 3,1);
         wrefresh(dialogue);
@@ -128,7 +128,7 @@ int conditionError(int lastPos){
         print_action();
         return 0;
     }
-    else if(action_buffer){
+    else{
         return 1;
     }
 }
@@ -161,61 +161,66 @@ int conditionError(int lastPos){
 //         return 1;
 //     }
 // }
+void delete_action() {
+    int halfY = getmaxy(action) / 2;
+    int halfX = getmaxx(action) / 2;
+    int txtLen = 0, highlight = 0, choiceBreak = 1, confirmChoice = 0;
+    char confirmYN[2][5] = {"[SI]\0", "[NO]\0"};
+    int confirmYN_Pos[2] = {halfX - 6, halfX + 2};
 
-void delete_action(){
-    int halfY=(getmaxy(action)-getbegy(action))/2, halfX=(getmaxx(action)-getbegx(action))/2;
-    int txtLen=0, highlight=0, choiceBreak=1, confirmChoice=0;
-    char confirmYN[2][2]={"[SI]","[NO]"};
-    int confirmYN_Pos[2]={halfX-6,halfX+6};
     werase(action);
-    box(action, 0 ,0);
-    txtLen=strlen("Stai per eliminare l'ultima istruzione inserita.");
-    mvwprintw(action, halfY-1, halfX-txtLen,"Stai per eliminare l'ultima istruzione inserita.");
-    txtLen=strlen("Sei sicuro?");
-    mvwprintw(action, halfY+1, halfX-txtLen,"Sei sicuro?");
-    while(choiceBreak){
-        for(int i=0;i<2;i++){
-            if(i==highlight){
+    box(action, 0, 0);
+    // txtLen = strlen("Stai per eliminare l'ultima istruzione inserita") / 2;
+    // mvwprintw(action, halfY - 1, halfX - txtLen, "Stai per eliminare l'ultima istruzione inserita");
+    Cprint(action,"Stai per eliminare l'ultima istruzione inserita",1,2,0);
+    txtLen = strlen("Sei sicuro?") / 2;
+    mvwprintw(action, halfY + 1, halfX - txtLen, "Sei sicuro?");
+    mvwprintw(action, halfY + 3, confirmYN_Pos[0], "%s", confirmYN[0]);
+    mvwprintw(action, halfY + 3, confirmYN_Pos[1], "%s", confirmYN[1]);
+    wrefresh(action);
+    while (choiceBreak) {
+        for (int i = 0; i < 2; i++) {
+            if (i == highlight) {
                 wattron(action, A_REVERSE);
-                mvwprintw(action, halfY+3, confirmYN_Pos[i],"%s",confirmYN[i]);
+                mvwprintw(action, halfY + 3, confirmYN_Pos[i], "%s", confirmYN[i]);
                 wattroff(action, A_REVERSE);
+            } else {
+                mvwprintw(action, halfY + 3, confirmYN_Pos[i], "%s", confirmYN[i]);
             }
         }
-        nclearBuff();
-        confirmChoice=getch();
-        switch(confirmChoice){
+        wrefresh(action);
+        confirmChoice = wgetch(action);
+
+        switch (confirmChoice) {
             case 'a':
             case 'A':
             case KEY_LEFT:
-                if(highlight==0){
-                    highlight=1;
-                }
-                highlight--;
+                highlight = (highlight == 0) ? 1 : 0;
                 break;
             case 'd':
             case 'D':
             case KEY_RIGHT:
-                if(highlight==1){
-                    highlight=0;
-                }
-                highlight++;
+                highlight = (highlight == 1) ? 0 : 1;
                 break;
             case '\n':
-                choiceBreak=0;
-                break;
-        }
-        switch(highlight)
-        {
-            case 0:
-                curAction_size--;
-                action_buffer=(int *)malloc(curAction_size*sizeof(int));
-                break;
-            default:
+                choiceBreak = 0;
                 break;
         }
     }
-}
 
+    if (highlight == 0) {
+        halfY = getmaxy(dialogue) / 2;
+        halfX = getmaxx(dialogue) / 2;
+        curAction_size--;
+        action_buffer = (int *)realloc(action_buffer, curAction_size * sizeof(int));
+        napms(500);
+        werase(dialogue);
+        box(dialogue, 0, 0);
+        Cprint(dialogue, "Istruzione Eliminata con successo.", 1, 1, 0);
+    }
+    nclearBuff();
+    print_action();
+}
 void print_add(int *limitact, int limit_size){
     werase(action);
     box(action, 0,0);

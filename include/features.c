@@ -100,9 +100,9 @@ void start(){
         getch();
     }
     start_time=time(NULL);
-    nodelay(stdscr,true);
+    nodelay(stdscr,TRUE);
     while(getch()!='\n'&&(time(NULL)-start_time)<10);
-    nodelay(stdscr,false);
+    nodelay(stdscr,FALSE);
     nclearBuff();
     werase(stdscr);
     refresh();
@@ -124,9 +124,9 @@ void run(){
     }
 }
 
-void Cprint(WINDOW *tmp,const char *pText, int hPad, int vPad, int fNL){
+void Cprint(WINDOW *tmp,  char *pText, int hPad, int vPad, int fNL){
     //da aggiustare in vista di righe pari
-    int hSize=getmaxx(tmp)-getbegx(tmp), vSize=getmaxy(tmp)-getbegy(tmp);
+    int hSize=getmaxx(tmp), vSize=getmaxy(tmp);
     int lidx=0, ridx=0, nStr=0, hStart=0,txtLength=0, midoff=0;
     char **final_txt=Hsplit(hSize,pText,NULL,hPad,fNL,&nStr);
     lidx=ridx=nStr/2;
@@ -190,7 +190,7 @@ void Cprint(WINDOW *tmp,const char *pText, int hPad, int vPad, int fNL){
     wrefresh(tmp);
 }
 
-char** Hsplit(int HSIZE,const char *pText, char **split_txt,int padding, int forceNL, int *nLines) {
+char** Hsplit(int HSIZE,  char *pText, char **split_txt,int padding, int forceNL, int *nLines) {
     int textLength = strlen(pText);
 
     if (textLength > (HSIZE - padding) || forceNL) {
@@ -219,8 +219,8 @@ char** Hsplit(int HSIZE,const char *pText, char **split_txt,int padding, int for
 
     return split_txt;
 }
-void Hprint(WINDOW *tmp,const char *pText, int padding, int forceNL) {
-    int hSize = getmaxx(tmp) - getbegx(tmp);
+void Hprint(WINDOW *tmp,  char *pText, int padding, int forceNL) {
+    int hSize = getmaxx(tmp);
     int curY = getcury(tmp);
     int textLength = strlen(pText);
     int nStr=0;
@@ -252,7 +252,7 @@ void SBHprint(WINDOW *tmp, char *pText, int padding){
     wmove(tmp, getbegy(tmp)+1, getmaxx(tmp)+1);
     wrefresh(tmp);
 }
-int csearch(const char *sample, int start, char find) {
+int csearch(  char *sample, int start, char find) {
     for (int i = start; i < strlen(sample); i++) {
         if (sample[i] == find) {
             return i;
