@@ -1,7 +1,7 @@
 #include "initlevels.h"
 #include "features.h"
 #include "levels.h"
-#include "levelsfunction.h"
+#include "levelsfunctions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,7 @@ char *lastVarname;
 fullAction correctAction[18];
 Pos choicePos[4];
 int alPad=5, auPad=3;
-int curAction_pos, curAction_size;
+int curAction_pos, curAction_size, levelLimitation=0;
 int* action_buffer;
 
 char** init_map(int sLevel, int lPad, int uPad){
@@ -70,7 +70,7 @@ char** init_map(int sLevel, int lPad, int uPad){
 
     for(int i=0;i<fLines;i++){
         wmove(map,wBegy+uPad+i,wBegx+lPad);
-        printcolor_str(map,Mmap[i], strlen(Mmap[i]));
+        printcolor_str(map,Mmap[i], strlen(Mmap[i]), i);
         wrefresh(map);
         napms(100);
     }
@@ -87,34 +87,34 @@ void bond_action(){
     strcpy(correctAction[1].name, "SE");
     correctAction[2].name = (char *)malloc(strlen("FINE_SE") + 1);
     strcpy(correctAction[2].name, "FINE_SE");
-    correctAction[3].name = (char *)malloc(strlen("(") + 1);
-    strcpy(correctAction[3].name, "(");
-    correctAction[4].name = (char *)malloc(strlen(")") + 1);
-    strcpy(correctAction[4].name, ")");
-    correctAction[5].name = (char *)malloc(strlen("MENTRE") + 1);
-    strcpy(correctAction[5].name, "MENTRE");
-    correctAction[6].name = (char *)malloc(strlen("FAI") + 1);
-    strcpy(correctAction[6].name, "FAI");
-    correctAction[7].name = (char *)malloc(strlen("FINCHE'") + 1);
-    strcpy(correctAction[7].name, "FINCHE'");
-    correctAction[8].name = (char *)malloc(strlen("provvisorio") + 1);
-    strcpy(correctAction[8].name, "provvisorio");
-    correctAction[9].name = (char *)malloc(strlen("FINE_CICLO") + 1);
-    strcpy(correctAction[9].name, "FINE_CICLO");
-    correctAction[10].name = (char *)malloc(strlen("FINE_FUNZIONE") + 1);
-    strcpy(correctAction[10].name, "FINE_FUNZIONE");
-    correctAction[11].name = (char *)malloc(strlen("cammina") + 1);
-    strcpy(correctAction[11].name, "cammina");
-    correctAction[12].name = (char *)malloc(strlen("ruota_antiorario") + 1);
-    strcpy(correctAction[12].name, "ruota_antiorario");
-    correctAction[13].name = (char *)malloc(strlen("ruota_orario") + 1);
-    strcpy(correctAction[13].name, "ruota_orario");
-    correctAction[14].name = (char *)malloc(strlen("FINE_PROGRAMMA") + 1);
-    strcpy(correctAction[14].name, "FINE_PROGRAMMA");
-    correctAction[15].name = (char *)malloc(strlen("BLOCCATO") + 1);
-    strcpy(correctAction[15].name, "BLOCCATO");
-    correctAction[16].name = (char *)malloc(strlen("Variabile") + 1);
-    strcpy(correctAction[16].name, "Variabile");
+    // correctAction[3].name = (char *)malloc(strlen("(") + 1);
+    // strcpy(correctAction[3].name, "(");
+    // correctAction[4].name = (char *)malloc(strlen(")") + 1);
+    // strcpy(correctAction[4].name, ")");
+    correctAction[3].name = (char *)malloc(strlen("MENTRE") + 1);
+    strcpy(correctAction[3].name, "MENTRE");
+    correctAction[4].name = (char *)malloc(strlen("FAI") + 1);
+    strcpy(correctAction[4].name, "FAI");
+    correctAction[5].name = (char *)malloc(strlen("FINCHE'") + 1);
+    strcpy(correctAction[5].name, "FINCHE'");
+    correctAction[6].name = (char *)malloc(strlen("provvisorio") + 1);
+    strcpy(correctAction[6].name, "provvisorio");
+    correctAction[7].name = (char *)malloc(strlen("FINE_CICLO") + 1);
+    strcpy(correctAction[7].name, "FINE_CICLO");
+    // correctAction[8].name = (char *)malloc(strlen("FINE_FUNZIONE") + 1);
+    // strcpy(correctAction[8].name, "FINE_FUNZIONE");
+    correctAction[8].name = (char *)malloc(strlen("cammina") + 1);
+    strcpy(correctAction[8].name, "cammina");
+    correctAction[9].name = (char *)malloc(strlen("ruota_antiorario") + 1);
+    strcpy(correctAction[9].name, "ruota_antiorario");
+    correctAction[10].name = (char *)malloc(strlen("ruota_orario") + 1);
+    strcpy(correctAction[10].name, "ruota_orario");
+    correctAction[11].name = (char *)malloc(strlen("FINE_PROGRAMMA") + 1);
+    strcpy(correctAction[11].name, "FINE_PROGRAMMA");
+    correctAction[12].name = (char *)malloc(strlen("BLOCCATO") + 1);
+    strcpy(correctAction[12].name, "BLOCCATO");
+    correctAction[13].name = (char *)malloc(strlen("Variabile") + 1);
+    strcpy(correctAction[13].name, "Variabile");
 }
 void init_action(){
     int vSize=0,hSize=0;
@@ -131,6 +131,7 @@ void init_action(){
             action_buffer[1]=action_VAR+2;
             mvwprintw(action, auPad+1, alPad+3, "int nPassi= %d;", action_buffer[1]-action_VAR);
             curAction_pos++;
+            levelLimitation=2;
             break;
         default:
             break;
@@ -149,64 +150,4 @@ void init_action(){
     mvwprintw(action, choicePos[2].y, choicePos[2].x, "%s", action_choice[2]);
     mvwprintw(action, choicePos[3].y, choicePos[3].x, "%s", action_choice[3]);
     wrefresh(action);
-}
-void action_run(){
-    int choice=0, highlight=0, fBreak=1;
-    keypad(action, TRUE);
-    //nodelay(action, TRUE);
-    while(fBreak){
-        for(int i=0;i<4;i++){
-            if(i==highlight){
-                wattron(action, A_REVERSE);
-                mvwprintw(action, choicePos[i].y,choicePos[i].x,"%s",action_choice[i]);
-                wattroff(action, A_REVERSE);
-            }else{
-                mvwprintw(action, choicePos[i].y,choicePos[i].x,"%s",action_choice[i]);
-            }
-        }
-        choice=wgetch(action);
-        nclearBuff();
-        switch(choice){
-            case 'a':
-            case 'A':
-            case KEY_LEFT:
-                if(highlight==0){
-                    highlight=3;
-                }else{
-                    highlight--;
-                }
-                break;
-            case 'd':
-            case 'D':
-            case KEY_RIGHT:
-                if(highlight==3){
-                    highlight=0;
-                }else{
-                    highlight++;
-                }
-                break;
-            case '\n':
-                action_subrun(highlight,&fBreak);
-                break;
-        }
-    }
-    //nodelay(action, FALSE);
-}
-void action_subrun(int status,int *EXITflag){
-    switch (status)
-    {
-        default:
-            return;
-            break;
-        case 0:
-            action_add();
-            break;
-        case 1:
-            delete_action();
-            break;
-        case 3:
-            *EXITflag=0;
-            break;
-    }
-    return ;
 }

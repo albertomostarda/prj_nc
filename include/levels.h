@@ -7,19 +7,17 @@ typedef enum actionCode{
         action_START,       //0
         action_IF,          //1
         action_ENDIF,       //2
-        action_SPARENT,     //3
-        action_EPARENT,     //4
-        action_WHILE,       //5
-        action_DO,          //6
-        action_FOR,         //7
-        action_FORSTRUCT,   //8
-        action_ENDCICLE,    //9
-        action_ENDFUNC,     //10
-        action_WALK,        //11
-        action_LROTATE,     //12
-        action_RROTATE,     //13
-        action_ENDSTART,    //14
-        action_isObstacle,  //15
+        action_WHILE,       //3
+        action_DO,          //4
+        action_FOR,         //5
+        action_FORSTRUCT,   //6
+        action_ENDCICLE,    //7
+        //action_ENDFUNC,     
+        action_WALK,        //8
+        action_LROTATE,     //9
+        action_RROTATE,     //10
+        action_ENDSTART,    //11
+        action_isObstacle,  //12
         //action_FUNC,
         action_VAR=40       //
 }actionCode;
@@ -45,6 +43,7 @@ extern WINDOW *action;
 extern WINDOW *dialogue;
 extern Hero pg1;
 extern int* action_buffer;
+extern char **mapArr;
 
 void print_menu();
 void menu();

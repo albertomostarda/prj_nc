@@ -1,14 +1,15 @@
-#include "levelsfunction.h"
+#include "levelsfunctions.h"
 #include "initlevels.h"
 #include "levels.h"
+#include "herofunctions.h"
 #include <ncurses.h>
 
-void printcolor_str(WINDOW *tWin,char *colStr, int pLines){
+void printcolor_str(WINDOW *tWin,char *colStr, int pLines, int tmpY){
     for(int i=0;i<pLines;i++){
-        printcolor_char(tWin,colStr[i]);
+        printcolor_char(tWin,colStr[i],i, tmpY);
     }
 }
-void printcolor_char(WINDOW *tWin,char cch){
+void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
     switch(cch){
         case '#':
             waddch(tWin, walls);
@@ -18,6 +19,10 @@ void printcolor_char(WINDOW *tWin,char cch){
             break;
         case '1':
             waddch(tWin, pg1.icon);
+            if(locY!=-1){
+                pg1.locate.x=locX;
+                pg1.locate.y=locY;
+            }
             break;
         case '2':
             waddch(tWin, road);
@@ -27,7 +32,6 @@ void printcolor_char(WINDOW *tWin,char cch){
             break;
     }
 }
-
 void print_action(){
     int conLenght=0, actY=0, indent=1, isCond=0,canGo=1;//
     werase(action);
@@ -40,47 +44,43 @@ void print_action(){
                     actY++;
                     break;
                 case action_IF:
-                    mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
-                    conLenght+=strlen(correctAction[action_buffer[i]].name)+alPad+(3*indent)+1;
-                    isCond=1;
-                    break;
-                // case action_SPARENT:
-                //     conLenght=strlen(correctAction[action_buffer[i-1]].name)+alPad+(3*indent);
-                //     mvwprintw(action, auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
-                //     break;
-                // case action_EPARENT:
-                //     canGo=check_Econdition(i);
-                //     if(canGo){
-                //         conLenght+=strlen(correctAction[action_buffer[i-1]].name);
-                //         mvwprintw(action,auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
-                //         conLenght=0;
-                //         actY++;
-                //         indent++;
-                //     }else{
-                //         actY--;
-                //     }
-                //     break;
-                case action_ENDIF:
-                    if(indent>1){
-                        indent--;
-                    }
-                    if(conLenght!=0){
-                        mvwprintw(action,auPad+actY,conLenght,"%s", correctAction[action_buffer[i]].name);
+                    if(isCond){
+                        ifError();
                     }else{
+                        mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
+                        conLenght+=strlen(correctAction[action_buffer[i]].name)+alPad+(3*indent)+1;
+                        isCond=1;
+                    }
+                    break;
+                case action_ENDIF:
+                    if(endError()){
+                        werase(dialogue);
+                        box(dialogue,0,0);
+                        Cprint(dialogue,"Bisogna che sia presente un 'IF' per usare 'END_IF'",1,1,0);
+                    }else{
+                        if(indent>1){
+                            indent--;
+                        }
                         mvwprintw(action,auPad+actY,alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
                         actY++;
                     }
+                    break;
                 default:
-                    if(isCond||(action_buffer[i]>action_ENDSTART&&action_buffer[i]<action_VAR)){
-                        canGo=conditionError(i);
-                        if(canGo){
-                            isCond=0;
-                            mvwprintw(action, auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
-                            conLenght=0;
-                            actY++;
-                            indent++;
+                    if(isCond||action_buffer[i]>action_ENDSTART&&action_buffer[i]<action_VAR){
+                        if(isCond){
+                            canGo=conditionError(i);
+                            if(canGo){
+                                isCond=0;
+                                mvwprintw(action, auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
+                                conLenght=0;
+                                actY++;
+                                indent++;
+                            }else{
+                                actY--;
+                            }
                         }else{
-                            actY--;
+                            werase(dialogue);
+                            Cprint(dialogue,"Questa e' una condizione e deve essere inserita solo dopo un 'IF','WHILE,'DO-WHILE'",1,1,0);
                         }
                     }
                     else if(action_buffer[i]>=action_VAR){
@@ -112,6 +112,13 @@ void print_action(){
         // }
     }
 }
+void ifError(){
+    werase(dialogue);
+    box(dialogue,0,0);
+    Cprint(dialogue,"Non puoi inserire due 'IF' di seguito",1,1,0);
+    curAction_size--;
+    action_buffer=(int *)realloc(action_buffer,curAction_size*sizeof(int));
+}
 int conditionError(int lastPos){
     if(action_buffer[lastPos]<=action_ENDSTART||action_buffer[lastPos]>=action_VAR){
         int halfY=getmaxy(dialogue)/2, halfX=getmaxx(dialogue)/2, txtLen=0;
@@ -132,94 +139,71 @@ int conditionError(int lastPos){
         return 1;
     }
 }
-// int check_Econdition(int lastPos){
-//     if((action_buffer[lastPos-1]<=action_ENDSTART||action_buffer[lastPos-1]>=action_VAR)&&action_buffer[lastPos-1]!=action_SPARENT){
-//         werase(dialogue);
-//         box(dialogue, 0,0);
-//         //Cprint(dialogue,"Nella struttura 'IF' non e' presente una condizione valida",1,1,0);
-//         //Cprint(dialogue,"Per favore inseriscine una valida.",1,1,0);
-//         mvwprintw(dialogue, 1,1, "Nella struttura '%s' non e' presente una condizione valida.", correctAction[action_buffer[lastPos-3]].name);
-//         mvwprintw(dialogue, 2,1, "Per favore inseriscine una valida.");
-//         wmove(dialogue, 3,1);
-//         wrefresh(dialogue);
-//         curAction_size-=2;
-//         action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
-//         print_action();
-//         return 0;
-//     }else if(action_buffer[lastPos-1]==action_SPARENT){
-//         werase(dialogue);
-//         box(dialogue, 0,0);
-//         mvwprintw(dialogue, 1,1, "Nella struttura '%s' non e' presente la condizione.", correctAction[action_buffer[lastPos-2]].name);
-//         mvwprintw(dialogue, 2,1, "Per favore inseriscine una o elimina la struttura.");
-//         wmove(dialogue, 3,1);
-//         wrefresh(dialogue);
-//         curAction_size--;
-//         action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
-//         print_action();
-//         return 0;
-//     }else{
-//         return 1;
-//     }
-// }
-void delete_action() {
-    int halfY = getmaxy(action) / 2;
-    int halfX = getmaxx(action) / 2;
-    int txtLen = 0, highlight = 0, choiceBreak = 1, confirmChoice = 0;
-    char confirmYN[2][5] = {"[SI]\0", "[NO]\0"};
-    int confirmYN_Pos[2] = {halfX - 6, halfX + 2};
+void delete_action(int lim) {
+    if(curAction_size<=lim){
+        werase(dialogue);
+            box(dialogue, 0, 0);
+            Cprint(dialogue, "Non posso cancellare oltre.", 1, 1, 0);
+    }else{
+        int halfY = getmaxy(action) / 2;
+        int halfX = getmaxx(action) / 2;
+        int txtLen = 0, highlight = 0, choiceBreak = 1, confirmChoice = 0;
+        char confirmYN[2][5] = {"[SI]\0", "[NO]\0"};
+        int confirmYN_Pos[2] = {halfX - 6, halfX + 2};
 
-    werase(action);
-    box(action, 0, 0);
-    // txtLen = strlen("Stai per eliminare l'ultima istruzione inserita") / 2;
-    // mvwprintw(action, halfY - 1, halfX - txtLen, "Stai per eliminare l'ultima istruzione inserita");
-    Cprint(action,"Stai per eliminare l'ultima istruzione inserita",1,2,0);
-    txtLen = strlen("Sei sicuro?") / 2;
-    mvwprintw(action, halfY + 1, halfX - txtLen, "Sei sicuro?");
-    mvwprintw(action, halfY + 3, confirmYN_Pos[0], "%s", confirmYN[0]);
-    mvwprintw(action, halfY + 3, confirmYN_Pos[1], "%s", confirmYN[1]);
-    wrefresh(action);
-    while (choiceBreak) {
-        for (int i = 0; i < 2; i++) {
-            if (i == highlight) {
-                wattron(action, A_REVERSE);
-                mvwprintw(action, halfY + 3, confirmYN_Pos[i], "%s", confirmYN[i]);
-                wattroff(action, A_REVERSE);
-            } else {
-                mvwprintw(action, halfY + 3, confirmYN_Pos[i], "%s", confirmYN[i]);
+        werase(action);
+        box(action, 0, 0);
+        // txtLen = strlen("Stai per eliminare l'ultima istruzione inserita") / 2;
+        // mvwprintw(action, halfY - 1, halfX - txtLen, "Stai per eliminare l'ultima istruzione inserita");
+        Cprint(action,"Stai per eliminare l'ultima istruzione inserita",1,2,0);
+        txtLen = strlen("Sei sicuro?") / 2;
+        mvwprintw(action, halfY + 1, halfX - txtLen, "Sei sicuro?");
+        mvwprintw(action, halfY + 3, confirmYN_Pos[0], "%s", confirmYN[0]);
+        mvwprintw(action, halfY + 3, confirmYN_Pos[1], "%s", confirmYN[1]);
+        wrefresh(action);
+        while (choiceBreak) {
+            for (int i = 0; i < 2; i++) {
+                if (i == highlight) {
+                    wattron(action, A_REVERSE);
+                    mvwprintw(action, halfY + 3, confirmYN_Pos[i], "%s", confirmYN[i]);
+                    wattroff(action, A_REVERSE);
+                } else {
+                    mvwprintw(action, halfY + 3, confirmYN_Pos[i], "%s", confirmYN[i]);
+                }
+            }
+            wrefresh(action);
+            confirmChoice = wgetch(action);
+
+            switch (confirmChoice) {
+                case 'a':
+                case 'A':
+                case KEY_LEFT:
+                    highlight = (highlight == 0) ? 1 : 0;
+                    break;
+                case 'd':
+                case 'D':
+                case KEY_RIGHT:
+                    highlight = (highlight == 1) ? 0 : 1;
+                    break;
+                case '\n':
+                    choiceBreak = 0;
+                    break;
             }
         }
-        wrefresh(action);
-        confirmChoice = wgetch(action);
 
-        switch (confirmChoice) {
-            case 'a':
-            case 'A':
-            case KEY_LEFT:
-                highlight = (highlight == 0) ? 1 : 0;
-                break;
-            case 'd':
-            case 'D':
-            case KEY_RIGHT:
-                highlight = (highlight == 1) ? 0 : 1;
-                break;
-            case '\n':
-                choiceBreak = 0;
-                break;
+        if (highlight == 0) {
+            halfY = getmaxy(dialogue) / 2;
+            halfX = getmaxx(dialogue) / 2;
+            curAction_size--;
+            action_buffer = (int *)realloc(action_buffer, curAction_size * sizeof(int));
+            napms(500);
+            werase(dialogue);
+            box(dialogue, 0, 0);
+            Cprint(dialogue, "Istruzione Eliminata con successo.", 1, 1, 0);
         }
+        nclearBuff();
+        print_action();
     }
-
-    if (highlight == 0) {
-        halfY = getmaxy(dialogue) / 2;
-        halfX = getmaxx(dialogue) / 2;
-        curAction_size--;
-        action_buffer = (int *)realloc(action_buffer, curAction_size * sizeof(int));
-        napms(500);
-        werase(dialogue);
-        box(dialogue, 0, 0);
-        Cprint(dialogue, "Istruzione Eliminata con successo.", 1, 1, 0);
-    }
-    nclearBuff();
-    print_action();
 }
 void print_add(int *limitact, int limit_size){
     werase(action);
@@ -247,7 +231,7 @@ void action_add(){
 void addone(){
     int addBreak=1, limitAction_size, onFocus=0, addchoice=0;
     //int limited_action[]={1, 2, 13, 14, 15, 16}; 
-    int limited_action[]={action_IF,action_ENDIF,action_SPARENT,action_EPARENT,action_WALK,action_LROTATE,action_RROTATE,action_ENDSTART, action_isObstacle};
+    int limited_action[]={action_IF,action_ENDIF,action_WALK,action_LROTATE,action_RROTATE,action_ENDSTART, action_isObstacle};
     limitAction_size=sizeof(limited_action)/sizeof(limited_action[0]);
     print_add(limited_action, limitAction_size);
     while(addBreak){
@@ -292,4 +276,129 @@ void addone(){
                 break;
         }
     }
+}
+void run_actions(){
+    if(action_buffer[curAction_size-1]==action_ENDSTART){
+        for(int i=1;action_buffer[i]!=action_ENDSTART;i++){
+            switch (action_buffer[i])
+            {
+                case action_IF:
+                    if_run(action_buffer[i+1]);
+                    break;
+                case action_WALK:
+                    walk();
+                    break;
+            }
+        }
+    }else{
+        werase(dialogue);
+        box(dialogue,0,0);
+        Cprint(dialogue, "Devi inserire alla fine del programma 'FINE_PROGRAMMA' per farlo funzionare.",1,1,1);
+    }
+}
+void action_run(){
+    int choice=0, highlight=0, fBreak=1;
+    keypad(action, TRUE);
+    //nodelay(action, TRUE);
+    while(fBreak){
+        for(int i=0;i<4;i++){
+            if(i==highlight){
+                wattron(action, A_REVERSE);
+                mvwprintw(action, choicePos[i].y,choicePos[i].x,"%s",action_choice[i]);
+                wattroff(action, A_REVERSE);
+            }else{
+                mvwprintw(action, choicePos[i].y,choicePos[i].x,"%s",action_choice[i]);
+            }
+        }
+        choice=wgetch(action);
+        nclearBuff();
+        switch(choice){
+            case 'a':
+            case 'A':
+            case KEY_LEFT:
+                if(highlight==0){
+                    highlight=3;
+                }else{
+                    highlight--;
+                }
+                break;
+            case 'd':
+            case 'D':
+            case KEY_RIGHT:
+                if(highlight==3){
+                    highlight=0;
+                }else{
+                    highlight++;
+                }
+                break;
+            case '\n':
+                action_subrun(highlight,&fBreak);
+                break;
+        }
+    }
+    //nodelay(action, FALSE);
+}
+void action_subrun(int status,int *EXITflag){
+    switch (status)
+    {
+        default:
+            return;
+            break;
+        case 0:
+            action_add();
+            break;
+        case 1:
+            delete_action(levelLimitation);
+            break;
+        case 2:
+            run_actions();
+            break;
+        case 3:
+            *EXITflag=0;
+            break;
+    }
+    return ;
+}
+void run_anim(WINDOW *tmp){
+    napms(100);
+    werase(tmp);
+    box(tmp, 0,0);
+    Cprint(tmp, "Esecuzione in corso -",1,1,0);
+    wrefresh(tmp);
+    napms(100);
+    Cprint(tmp, "Esecuzione in corso \\",1,1,0);
+    wrefresh(tmp);
+    napms(100);
+    Cprint(tmp, "Esecuzione in corso |",1,1,0);
+    wrefresh(tmp);
+    napms(100);
+    Cprint(tmp, "Esecuzione in corso /",1,1,0);
+    wrefresh(tmp);
+    napms(100);
+    Cprint(tmp, "Esecuzione in corso -",1,1,0);
+    wrefresh(tmp);
+}
+void print_map(WINDOW *tmp){
+    int wBegy=0,wBegx=0, uPad=1,lPad=26;
+    getbegyx(tmp, wBegy, wBegx);
+    werase(tmp);
+    box(tmp,0,0);
+    for(int i=0;i<22;i++){
+        wmove(tmp,wBegy+uPad+i,wBegx+lPad);
+        printcolor_str(tmp,mapArr[i], strlen(mapArr[i]), -1);
+        wrefresh(tmp);
+    }
+}
+int endError(){
+    int endFlag=1;
+    for(int i=curAction_size-1;endFlag&&action_buffer[i-1]!=action_ENDIF&&i>0;i--){
+        if(action_buffer[i]==action_IF){
+            endFlag=0;
+        }
+    }
+    if(endFlag){
+        curAction_size--;
+        action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+    }
+    return endFlag;
 }

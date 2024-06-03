@@ -40,9 +40,8 @@ void printLvl_one(){
     pg1.icon=94|COLOR_PAIR(7);
     mapArr=init_map(1,26,1);
     init_action();
-    action_run();
-    getch();
 }
 void level_one(){
-    
+    action_run();
+    getch();
 }

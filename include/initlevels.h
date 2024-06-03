@@ -2,16 +2,13 @@
 #define INITLEVELS_H
 #include "features.h"
 #include "levels.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <ncurses.h>
 
 extern char *action_choice[];
 extern char *lastVarname;
 extern Pos choicePos[4];
 extern char *action_codename[];
-extern int curAction_size;
+extern int curAction_size, levelLimitation;
 extern fullAction correctAction[18];
 extern int auPad, alPad;
 
