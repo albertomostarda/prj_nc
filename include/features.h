@@ -1,6 +1,6 @@
 #ifndef FEATURES_H
 #define FEATURES_H
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 
 typedef enum fStatus{fSTART, fRUN} state_t;
 //typedef enum customPos{custDEFAULT, custTOP, custBOT} custPos;

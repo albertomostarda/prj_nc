@@ -1,6 +1,6 @@
 #ifndef LEVELSFUNCTIONS_H
 #define LEVELSFUNCTIONS_H
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -11,7 +11,6 @@ void print_action();
 void print_add(int *limitact, int limit_size);
 void action_add();
 void addone();
-void add_run(int *limit, int limit_size); //sostituire a alla riga 240  
 //int check_Econdition(int lastPos);
 int conditionError(int lastPos);
 void ifError();

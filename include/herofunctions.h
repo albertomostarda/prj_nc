@@ -1,6 +1,6 @@
 #ifndef HEROFUNCTIONS_H
 #define HEROFUNCTIONS_H
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 
 void if_run(int condition);
 void while_run(int condition);

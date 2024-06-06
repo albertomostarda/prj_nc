@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 
 char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
 char *lastVarname;
@@ -20,17 +20,20 @@ char** init_map(int sLevel, int lPad, int uPad){
     char *exePath=getPath();
     char fileName[23], buffer[160];
     char *fullpath=(char*)malloc(max_path);
+    for(int i=0;i<max_path;i++){
+        fullpath[i]='\0';
+    }
     int fLines=0, fCols=0,wBegy=0, wBegx=0;
     switch (sLevel)
     {
         case 1:
-            strcpy(fileName, "resources/levelone.txt");
+            strcpy(fileName, "resources\\levelone.txt");
             break;
     }
     strcat(fullpath, exePath);
-    if (strlen(fullpath)!='/')
+    if (strlen(fullpath)!='\\')
     {
-        fullpath[strlen(fullpath)]='/';
+        fullpath[strlen(fullpath)]='\\';
     }
     strcat(fullpath,fileName);
     fp=fopen(fullpath,"r");

@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ncurses.h>
-#include <unistd.h>
+#include <ncurses/ncurses.h>
+// #include <unistd.h>
 #include <time.h>
-#include <signal.h>
+#include <windows.h>
+// #include <signal.h>
 #include <setjmp.h> //Probabilmente non lo utilizzero'
 //Per tornare a un punto specifico dopo il signal potrei utilizzare il setjmp e longjmp implementando la libreria setjmp.h
 //Mi devo ricordare di implementare una var globale per tenere traccia dello funzione in cui si trova il programma
@@ -38,35 +39,50 @@ void nclearBuff(void){
     nodelay(stdscr, FALSE);
 
 }
-char *getPath() {
-    int j=0;
-    char *path = (char *)malloc(max_path * sizeof(char));
-    if (path == NULL) {
-        printw("Percorso non allocato");
-        refresh();
-        napms(5000);
-        return NULL;
-    }
-    ssize_t len = readlink("/proc/self/exe", path, max_path - 1);
-    for (ssize_t i = len - 1; i >= 0; i--) {
-        if (path[i] == '/') {
-            path[i] = '\0';
-            break;
+// char *getPath() {
+//     int j=0;
+//     char *path = (char *)malloc(max_path * sizeof(char));
+//     if (path == NULL) {
+//         printw("Percorso non allocato");
+//         refresh();
+//         napms(5000);
+//         return NULL;
+//     }
+//     ssize_t len = readlink("/proc/self/exe", path, max_path - 1);
+//     for (ssize_t i = len - 1; i >= 0; i--) {
+//         if (path[i] == '/') {
+//             path[i] = '\0';
+//             break;
+//         }
+//     }
+//     char *exePath = (char *)malloc(strlen(path) + 1);
+//     strcpy(exePath, path);
+//     return exePath;
+// }
+
+char *getPath(){
+    int pathsize=0, isFound=1;
+    char *path=(char *)malloc(max_path*sizeof(char));
+    GetModuleFileName(NULL, path, max_path);
+    pathsize=strlen(path);
+    for(int i=pathsize;isFound&&i>=0;i--){
+        if(path[i]=='\\'){
+            path[i]='\0';
+            isFound=0;
         }
     }
-    char *exePath = (char *)malloc(strlen(path) + 1);
-    strcpy(exePath, path);
-    return exePath;
+    path=(char *)realloc(path,strlen(path));
+    return path;
 }
 
-void handle_resize(int sig){
-    if(curState==fSTART){
-        //ipotetica chiamata del salto
-    }
-    else if(curState==fRUN){
+// void handle_resize(int sig){
+//     if(curState==fSTART){
+//         //ipotetica chiamata del salto
+//     }
+//     else if(curState==fRUN){
 
-    }
-}
+//     }
+// }
 void myPause(void){
     printw("Premi INVIO per continuare . . .");
     refresh();
@@ -76,8 +92,9 @@ void myPause(void){
 void start(){
     time_t start_time;
     int halfContinue=strlen(pContinue)/2;
-    system("resize -s 35 160 >/dev/null"); //per windows;
-    signal(SIGWINCH, handle_resize);
+    system("MODE 160,35");
+    //system("resize -s 35 160 >/dev/null"); //per windows;
+    //signal(SIGWINCH, handle_resize);
     initscr();
     cbreak();
     noecho();

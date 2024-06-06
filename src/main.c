@@ -1,5 +1,5 @@
 #include "../include/features.h"
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 

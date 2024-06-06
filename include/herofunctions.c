@@ -2,7 +2,7 @@
 #include "levels.h"
 #include "levelsfunctions.h"
 #include "features.h"
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 
 int nSteps=2; // non ancora usata
 
@@ -72,12 +72,13 @@ void if_run(int condition){
                 rotclock();
                 break;
         }
+        idx++;
     }
 }
 
 void walk(){
     int i=0;
-    if(checkObstacle!=0){
+    if(checkObstacle()!=1){
         while(i<nSteps){
             switch (pg1.rotation)
             {
@@ -88,12 +89,12 @@ void walk(){
                     break;
                 case 1:
                     mapArr[pg1.locate.y][pg1.locate.x]='2';
-                    pg1.locate.y++;
+                    pg1.locate.x++;
                     mapArr[pg1.locate.y][pg1.locate.x]='1';
                     break;
                 case 2:
                     mapArr[pg1.locate.y][pg1.locate.x]='2';
-                    pg1.locate.x++;
+                    pg1.locate.y++;
                     mapArr[pg1.locate.y][pg1.locate.x]='1';
                     break;
                 case 3:
@@ -120,8 +121,16 @@ void do_run(int condition){
 
 }
 void rotcclock(){
-
+    if(pg1.rotation==0){
+        pg1.rotation=3;
+    }else{
+        pg1.rotation--;
+    }
 }
 void rotclock(){
-
+    if(pg1.rotation==3){
+        pg1.rotation=0;
+    }else{
+        pg1.rotation++;
+    }
 }

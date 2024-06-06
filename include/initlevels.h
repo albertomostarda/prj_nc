@@ -2,7 +2,7 @@
 #define INITLEVELS_H
 #include "features.h"
 #include "levels.h"
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 
 extern char *action_choice[];
 extern char *lastVarname;

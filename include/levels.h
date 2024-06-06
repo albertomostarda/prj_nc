@@ -1,6 +1,6 @@
 #ifndef LEVELS_H
 #define LEVELS_H
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 
 typedef enum heroRot{UP,DOWN,RIGHT,LEFT}pgRot;
 typedef enum actionCode{

@@ -2,7 +2,7 @@
 #include "initlevels.h"
 #include "levels.h"
 #include "herofunctions.h"
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 
 void printcolor_str(WINDOW *tWin,char *colStr, int pLines, int tmpY){
     for(int i=0;i<pLines;i++){
@@ -33,7 +33,7 @@ void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
     }
 }
 void print_action(){
-    int conLenght=0, actY=0, indent=1, isCond=0,canGo=1;//
+    int conLenght=0, actY=0, indent=1, isCond=0,canGo=1, checkEnd=0;//
     werase(action);
     box(action, 0,0);
     for(int i=0;i<curAction_size&&canGo;i++){
@@ -53,17 +53,28 @@ void print_action(){
                     }
                     break;
                 case action_ENDIF:
-                    if(endError()){
-                        werase(dialogue);
-                        box(dialogue,0,0);
-                        Cprint(dialogue,"Bisogna che sia presente un 'IF' per usare 'END_IF'",1,1,0);
-                    }else{
-                        if(indent>1){
-                            indent--;
+                    checkEnd=endError();
+                    //if(isCond!=1){
+                        if(checkEnd==0){
+                            if(indent>1){
+                                indent--;
+                            }
+                            mvwprintw(action,auPad+actY,alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
+                            actY++;
+                        }else if(checkEnd<0){
+                            werase(dialogue);
+                            box(dialogue,0,0);
+                            Cprint(dialogue,"La struttura 'FINE_SE' va sempre inserita dopo la fine dell'utilizzo del 'SE'",1,1,0);
+                            curAction_size--;
+                            action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
                         }
-                        mvwprintw(action,auPad+actY,alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
-                        actY++;
-                    }
+                    // }else{
+                    //     werase(dialogue);
+                    //     box(dialogue,0,0);
+                    //     Cprint(dialogue, "Devi inserire una condizione valida",1,1,0);
+                    //     curAction_size--;
+                    //     action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                    // }
                     break;
                 default:
                     if(isCond||action_buffer[i]>action_ENDSTART&&action_buffer[i]<action_VAR){
@@ -80,17 +91,14 @@ void print_action(){
                             }
                         }else{
                             werase(dialogue);
+                            box(dialogue, 0, 0);
                             Cprint(dialogue,"Questa e' una condizione e deve essere inserita solo dopo un 'IF','WHILE,'DO-WHILE'",1,1,0);
                         }
                     }
                     else if(action_buffer[i]>=action_VAR){
                         mvwprintw(action, auPad+actY, alPad+(3*indent),"int nPassi= %d;", action_buffer[i]-action_VAR);
                         actY++;
-                    }/*else if((action_buffer[i]>action_ENDSTART&&action_buffer[i]<action_VAR)&&conLenght!=0)/*caso delle condizioni{
-                        mvwprintw(action, auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
-                        actY++;
-                        indent++;
-                    }*/else if(conLenght!=0){
+                    }else if(conLenght!=0){
                         conLenght+=strlen(correctAction[action_buffer[i-1]].name);
                         mvwprintw(action, auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
                     }else{
@@ -100,16 +108,6 @@ void print_action(){
                     break;
             }
         wrefresh(action);
-        // if(i!=0){
-        //     if(action_buffer[i]>=action_VAR){
-        //         mvwprintw(action, auPad+i, alPad+3,"int nPassi= %d;", action_buffer[i]-action_VAR);
-        //     }else{
-        //         mvwprintw(action, auPad+i, alPad+3,"%s", correctAction[action_buffer[i]].name);
-        //     }
-        // }
-        // else{
-        //     mvwprintw(action, auPad+i, alPad,"%s", correctAction[action_buffer[i]].name);
-        // }
     }
 }
 void ifError(){
@@ -290,6 +288,7 @@ void run_actions(){
                     break;
             }
         }
+        print_action(); // aggiungere una fase di reset della mappa
     }else{
         werase(dialogue);
         box(dialogue,0,0);
@@ -390,15 +389,16 @@ void print_map(WINDOW *tmp){
     }
 }
 int endError(){
-    int endFlag=1;
-    for(int i=curAction_size-1;endFlag&&action_buffer[i-1]!=action_ENDIF&&i>0;i--){
+    int ifCount=0;
+    for(int i=0;i<curAction_size;i++){
         if(action_buffer[i]==action_IF){
-            endFlag=0;
+            ifCount++;
+        }else if(action_buffer[i]==action_ENDIF){
+            ifCount--;
+            if(ifCount<0){
+                return -1;
+            }
         }
     }
-    if(endFlag){
-        curAction_size--;
-        action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
-    }
-    return endFlag;
+    return ifCount; // se =0 tutti gli if chiusi, se >0 mancano degli if aperti, <0 troppi endif
 }
