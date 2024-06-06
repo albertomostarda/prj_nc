@@ -281,7 +281,7 @@ void run_actions(){
             switch (action_buffer[i])
             {
                 case action_IF:
-                    if_run(action_buffer[i+1]);
+                    if_run(action_buffer[i+1],i+1);
                     break;
                 case action_WALK:
                     walk();
@@ -401,4 +401,21 @@ int endError(){
         }
     }
     return ifCount; // se =0 tutti gli if chiusi, se >0 mancano degli if aperti, <0 troppi endif
+}
+void setRotation(){
+    switch (pg1.rotation)
+    {
+        case 0:
+            pg1.icon='^';
+            break;
+        case 1:
+            pg1.icon='>';
+            break;
+        case 2:
+            pg1.icon='V';
+            break;
+        case 3:
+            pg1.icon='<';
+            break;
+    }
 }

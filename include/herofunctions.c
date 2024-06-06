@@ -16,14 +16,14 @@ int checkObstacle(){
             }
             break;
         case 1:
-            if(mapArr[pg1.locate.y+1][pg1.locate.x]=='0'||mapArr[pg1.locate.y+1][pg1.locate.x]=='#'){
+            if(mapArr[pg1.locate.y][pg1.locate.x+1]=='0'||mapArr[pg1.locate.y][pg1.locate.x+1]=='#'){
                 return 1;
             }else{
                 return 0;
             }
             break;
         case 2:
-            if(mapArr[pg1.locate.y][pg1.locate.x+1]=='0'||mapArr[pg1.locate.y][pg1.locate.x+1]=='#'){
+            if(mapArr[pg1.locate.y+1][pg1.locate.x]=='0'||mapArr[pg1.locate.y+1][pg1.locate.x]=='#'){
                 return 1;
             }else{
                 return 0;
@@ -40,8 +40,8 @@ int checkObstacle(){
 
 }
 
-void if_run(int condition){
-    int idx=1, isClear=0;
+void if_run(int condition, int condPos){
+    int idx=condPos+1, isClear=0;
     
     switch (condition)
     {
@@ -50,11 +50,11 @@ void if_run(int condition){
             break;
         // nel caso di piu' condizioni
     }
-    while(!isClear&&action_buffer[idx]!=action_ENDIF){
+    while(isClear&&action_buffer[idx]!=action_ENDIF){
         switch (action_buffer[idx])
         {
             case action_IF:
-                if_run(action_buffer[idx+1]);
+                if_run(action_buffer[idx+1], idx+1);
                 break;
             case action_WHILE:
                 while_run(action_buffer[idx+1]);
@@ -126,6 +126,7 @@ void rotcclock(){
     }else{
         pg1.rotation--;
     }
+    setRotation();
 }
 void rotclock(){
     if(pg1.rotation==3){
@@ -133,4 +134,5 @@ void rotclock(){
     }else{
         pg1.rotation++;
     }
+    setRotation();
 }
