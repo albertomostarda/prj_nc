@@ -12,7 +12,7 @@ extern int curAction_size, levelLimitation;
 extern fullAction correctAction[18];
 extern int auPad, alPad;
 
-char** init_map(int sLevel, int lPad, int uPad );
+char** init_map(int lPad, int uPad );
 
 void init_action();
 void bond_action();

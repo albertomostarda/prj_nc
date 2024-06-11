@@ -18,14 +18,19 @@ void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
             waddch(tWin, blank);
             break;
         case '1':
-            waddch(tWin, pg1.icon);
             if(locY!=-1){
                 pg1.locate.x=locX;
                 pg1.locate.y=locY;
             }
+            setRotation(0);
+            waddch(tWin, pg1.icon);
             break;
         case '2':
             waddch(tWin, road);
+            break;
+        case '8':
+            setRotation(1);
+            waddch(tWin, pg1.icon);
             break;
         case '9':
             waddch(tWin, goal);
@@ -49,12 +54,12 @@ void print_action(){
                     }else{
                         mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
                         conLenght+=strlen(correctAction[action_buffer[i]].name)+alPad+(3*indent)+1;
-                        isCond=1;
+                        isCond=-1;
                     }
                     break;
                 case action_ENDIF:
                     checkEnd=endError();
-                    //if(isCond!=1){
+                    if(isCond>=0){
                         if(checkEnd==0){
                             if(indent>1){
                                 indent--;
@@ -67,17 +72,18 @@ void print_action(){
                             Cprint(dialogue,"La struttura 'FINE_SE' va sempre inserita dopo la fine dell'utilizzo del 'SE'",1,1,0);
                             curAction_size--;
                             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                            print_action();
                         }
-                    // }else{
-                    //     werase(dialogue);
-                    //     box(dialogue,0,0);
-                    //     Cprint(dialogue, "Devi inserire una condizione valida",1,1,0);
-                    //     curAction_size--;
-                    //     action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
-                    // }
+                    }else{
+                        werase(dialogue);
+                        box(dialogue,0,0);
+                        Cprint(dialogue, "Devi inserire una condizione valida",1,1,0);
+                        curAction_size--;
+                        action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                    }
                     break;
                 default:
-                    if(isCond||action_buffer[i]>action_ENDSTART&&action_buffer[i]<action_VAR){
+                    if(isCond==-1||action_buffer[i]>action_ENDSTART&&action_buffer[i]<action_VAR){
                         if(isCond){
                             canGo=conditionError(i);
                             if(canGo){
@@ -272,23 +278,38 @@ void addone(){
                 wrefresh(action);
                 addBreak=0;
                 break;
+            case 'q':
+            case 'Q':
+                print_action();
+                addBreak=0;
+                break;
         }
     }
 }
 void run_actions(){
+    int i=1;
     if(action_buffer[curAction_size-1]==action_ENDSTART){
-        for(int i=1;action_buffer[i]!=action_ENDSTART;i++){
+        while(action_buffer[i]!=action_ENDSTART){
             switch (action_buffer[i])
             {
                 case action_IF:
-                    if_run(action_buffer[i+1],i+1);
+                    i=if_run(action_buffer[i+1],i+1);
                     break;
                 case action_WALK:
                     walk();
                     break;
+                case action_RROTATE:
+                    rotclock();
+                    break;
+                case action_LROTATE:
+                    rotcclock();
+                    break;
             }
+            i++;
         }
+        print_map(map);
         print_action(); // aggiungere una fase di reset della mappa
+        Cprint(dialogue,"eseguito con successo",1,1,0);
     }else{
         werase(dialogue);
         box(dialogue,0,0);
@@ -402,20 +423,50 @@ int endError(){
     }
     return ifCount; // se =0 tutti gli if chiusi, se >0 mancano degli if aperti, <0 troppi endif
 }
-void setRotation(){
-    switch (pg1.rotation)
-    {
-        case 0:
-            pg1.icon='^';
-            break;
-        case 1:
-            pg1.icon='>';
-            break;
-        case 2:
-            pg1.icon='V';
-            break;
-        case 3:
-            pg1.icon='<';
-            break;
+void setRotation(int isEnd){
+    if(isEnd){
+        switch (pg1.rotation)
+        {
+            case 0:
+                pg1.icon='^'|COLOR_PAIR(8);
+                break;
+            case 1:
+                pg1.icon='>'|COLOR_PAIR(8);
+                break;
+            case 2:
+                pg1.icon='V'|COLOR_PAIR(8);
+                break;
+            case 3:
+                pg1.icon='<'|COLOR_PAIR(8);
+                break;
+        }
+    }else{
+        switch (pg1.rotation)
+        {
+            case 0:
+                pg1.icon='^'|COLOR_PAIR(7);
+                break;
+            case 1:
+                pg1.icon='>'|COLOR_PAIR(7);
+                break;
+            case 2:
+                pg1.icon='V'|COLOR_PAIR(7);
+                break;
+            case 3:
+                pg1.icon='<'|COLOR_PAIR(7);
+                break;
+        }
+    }
+}
+void checkEndLvl(){
+    if(mapArr[pg1.locate.y][pg1.locate.x]!=8){
+        char cho='\0';
+        time_t swait=time(NULL);
+        werase(dialogue);
+        box(dialogue,0,0);
+        Cprint(dialogue, "Non hai raggiunto il traguardo. Premi INVIO per ritentare o 'Q' per tornare al menu.",1,1,1);
+        while(((cho=getch())!='\n'||cho!='q'||cho!='q')&&(time(NULL)-swait));
+
+
     }
 }

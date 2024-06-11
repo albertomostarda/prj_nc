@@ -37,8 +37,8 @@ void printLvl_one(){
     wrefresh(map);
     wrefresh(action);
     wrefresh(dialogue);
-    pg1.icon=94|COLOR_PAIR(7);
-    mapArr=init_map(1,26,1);
+    pg1.rotation=0;
+    mapArr=init_map(26,1);
     init_action();
 }
 void level_one(){

@@ -15,7 +15,7 @@ int alPad=5, auPad=3;
 int curAction_pos, curAction_size, levelLimitation=0;
 int* action_buffer;
 
-char** init_map(int sLevel, int lPad, int uPad){
+char** init_map(int lPad, int uPad){
     FILE *fp;
     char *exePath=getPath();
     char fileName[23], buffer[160];

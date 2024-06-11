@@ -19,5 +19,6 @@ void run_actions();
 void delete_action(int lim);
 void run_anim(WINDOW *tmp);
 void print_map(WINDOW *tmp);
-void setRotation();
+void setRotation(int isEnd);
+void checkEndLvl();
 #endif

@@ -37,10 +37,8 @@ int checkObstacle(){
             }
             break;
     }
-
 }
-
-void if_run(int condition, int condPos){
+int if_run(int condition, int condPos){
     int idx=condPos+1, isClear=0;
     
     switch (condition)
@@ -74,6 +72,18 @@ void if_run(int condition, int condPos){
         }
         idx++;
     }
+    if(action_buffer[idx]==action_ENDIF){
+        return idx-1;
+    }else{
+        return getEndif(condPos+1);
+    }
+}
+int getEndif(int posi){
+    while (action_buffer[posi]!=action_ENDIF)
+    {
+        posi++;
+    }
+    return posi-1;
 }
 
 void walk(){
@@ -85,29 +95,46 @@ void walk(){
                 case 0:
                     mapArr[pg1.locate.y][pg1.locate.x]='2';
                     pg1.locate.y=pg1.locate.y-1;
-                    mapArr[pg1.locate.y][pg1.locate.x]='1';
+                    if(mapArr[pg1.locate.y][pg1.locate.x]=='9'){
+                        mapArr[pg1.locate.y][pg1.locate.x]='8';
+                    }else{
+                        mapArr[pg1.locate.y][pg1.locate.x]='1';
+                    }
                     break;
                 case 1:
                     mapArr[pg1.locate.y][pg1.locate.x]='2';
-                    pg1.locate.x++;
-                    mapArr[pg1.locate.y][pg1.locate.x]='1';
+                    pg1.locate.x++;if(mapArr[pg1.locate.y][pg1.locate.x]=='9'){
+                        mapArr[pg1.locate.y][pg1.locate.x]='8';
+                    }else{
+                        mapArr[pg1.locate.y][pg1.locate.x]='1';
+                    }
                     break;
                 case 2:
                     mapArr[pg1.locate.y][pg1.locate.x]='2';
                     pg1.locate.y++;
-                    mapArr[pg1.locate.y][pg1.locate.x]='1';
+                    if(mapArr[pg1.locate.y][pg1.locate.x]=='9'){
+                        mapArr[pg1.locate.y][pg1.locate.x]='8';
+                    }else{
+                        mapArr[pg1.locate.y][pg1.locate.x]='1';
+                    }
                     break;
                 case 3:
                     mapArr[pg1.locate.y][pg1.locate.x]='2';
                     pg1.locate.x--;
-                    mapArr[pg1.locate.y][pg1.locate.x]='1';
+                    if(mapArr[pg1.locate.y][pg1.locate.x]=='9'){
+                        mapArr[pg1.locate.y][pg1.locate.x]='8';
+                    }else{
+                        mapArr[pg1.locate.y][pg1.locate.x]='1';
+                    }
                     break;
             }
+
             run_anim(action);
             napms(500);
             print_map(map);
             i++;
         }
+        
     }else{
         werase(dialogue);
         box(dialogue,0,0);
@@ -126,7 +153,6 @@ void rotcclock(){
     }else{
         pg1.rotation--;
     }
-    setRotation();
 }
 void rotclock(){
     if(pg1.rotation==3){
@@ -134,5 +160,4 @@ void rotclock(){
     }else{
         pg1.rotation++;
     }
-    setRotation();
 }

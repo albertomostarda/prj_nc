@@ -109,8 +109,8 @@ void start(){
     mvwprintw(stdscr,24,(getmaxx(win)/2)-halfContinue,"%s", pContinue);
     wmove(stdscr,25,11);
     SBHprint(stdscr,sizeWarn,20);
-    if(!has_colors()){
-        mvwprintw(stdscr,1,1,"Non supporta i colori");
+    if(!can_change_color()){
+        mvwprintw(stdscr,1,1,"%d",COLORS);
         getch();
     }else{
         mvwprintw(stdscr,1,1,"supporta i colori");
@@ -325,4 +325,5 @@ void initColors(){
     init_pair(5,COLOR_BLACK,COLOR_BLACK); // per lo spazio vuoto 0
     init_pair(6, COLOR_GREEN, COLOR_GREEN); // per il traguardo 9
     init_pair(7, COLOR_WHITE, COLOR_BLUE);   // per il personaggio
+    init_pair(8, COLOR_WHITE, COLOR_GREEN);
 }
