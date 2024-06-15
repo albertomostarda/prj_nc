@@ -233,7 +233,6 @@ char** Hsplit(int HSIZE,  char *pText, char **split_txt,int padding, int forceNL
         strcpy(split_txt[*nLines], pText);
         (*nLines)++;
     }
-
     return split_txt;
 }
 void Hprint(WINDOW *tmp,  char *pText, int padding, int forceNL) {

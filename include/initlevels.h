@@ -16,9 +16,8 @@ char** init_map(int lPad, int uPad );
 
 void init_action();
 void bond_action();
-void action_run();
 void action_subrun(int status,int *EXITflag);
-
+void free_actionBND();
 
 
 #endif

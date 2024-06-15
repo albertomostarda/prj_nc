@@ -28,5 +28,6 @@ char* getPath(); // Da cambiare in caso di passaggio a windows
 int fCountLines(FILE *tmpFile);
 int fCountCols(FILE *tmpFile);
 void initColors();
+void freeVar();
 
 #endif

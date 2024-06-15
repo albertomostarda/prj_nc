@@ -3,6 +3,7 @@
 #include "levels.h"
 #include "herofunctions.h"
 #include <ncurses/ncurses.h>
+#include <time.h>
 
 void printcolor_str(WINDOW *tWin,char *colStr, int pLines, int tmpY){
     for(int i=0;i<pLines;i++){
@@ -80,6 +81,18 @@ void print_action(){
                         Cprint(dialogue, "Devi inserire una condizione valida",1,1,0);
                         curAction_size--;
                         action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                    }
+                    break;
+                case action_ENDSTART:
+                    if(indent>1){
+                        werase(dialogue);
+                        box(dialogue,0,0);
+                        Cprint(dialogue, "Il 'FINE_PROGRAMMA' VA inserito alla fine del programma",1,1,0);
+                        curAction_size--;
+                        action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                    }else{
+                        mvwprintw(action, auPad+actY, alPad,"%s", correctAction[action_buffer[i]].name);
+                        actY++;
                     }
                     break;
                 default:
@@ -286,7 +299,7 @@ void addone(){
         }
     }
 }
-void run_actions(){
+void run_actions(int *fexit){
     int i=1;
     if(action_buffer[curAction_size-1]==action_ENDSTART){
         while(action_buffer[i]!=action_ENDSTART){
@@ -309,7 +322,9 @@ void run_actions(){
         }
         print_map(map);
         print_action(); // aggiungere una fase di reset della mappa
-        Cprint(dialogue,"eseguito con successo",1,1,0);
+        *fexit=checkEndLvl();
+        nclearBuff();
+        // Cprint(dialogue,"eseguito con successo",1,1,0);
     }else{
         werase(dialogue);
         box(dialogue,0,0);
@@ -371,7 +386,7 @@ void action_subrun(int status,int *EXITflag){
             delete_action(levelLimitation);
             break;
         case 2:
-            run_actions();
+            run_actions(EXITflag);
             break;
         case 3:
             *EXITflag=0;
@@ -458,15 +473,40 @@ void setRotation(int isEnd){
         }
     }
 }
-void checkEndLvl(){
-    if(mapArr[pg1.locate.y][pg1.locate.x]!=8){
-        char cho='\0';
+int checkEndLvl(){
+    if(mapArr[pg1.locate.y][pg1.locate.x]!='8'){
+        int cho;
         time_t swait=time(NULL);
         werase(dialogue);
         box(dialogue,0,0);
         Cprint(dialogue, "Non hai raggiunto il traguardo. Premi INVIO per ritentare o 'Q' per tornare al menu.",1,1,1);
-        while(((cho=getch())!='\n'||cho!='q'||cho!='q')&&(time(NULL)-swait));
-
-
+        mvwprintw(dialogue,1,1,"%c", mapArr[pg1.locate.y][pg1.locate.x]);
+        wrefresh(dialogue);
+        nclearBuff();
+        wmove(action,getcury(action), getcurx(action));
+        while((cho!='\n'||cho!='q'||cho!='Q')&&(time(NULL)-swait)<10){
+            cho=getch();
+        }
+        mapArr=init_map(26,1);
+        switch (sLevel)
+        {
+            case 1:
+                pg1.rotation=0;
+                break;
+        }
+        // free(action_buffer);
+        init_action();
+        print_map(map);
+        print_action();
+        return 1;
+    }else{
+        werase(dialogue);
+        werase(action);
+        werase(map);
+        box(stdscr,0,0);
+        Cprint(stdscr,"Hai superato il livello!",1,1,0);
+        mvwprintw(stdscr,getcury(stdscr)+1,(getmaxx(stdscr)/2)-(strlen("CONGRATULAZIONI!")/2),"CONGRATULAZIONI!");
+        wrefresh(stdscr);
+        return 0;
     }
 }

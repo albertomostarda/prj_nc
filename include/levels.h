@@ -2,6 +2,8 @@
 #define LEVELS_H
 #include <ncurses/ncurses.h>
 
+//pulire mapArr
+
 typedef enum heroRot{UP,DOWN,RIGHT,LEFT}pgRot;
 typedef enum actionCode{
         action_START,       //0
@@ -51,4 +53,5 @@ void print_settings();
 void settings();
 void printLvl_one();
 void level_one();
+void freeabuffer();
 #endif

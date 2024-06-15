@@ -1,6 +1,7 @@
 #include "levels.h"
 #include "features.h"
 #include "initlevels.h"
+#include "levelsfunctions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,4 +45,8 @@ void printLvl_one(){
 void level_one(){
     action_run();
     getch();
+}
+void freeabuffer(){
+    free(action_buffer);
+    curAction_size=1;
 }
