@@ -81,43 +81,63 @@ char** init_map(int lPad, int uPad){
 }
 void bond_action(){
     actionCode i=0;
-    for(int idx=0;idx<17;i++,idx++){
+    for(int idx=0;idx<12;i++,idx++){
         correctAction[idx].id=i;
     }
     correctAction[0].name = (char *)malloc(strlen("INIZIO") + 1);
     strcpy(correctAction[0].name, "INIZIO");
+    correctAction[0].descr = (char *)malloc(strlen("Si utilizza per indicare l'inizio del programma.") + 1);
+    strcpy(correctAction[0].descr, "Si utilizza per indicare l'inizio del programma.");
     correctAction[1].name = (char *)malloc(strlen("SE") + 1);
     strcpy(correctAction[1].name, "SE");
+    correctAction[1].descr = (char *)malloc(strlen("Se la condizione e' VERA o FALSA, esegue il codice al suo interno.") + 1);
+    strcpy(correctAction[1].descr, "Se la condizione e' VERA o FALSA, esegue il codice al suo interno.");
     correctAction[2].name = (char *)malloc(strlen("FINE_SE") + 1);
     strcpy(correctAction[2].name, "FINE_SE");
-    // correctAction[3].name = (char *)malloc(strlen("(") + 1);
-    // strcpy(correctAction[3].name, "(");
-    // correctAction[4].name = (char *)malloc(strlen(")") + 1);
-    // strcpy(correctAction[4].name, ")");
+    correctAction[2].descr = (char *)malloc(strlen("Serve per chiudere il codice che fa parte del 'SE'.") + 1);
+    strcpy(correctAction[2].descr, "Serve per chiudere il codice che fa parte del 'SE'.");
     correctAction[3].name = (char *)malloc(strlen("MENTRE") + 1);
     strcpy(correctAction[3].name, "MENTRE");
+    correctAction[3].descr = (char *)malloc(strlen("Il codice al suo interno verra' ripetuto fin quando la condizone e' VERA.") + 1);
+    strcpy(correctAction[3].descr, "Il codice al suo interno verra' ripetuto fin quando la condizone e' VERA.");
     correctAction[4].name = (char *)malloc(strlen("FAI") + 1);
     strcpy(correctAction[4].name, "FAI");
-    correctAction[5].name = (char *)malloc(strlen("FINCHE'") + 1);
-    strcpy(correctAction[5].name, "FINCHE'");
-    correctAction[6].name = (char *)malloc(strlen("provvisorio") + 1);
-    strcpy(correctAction[6].name, "provvisorio");
-    correctAction[7].name = (char *)malloc(strlen("FINE_CICLO") + 1);
-    strcpy(correctAction[7].name, "FINE_CICLO");
-    // correctAction[8].name = (char *)malloc(strlen("FINE_FUNZIONE") + 1);
-    // strcpy(correctAction[8].name, "FINE_FUNZIONE");
-    correctAction[8].name = (char *)malloc(strlen("cammina") + 1);
-    strcpy(correctAction[8].name, "cammina");
-    correctAction[9].name = (char *)malloc(strlen("ruota_antiorario") + 1);
-    strcpy(correctAction[9].name, "ruota_antiorario");
-    correctAction[10].name = (char *)malloc(strlen("ruota_orario") + 1);
-    strcpy(correctAction[10].name, "ruota_orario");
-    correctAction[11].name = (char *)malloc(strlen("FINE_PROGRAMMA") + 1);
-    strcpy(correctAction[11].name, "FINE_PROGRAMMA");
-    correctAction[12].name = (char *)malloc(strlen("BLOCCATO") + 1);
-    strcpy(correctAction[12].name, "BLOCCATO");
-    correctAction[13].name = (char *)malloc(strlen("Variabile") + 1);
-    strcpy(correctAction[13].name, "Variabile");
+    correctAction[4].descr = (char *)malloc(strlen("Il codice all'interno viene eseguito almeno una volta e poi se la condizione e' VERA verra' ripetuto.") + 1);
+    strcpy(correctAction[4].descr, "Il codice all'interno viene eseguito almeno una volta e poi se la condizione e' VERA verra' ripetuto.");
+    //correctAction[5].name = (char *)malloc(strlen("FINCHE'") + 1);
+    // strcpy(correctAction[5].name, "FINCHE'");
+    // correctAction[6].name = (char *)malloc(strlen("provvisorio") + 1);
+    // strcpy(correctAction[6].name, "provvisorio");
+    correctAction[5].name = (char *)malloc(strlen("FINE_CICLO") + 1);
+    strcpy(correctAction[5].name, "FINE_CICLO");
+    correctAction[5].descr = (char *)malloc(strlen("Serve per chiudere il codice che fa parte del 'MENTRE', 'FAI'.") + 1);
+    strcpy(correctAction[5].descr, "Serve per chiudere il codice che fa parte del 'MENTRE', 'FAI'.");
+    // correctAction[6].name = (char *)malloc(strlen("FINE_FUNZIONE") + 1);
+    // strcpy(correctAction[6].name, "FINE_FUNZIONE");
+    correctAction[6].name = (char *)malloc(strlen("cammina") + 1);
+    strcpy(correctAction[6].name, "cammina");
+    correctAction[6].descr = (char *)malloc(strlen("Funzione che permette al personaggio di camminare.") + 1);
+    strcpy(correctAction[6].descr, "Funzione che permette al personaggio di camminare.");
+    correctAction[7].name = (char *)malloc(strlen("ruota_antiorario") + 1);
+    strcpy(correctAction[7].name, "ruota_antiorario");
+    correctAction[7].descr = (char *)malloc(strlen("Funzione che permette al personaggio di ruotare verso sinistra.") + 1);
+    strcpy(correctAction[7].descr, "Funzione che permette al personaggio di ruotare verso sinistra.");
+    correctAction[8].name = (char *)malloc(strlen("ruota_orario") + 1);
+    strcpy(correctAction[8].name, "ruota_orario");
+    correctAction[8].descr = (char *)malloc(strlen("Funzione che permette al personaggio di ruotare verso destra.") + 1);
+    strcpy(correctAction[8].descr, "Funzione che permette al personaggio di ruotare verso destra.");
+    correctAction[9].name = (char *)malloc(strlen("FINE_PROGRAMMA") + 1);
+    strcpy(correctAction[9].name, "FINE_PROGRAMMA");
+    correctAction[9].descr = (char *)malloc(strlen("Si utilizza per terminare il programma.") + 1);
+    strcpy(correctAction[9].descr, "Si utilizza per terminare il programma");
+    correctAction[10].name = (char *)malloc(strlen("BLOCCATO") + 1);
+    strcpy(correctAction[10].name, "BLOCCATO");
+    correctAction[10].descr = (char *)malloc(strlen("Condizione che e' VERA se il personaggio e' bloccato.") + 1);
+    strcpy(correctAction[10].descr, "Condizione che e' VERA se il personaggio e' bloccato.");
+    correctAction[11].name = (char *)malloc(strlen("Variabile") + 1);
+    strcpy(correctAction[11].name, "Variabile");
+    correctAction[11].name = (char *)malloc(strlen("Contenitore di valori (numeri).") + 1);
+    strcpy(correctAction[11].name, "Contenitore di valori (numeri).");
 }
 void init_action(){
     int vSize=0,hSize=0;

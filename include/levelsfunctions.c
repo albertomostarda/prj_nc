@@ -257,10 +257,14 @@ void addone(){
                 wattron(action, A_REVERSE);
                 mvwprintw(action, auPad+i, alPad, "%s",correctAction[limited_action[i]].name);
                 wattroff(action, A_REVERSE);
+                werase(dialogue);
+                box(dialogue,0,0);
+                Cprint(dialogue,correctAction[limited_action[i]].descr, 1,1,0);
             }else{
                 mvwprintw(action, auPad+i, alPad, "%s",correctAction[limited_action[i]].name);;
             }
         }
+        nclearBuff();
         addchoice=wgetch(action);
         nclearBuff();
         switch(addchoice){
@@ -298,6 +302,7 @@ void addone(){
                 break;
         }
     }
+    //aggiungere reset dialoghi
 }
 void run_actions(int *fexit){
     int i=1;
@@ -321,7 +326,7 @@ void run_actions(int *fexit){
             i++;
         }
         print_map(map);
-        print_action(); // aggiungere una fase di reset della mappa
+        print_action();
         *fexit=checkEndLvl();
         nclearBuff();
         // Cprint(dialogue,"eseguito con successo",1,1,0);
@@ -484,9 +489,12 @@ int checkEndLvl(){
         wrefresh(dialogue);
         nclearBuff();
         wmove(action,getcury(action), getcurx(action));
+        nodelay(action,TRUE);
         while((cho!='\n'||cho!='q'||cho!='Q')&&(time(NULL)-swait)<10){
-            cho=getch();
+            cho=wgetch(action);
         }
+        nodelay(action,FALSE);
+        //aggiungere la condizione per tornare al menu
         mapArr=init_map(26,1);
         switch (sLevel)
         {
@@ -495,6 +503,9 @@ int checkEndLvl(){
                 break;
         }
         // free(action_buffer);
+        werase(dialogue);
+        box(dialogue,0,0);
+        wrefresh(dialogue);
         init_action();
         print_map(map);
         print_action();

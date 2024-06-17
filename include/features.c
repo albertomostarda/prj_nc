@@ -1,5 +1,6 @@
 #include "features.h"
 #include "levels.h"
+#include "menufunctions.h"
 //#include "test.c" //Luogo felice per provare i codici senza intasare il codice
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,24 +13,15 @@
 #include <setjmp.h> //Probabilmente non lo utilizzero'
 //Per tornare a un punto specifico dopo il signal potrei utilizzare il setjmp e longjmp implementando la libreria setjmp.h
 //Mi devo ricordare di implementare una var globale per tenere traccia dello funzione in cui si trova il programma
-state_t curState;
-WINDOW *win;
+//state_t curState;
 
 const int max_path=4096;
-static char *logo[]={
-"  __  .__  __         .__          ",
-"_/  |_|__|/  |_  ____ |  |   ____  ",
-"\\   __\\  \\   __\\/  _ \\|  |  /  _ \\",
-" |  | |  ||  | (  <_> )  |_(  <_> )",
-" |__| |__||__|  \\____/|____/\\____/ "                                  
-};
-
 static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD. Buona Programmazione";
 static char *pContinue="Premi INVIO per continuare";
 static char *sizeWarn="Per favore evita di ridimensionare la finestra del terminale";
 // Giacomo 5-1, avevo la necessita di un testo abbastanza grande per il testing;
 static char *testBible="Ora a voi, ricchi: piangete e gridate per le sciagure che cadranno su di voi! Le vostre ricchezze sono marce, i vostri vestiti sono mangiati dalle tarme. Il vostro oro e il vostro argento sono consumati dalla ruggine, la loro ruggine si alzerà ad accusarvi e divorerà le vostre carni come un fuoco.";
-int sLevel;
+int sLevel, rStatus=1;
 
 
 void nclearBuff(void){
@@ -59,7 +51,6 @@ void nclearBuff(void){
 //     strcpy(exePath, path);
 //     return exePath;
 // }
-
 char *getPath(){
     int pathsize=0, isFound=1;
     char *path=(char *)malloc(max_path*sizeof(char));
@@ -74,7 +65,6 @@ char *getPath(){
     path=(char *)realloc(path,strlen(path));
     return path;
 }
-
 // void handle_resize(int sig){
 //     if(curState==fSTART){
 //         //ipotetica chiamata del salto
@@ -88,7 +78,6 @@ void myPause(void){
     refresh();
     getch();
 }
-
 void start(){
     time_t start_time;
     int halfContinue=strlen(pContinue)/2;
@@ -106,7 +95,7 @@ void start(){
     wrefresh(stdscr);
     Cprint(stdscr,initTxt,20,0,1);
     //Hprint(win, pContinue,20,0);
-    mvwprintw(stdscr,24,(getmaxx(win)/2)-halfContinue,"%s", pContinue);
+    mvwprintw(stdscr,24,(getmaxx(stdscr)/2)-halfContinue,"%s", pContinue);
     wmove(stdscr,25,11);
     SBHprint(stdscr,sizeWarn,20);
     if(!can_change_color()){
@@ -125,22 +114,22 @@ void start(){
     refresh();
 }
 void run(){
-    int isRun=1, status=2;
+    int isRun=1;
     while(isRun){
-        switch(status){
+        switch(rStatus){
             case 1:
-                menu();
+                init_menu();
+                menu(&isRun);
                 break;
             case 2:
                 sLevel=1;
                 printLvl_one();
                 level_one();
-                isRun=0;
+                rStatus=1;
                 break;
         }
     }
 }
-
 void Cprint(WINDOW *tmp,  char *pText, int hPad, int vPad, int fNL){
     //da aggiustare in vista di righe pari
     int hSize=getmaxx(tmp), vSize=getmaxy(tmp);

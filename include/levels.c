@@ -19,11 +19,6 @@ chtype enemy=219|COLOR_PAIR(3);
 chtype road=219|COLOR_PAIR(4);
 chtype goal=219|COLOR_PAIR(6);
 
-
-void menu(){
-    return;
-}
-
 void printLvl_one(){
     time_t wait;
     map=newwin(24,110,0,0);

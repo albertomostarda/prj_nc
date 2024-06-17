@@ -6,8 +6,8 @@
 int main(int argc, char **argv){
     start();
     run();
-    werase(win);
-    wrefresh(win);
+    werase(stdscr);
+    wrefresh(stdscr);
     myPause();
     return 0;
 }

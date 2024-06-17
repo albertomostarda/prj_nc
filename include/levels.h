@@ -9,24 +9,27 @@ typedef enum actionCode{
         action_START,       //0
         action_IF,          //1
         action_ENDIF,       //2
+        //action_ELSE,
+        //action_ENDELSE,
         action_WHILE,       //3
         action_DO,          //4
-        action_FOR,         //5
-        action_FORSTRUCT,   //6
-        action_ENDCICLE,    //7
+        //action_FOR,         //
+        //action_FORSTRUCT,   //
+        action_ENDCICLE,    //5
         //action_ENDFUNC,     
-        action_WALK,        //8
-        action_LROTATE,     //9
-        action_RROTATE,     //10
-        action_ENDSTART,    //11
-        action_isObstacle,  //12
+        action_WALK,        //6
+        action_LROTATE,     //7
+        action_RROTATE,     //8
+        action_ENDSTART,    //9
+        action_isObstacle,  //10
         //action_FUNC,
-        action_VAR=40       //
+        action_VAR=40       //11+varVAULUE
 }actionCode;
 
 typedef struct fullact{
     actionCode id;
     char *name;
+    char *descr;
 } fullAction;
 
 typedef struct Position{
@@ -47,10 +50,6 @@ extern Hero pg1;
 extern int* action_buffer;
 extern char **mapArr;
 
-void print_menu();
-void menu();
-void print_settings();
-void settings();
 void printLvl_one();
 void level_one();
 void freeabuffer();
