@@ -4,6 +4,6 @@
 int loadSaves();
 void init_menu();
 void menu(int *quit);
-void menu_subrun(int mMode, int *mExit);
+void menu_subrun(int mMode, int *pExit, int *lvlPass);
 
 #endif

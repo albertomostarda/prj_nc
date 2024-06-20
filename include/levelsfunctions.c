@@ -59,7 +59,7 @@ void print_action(){
                     }
                     break;
                 case action_ENDIF:
-                    checkEnd=endError();
+                    checkEnd=endError(i+1);
                     if(isCond>=0){
                         if(checkEnd==0){
                             if(indent>1){
@@ -429,9 +429,9 @@ void print_map(WINDOW *tmp){
         wrefresh(tmp);
     }
 }
-int endError(){
+int endError(int lPos){
     int ifCount=0;
-    for(int i=0;i<curAction_size;i++){
+    for(int i=0;i<lPos;i++){
         if(action_buffer[i]==action_IF){
             ifCount++;
         }else if(action_buffer[i]==action_ENDIF){
@@ -511,13 +511,24 @@ int checkEndLvl(){
         print_action();
         return 1;
     }else{
+        int cho;
+        time_t swait=time(NULL);
         werase(dialogue);
         werase(action);
         werase(map);
+        delwin(dialogue);
+        delwin(map);
+        delwin(action);
+        werase(stdscr);
         box(stdscr,0,0);
         Cprint(stdscr,"Hai superato il livello!",1,1,0);
         mvwprintw(stdscr,getcury(stdscr)+1,(getmaxx(stdscr)/2)-(strlen("CONGRATULAZIONI!")/2),"CONGRATULAZIONI!");
         wrefresh(stdscr);
+        nodelay(action,TRUE);
+        while((cho!='\n'||cho!='q'||cho!='Q')&&(time(NULL)-swait)<10){
+            cho=wgetch(action);
+        }
+        nodelay(action,FALSE);
         return 0;
     }
 }

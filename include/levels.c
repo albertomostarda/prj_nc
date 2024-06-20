@@ -39,7 +39,6 @@ void printLvl_one(){
 }
 void level_one(){
     action_run();
-    getch();
 }
 void freeabuffer(){
     free(action_buffer);

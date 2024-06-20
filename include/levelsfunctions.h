@@ -15,7 +15,7 @@ void addone();
 //int check_Econdition(int lastPos);
 int conditionError(int lastPos);
 void ifError();
-int endError();
+int endError(int lPos);
 void run_actions(int *fexit);
 void delete_action(int lim);
 void run_anim(WINDOW *tmp);

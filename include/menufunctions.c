@@ -60,12 +60,10 @@ void init_menu(){
 void menu(int *quit){
     int midScr=getmaxx(stdscr)/2,rMenu=1, highlight=0,menuch=0;
     keypad(stdscr,TRUE);
-    while(*quit){
+    while(rMenu){
         for(int i=0;i<3;i++){
-            if(fSelect==0){
-                if(i==1){
-                    i++;
-                }
+            if(fSelect==0 && i==1){
+                continue;
             }
             if(i==highlight){
                 wattron(stdscr, A_REVERSE);
@@ -83,70 +81,54 @@ void menu(int *quit){
             case 'w':
             case 'W':
             case KEY_UP:
-                if(fSelect==0){
-                    if(highlight==1){
-                        highlight=0;
-                    }else{
-                        if(highlight==0){
-                            highlight=2;
-                        }else{
-                            highlight--;
-                    }
-                    }
-                    
+                if(highlight==0){
+                    highlight=2;
                 }else{
-                    if(highlight==0){
-                        highlight=2;
-                    }else{
-                        highlight--;
-                    }
+                    highlight--;
+                }
+                if(fSelect==0&&highlight==1){
+                    highlight--;
                 }
                 break;
             case 's':
             case 'S':
             case KEY_DOWN:
-                if(fSelect==0){
-                    if(highlight==1){
-                        highlight=2;
-                    }else{
-                        if(highlight==2){
-                            highlight=0;
-                        }else{
-                            highlight++;
-                        }
-                    }
+                if(highlight==2){
+                    highlight=0;
                 }else{
-                    if(highlight==2){
-                        highlight=0;
-                    }else{
-                        highlight++;
-                    }
+                    highlight++;
+                }
+                if(fSelect==0&&highlight==1){
+                    highlight++;
                 }
                 break;
             case '\n':
-                menu_subrun(highlight, quit);
+                menu_subrun(highlight, quit, &rMenu);
                 break;
         }
     }
     keypad(stdscr,FALSE);
-    getch();
-    rStatus=2;
     return;
 }
-void menu_subrun(int mMode, int *mExit){
+void menu_subrun(int mMode, int *pExit, int * lvlPass){
     switch(mMode){
         case 0:
-            printf("0 ok");
+            *lvlPass=0;
+            rStatus=2;
             break;
         case 1:
-            printf("0 ok");
+            werase(stdscr);
+            mvwprintw(stdscr,1,1,"1 OK");
+            refresh();
+            getch();
             break;
         case 2:
             werase(stdscr);
             box(stdscr,0,0);
             Cprint(stdscr, "Arrivederci!",1,1,0);
             napms(100);
-            *mExit=0;
+            *lvlPass=0;
+            *pExit=0;
             break;
     }
 }

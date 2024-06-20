@@ -21,7 +21,7 @@ static char *pContinue="Premi INVIO per continuare";
 static char *sizeWarn="Per favore evita di ridimensionare la finestra del terminale";
 // Giacomo 5-1, avevo la necessita di un testo abbastanza grande per il testing;
 static char *testBible="Ora a voi, ricchi: piangete e gridate per le sciagure che cadranno su di voi! Le vostre ricchezze sono marce, i vostri vestiti sono mangiati dalle tarme. Il vostro oro e il vostro argento sono consumati dalla ruggine, la loro ruggine si alzerà ad accusarvi e divorerà le vostre carni come un fuoco.";
-int sLevel, rStatus=1;
+int sLevel, rStatus;
 
 
 void nclearBuff(void){
@@ -93,6 +93,7 @@ void start(){
     //win=newwin(35,160,0,0);
     box(stdscr,0,0);
     wrefresh(stdscr);
+    rStatus=1;
     Cprint(stdscr,initTxt,20,0,1);
     //Hprint(win, pContinue,20,0);
     mvwprintw(stdscr,24,(getmaxx(stdscr)/2)-halfContinue,"%s", pContinue);
