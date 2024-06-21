@@ -6,7 +6,6 @@
 #include <string.h>
 
 int midCPos, fSelect;
-int lvlCompleted=0;
 int menupos_ch[3];
 static char* menu_choice[]={"[NUOVA PARTITA]","[SELEZIONA LIVELLO]","[ESCI]"};
 static char* logo[]={
@@ -34,6 +33,13 @@ int loadSaves(){
         return 0;
     }
 }
+void createSaves(){
+    char *path=getPath();
+    strcat(path, "\\saves\\save.sav");
+    FILE *fp=fopen(path,"w");
+    fprintf(fp,"%d\0",lvlCompleted);
+    fclose(fp);
+}
 void init_menu(){
     int midScr=getmaxx(stdscr)/2;
     fSelect=loadSaves();
@@ -55,7 +61,6 @@ void init_menu(){
         mvwprintw(stdscr,menupos_ch[2],midScr-(strlen(menu_choice[2])/2),"%s",menu_choice[2]);
     }
     wrefresh(stdscr);
-    getch();   
 }
 void menu(int *quit){
     int midScr=getmaxx(stdscr)/2,rMenu=1, highlight=0,menuch=0;
@@ -113,6 +118,8 @@ void menu(int *quit){
 void menu_subrun(int mMode, int *pExit, int * lvlPass){
     switch(mMode){
         case 0:
+            lvlCompleted=0;
+            createSaves();
             *lvlPass=0;
             rStatus=2;
             break;

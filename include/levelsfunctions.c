@@ -479,9 +479,9 @@ void setRotation(int isEnd){
     }
 }
 int checkEndLvl(){
+    int cho='\0';
+    time_t swait=time(NULL);
     if(mapArr[pg1.locate.y][pg1.locate.x]!='8'){
-        int cho;
-        time_t swait=time(NULL);
         werase(dialogue);
         box(dialogue,0,0);
         Cprint(dialogue, "Non hai raggiunto il traguardo. Premi INVIO per ritentare o 'Q' per tornare al menu.",1,1,1);
@@ -493,6 +493,7 @@ int checkEndLvl(){
         while((cho!='\n'||cho!='q'||cho!='Q')&&(time(NULL)-swait)<10){
             cho=wgetch(action);
         }
+        nclearBuff();
         nodelay(action,FALSE);
         //aggiungere la condizione per tornare al menu
         mapArr=init_map(26,1);
@@ -511,8 +512,6 @@ int checkEndLvl(){
         print_action();
         return 1;
     }else{
-        int cho;
-        time_t swait=time(NULL);
         werase(dialogue);
         werase(action);
         werase(map);
@@ -524,11 +523,18 @@ int checkEndLvl(){
         Cprint(stdscr,"Hai superato il livello!",1,1,0);
         mvwprintw(stdscr,getcury(stdscr)+1,(getmaxx(stdscr)/2)-(strlen("CONGRATULAZIONI!")/2),"CONGRATULAZIONI!");
         wrefresh(stdscr);
-        nodelay(action,TRUE);
-        while((cho!='\n'||cho!='q'||cho!='Q')&&(time(NULL)-swait)<10){
-            cho=wgetch(action);
+        switch(sLevel){
+            case 1:
+                lvlCompleted=1;
+                break;
         }
-        nodelay(action,FALSE);
+        nodelay(stdscr,TRUE);
+        nclearBuff();
+        while((cho!='\n')&&(time(NULL)-swait)<10){
+            cho=getch();
+        }
+        nclearBuff();
+        nodelay(stdscr,FALSE);
         return 0;
     }
 }

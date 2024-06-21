@@ -11,7 +11,7 @@ extern chtype walls;
 extern chtype enemy;
 extern chtype road;
 extern chtype goal;
-extern int sLevel, rStatus;
+extern int sLevel, rStatus, lvlCompleted;
 
 void nclearBuff(void);
 void myPause(void);

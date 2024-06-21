@@ -12,5 +12,4 @@ void rotclock();
 int checkObstacle();
 int getEndif(int posi);
 
-
 #endif

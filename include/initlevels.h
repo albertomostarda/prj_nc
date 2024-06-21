@@ -19,5 +19,4 @@ void bond_action();
 void action_subrun(int status,int *EXITflag);
 void free_actionBND();
 
-
 #endif

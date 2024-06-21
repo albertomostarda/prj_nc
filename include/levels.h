@@ -25,13 +25,11 @@ typedef enum actionCode{
         //action_FUNC,
         action_VAR=40       //11+varVAULUE
 }actionCode;
-
 typedef struct fullact{
     actionCode id;
     char *name;
     char *descr;
 } fullAction;
-
 typedef struct Position{
     int y;
     int x;
@@ -41,7 +39,7 @@ typedef struct player{
     Pos locate;
     int rotation;
     char **art;
-}Hero;
+} Hero;
 
 extern WINDOW *map;
 extern WINDOW *action;
