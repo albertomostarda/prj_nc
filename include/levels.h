@@ -25,6 +25,15 @@ typedef enum actionCode{
         //action_FUNC,
         action_VAR=40       //11+varVAULUE
 }actionCode;
+typedef enum varCode{
+    var_nSteps,
+    var_nTurns
+}varCode;
+typedef struct fullvar{
+    varCode id;
+    char *name;
+    char *descr;
+}fullVariables;
 typedef struct fullact{
     actionCode id;
     char *name;
@@ -45,10 +54,12 @@ extern WINDOW *map;
 extern WINDOW *action;
 extern WINDOW *dialogue;
 extern Hero pg1;
-extern int* action_buffer;
+extern fullVariables correctVar[2];
+extern int var_size, curAction_size;
+extern int *action_buffer, *var_buffer;
 extern char **mapArr;
 
-void printLvl_one();
-void level_one();
+void printLvl();
+void level_run();
 void freeabuffer();
 #endif

@@ -121,6 +121,7 @@ void menu_subrun(int mMode, int *pExit, int * lvlPass){
             lvlCompleted=0;
             createSaves();
             *lvlPass=0;
+            sLevel=2;
             rStatus=2;
             break;
         case 1:
@@ -133,6 +134,7 @@ void menu_subrun(int mMode, int *pExit, int * lvlPass){
             werase(stdscr);
             box(stdscr,0,0);
             Cprint(stdscr, "Arrivederci!",1,1,0);
+            getch();
             napms(100);
             *lvlPass=0;
             *pExit=0;

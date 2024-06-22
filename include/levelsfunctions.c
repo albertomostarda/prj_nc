@@ -239,7 +239,7 @@ void print_add(int *limitact, int limit_size){
 }
 void action_add(){
     switch(sLevel){
-        case 1:
+        case 2:
             addone();
             return;
             break;
@@ -305,7 +305,7 @@ void addone(){
     //aggiungere reset dialoghi
 }
 void run_actions(int *fexit){
-    int i=1;
+    int i=1,vidx=0;
     if(action_buffer[curAction_size-1]==action_ENDSTART){
         while(action_buffer[i]!=action_ENDSTART){
             switch (action_buffer[i])
@@ -322,6 +322,15 @@ void run_actions(int *fexit){
                 case action_LROTATE:
                     rotcclock();
                     break;
+                default:
+                    if(action_buffer[i]>=action_VAR){
+                        switch(var_buffer[vidx]){
+                            case var_nSteps:
+                                set_steps(action_buffer[i]-action_VAR);
+                                break;
+                        }
+                        vidx++;
+                    }
             }
             i++;
         }
@@ -485,8 +494,6 @@ int checkEndLvl(){
         werase(dialogue);
         box(dialogue,0,0);
         Cprint(dialogue, "Non hai raggiunto il traguardo. Premi INVIO per ritentare o 'Q' per tornare al menu.",1,1,1);
-        mvwprintw(dialogue,1,1,"%c", mapArr[pg1.locate.y][pg1.locate.x]);
-        wrefresh(dialogue);
         nclearBuff();
         wmove(action,getcury(action), getcurx(action));
         nodelay(action,TRUE);
@@ -526,6 +533,9 @@ int checkEndLvl(){
         switch(sLevel){
             case 1:
                 lvlCompleted=1;
+                break;
+            case 2:
+                lvlCompleted=2;
                 break;
         }
         nodelay(stdscr,TRUE);

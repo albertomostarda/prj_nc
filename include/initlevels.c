@@ -8,12 +8,10 @@
 #include <ncurses/ncurses.h>
 
 char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
-char *lastVarname;
-fullAction correctAction[18];
+fullAction correctAction[12];
 Pos choicePos[4];
 int alPad=5, auPad=3;
-int curAction_pos, curAction_size, levelLimitation=0;
-int* action_buffer;
+int curAction_pos, levelLimitation=0;
 
 char** init_map(int lPad, int uPad){
     FILE *fp;
@@ -28,6 +26,9 @@ char** init_map(int lPad, int uPad){
     {
         case 1:
             strcpy(fileName, "resources\\levelone.txt");
+            break;
+        case 2:
+            strcpy(fileName, "resources\\leveltwo.txt");
             break;
     }
     strcat(fullpath, exePath);
@@ -139,20 +140,42 @@ void bond_action(){
     correctAction[11].name = (char *)malloc(strlen("Contenitore di valori (numeri).") + 1);
     strcpy(correctAction[11].name, "Contenitore di valori (numeri).");
 }
+void bondVar(){
+    correctVar[0].id=var_nSteps;
+    correctVar[0].name=(char *)malloc(strlen("nPassi")+1);
+    strcpy(correctVar[0].name, "nPassi");
+    correctVar[0].descr=(char *)malloc(strlen("Variabile che indica quanti passi deve fare il personaggio.")+1);
+    strcpy(correctVar[0].descr,"Variabile che indica quanti passi deve fare il personaggio.");
+    correctVar[1].id=var_nTurns;
+    correctVar[1].name=(char *)malloc(strlen("nGiri")+1);
+    strcpy(correctVar[1].name, "nGiri");
+    correctVar[1].descr=(char *)malloc(strlen("Variabile che indica quanti giri deve fare il personaggio.")+1);
+    strcpy(correctVar[1].descr,"Variabile che indica quanti giri deve fare il personaggio.");
+}
 void init_action(){
     int vSize=0,hSize=0;
-    curAction_size=2;
+    curAction_size=1;
+    bond_action();
+    bondVar();
     action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
     curAction_pos=0;
     getmaxyx(action,vSize,hSize);
-    bond_action();
     action_buffer[0]=action_START;
+    levelLimitation=1;
     curAction_pos++;
     switch (sLevel)
     {
         case 1:
+
+            break;
+        case 2:
+            curAction_size++;
+            var_size=1;
+            action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
             action_buffer[1]=action_VAR+2;
-            mvwprintw(action, auPad+1, alPad+3, "int nPassi= %d;", action_buffer[1]-action_VAR);
+            var_buffer=(int *)realloc(var_buffer, var_size*sizeof(int));
+            var_buffer[0]=var_nSteps;
+            mvwprintw(action, auPad+1, alPad+3, "int %s = %d;", correctVar[var_buffer[0]].name,action_buffer[1]-action_VAR);
             curAction_pos++;
             levelLimitation=2;
             break;
@@ -173,4 +196,16 @@ void init_action(){
     mvwprintw(action, choicePos[2].y, choicePos[2].x, "%s", action_choice[2]);
     mvwprintw(action, choicePos[3].y, choicePos[3].x, "%s", action_choice[3]);
     wrefresh(action);
+}
+void free_actionBND(){
+    for(int i=0;i<12;i++){
+        free(correctAction[i].descr);
+        free(correctAction[i].name);
+    }
+}
+void free_varBND(){
+    for(int i=0;i<2;i++){
+        free(correctVar[i].name);
+        free(correctVar[i].descr);
+    }
 }

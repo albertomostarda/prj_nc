@@ -12,14 +12,17 @@ WINDOW *map;
 WINDOW *action;
 WINDOW *dialogue;
 char **mapArr;
+int* action_buffer, *var_buffer;
+int curAction_size, var_size=2;
 Hero pg1;
+fullVariables correctVar[2];
 chtype blank=219|COLOR_PAIR(5);
 chtype walls=219|COLOR_PAIR(2);
 chtype enemy=219|COLOR_PAIR(3);
 chtype road=219|COLOR_PAIR(4);
 chtype goal=219|COLOR_PAIR(6);
 
-void printLvl_one(){
+void printLvl(){
     time_t wait;
     map=newwin(24,110,0,0);
     action=newwin(35,50,0,110);
@@ -37,7 +40,7 @@ void printLvl_one(){
     mapArr=init_map(26,1);
     init_action();
 }
-void level_one(){
+void level_run(){
     action_run();
 }
 void freeabuffer(){

@@ -67,9 +67,8 @@ void run(){
                 menu(&isRun);
                 break;
             case 2:
-                sLevel=1;
-                printLvl_one();
-                level_one();
+                printLvl();
+                level_run();
                 rStatus=1;
                 break;
         }

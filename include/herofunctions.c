@@ -4,7 +4,7 @@
 #include "features.h"
 #include <ncurses/ncurses.h>
 
-int nSteps=2; // non ancora usata
+int nSteps; // non ancora usata
 
 int checkObstacle(){
     switch(pg1.rotation){
@@ -160,4 +160,7 @@ void rotclock(){
     }else{
         pg1.rotation++;
     }
+}
+void set_steps(int value){
+    nSteps=value;
 }
