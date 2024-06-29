@@ -15,7 +15,7 @@
 //Mi devo ricordare di implementare una var globale per tenere traccia dello funzione in cui si trova il programma
 //state_t curState;
 
-const int max_path=4096;
+const int max_path=8192;
 static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD. Buona Programmazione";
 static char *pContinue="Premi INVIO per continuare";
 static char *sizeWarn="Per favore evita di ridimensionare la finestra del terminale";

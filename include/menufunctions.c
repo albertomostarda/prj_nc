@@ -27,6 +27,7 @@ int loadSaves(){
         lvltxt[1]='\0';
         lvlCompleted=atoi(lvltxt);
         fclose(fp);
+        free(path);
         return 1;
     }else{
         fclose(fp);
@@ -39,6 +40,7 @@ void createSaves(){
     FILE *fp=fopen(path,"w");
     fprintf(fp,"%d\0",lvlCompleted);
     fclose(fp);
+    free(path);
 }
 void init_menu(){
     int midScr=getmaxx(stdscr)/2;
