@@ -6,5 +6,7 @@ void createSaves();
 void init_menu();
 void menu(int *quit);
 void menu_subrun(int mMode, int *pExit, int *lvlPass);
+void init_selectLvl();
+void selectLvl();
 
 #endif

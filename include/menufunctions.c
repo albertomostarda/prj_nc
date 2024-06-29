@@ -5,9 +5,10 @@
 #include <ncurses/ncurses.h>
 #include <string.h>
 
-int midCPos, fSelect;
-int menupos_ch[3];
+int fSelect;
+int menupos_ch[3], selectpos[5];
 static char* menu_choice[]={"[NUOVA PARTITA]","[SELEZIONA LIVELLO]","[ESCI]"};
+static char* lvl_choice[]={"Livello 1","Livello 2","Livello 3","Livello 4","Livello 5"};
 static char* logo[]={
 "   _____          _                    _                 _                  ",
 "  / ____|        | |          /\\      | |               | |                 ",
@@ -18,7 +19,7 @@ static char* logo[]={
 };
 
 int loadSaves(){
-    //se i livelli saranno piu di 9 mod grandezza lvltxt e terminatore
+    //se i livelli saranno piu di 9 modificare grandezza lvltxt e terminatore
     char *path=getPath(), lvltxt[2];
     strcat(path, "\\saves\\save.sav");
     FILE *fp=fopen(path,"r");
@@ -43,9 +44,8 @@ void createSaves(){
     free(path);
 }
 void init_menu(){
-    int midScr=getmaxx(stdscr)/2;
+    int midScr=getmaxx(stdscr)/2,midCPos=(getmaxy(stdscr)/2)+2;
     fSelect=loadSaves();
-    midCPos=(getmaxy(stdscr)/2)+2;
     werase(stdscr);
     box(stdscr,0,0);
     artHprint(stdscr,160,logo,6);
@@ -141,5 +141,56 @@ void menu_subrun(int mMode, int *pExit, int * lvlPass){
             *lvlPass=0;
             *pExit=0;
             break;
+    }
+}
+void init_selectLvl(){
+    int midScr=getmaxx(stdscr), midPos;
+
+}
+void selectLvl(){
+    int fBreak=1, focus=0, choice=0, midScr=getmaxx(stdscr)/2;
+    while(fBreak)
+    {
+        for(int i=0;i<5;i++){
+            if(focus==i){
+                wattron(stdscr, A_REVERSE);
+                mvwprintw(stdscr, selectpos, midScr-(strlen(lvl_choice[i])/2),"%s",lvl_choice[i]);
+                wattroff(stdscr, A_REVERSE);
+            }else{
+                mvwprintw(stdscr, selectpos, midScr-(strlen(lvl_choice[i])/2),"%s",lvl_choice[i]);
+            }
+        }
+        nclearBuff();
+        choice=getch();
+        nclearBuff();
+        switch (choice)
+        {
+            case 'W':
+            case 'w':
+            case KEY_UP:
+                if(focus==0){
+                    focus=4;
+                }else{
+                    focus--;
+                }
+                break;
+            case 'S':
+            case 's':
+            case KEY_DOWN:
+                if(focus==4){
+                    focus=0;
+                }else{
+                    focus++;
+                }
+                break;
+            case 'q':
+            case 'Q':
+                init_menu();
+                fBreak=0;
+                break;
+            case '\n':
+                selectLvl_subrun();
+                break;     
+        }
     }
 }
