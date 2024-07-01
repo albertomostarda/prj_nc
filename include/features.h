@@ -6,12 +6,9 @@ typedef enum fStatus{fSTART, fRUN} state_t;
 //typedef enum customPos{custDEFAULT, custTOP, custBOT} custPos;
 extern WINDOW *win;
 extern const int max_path;
-extern chtype blank;
-extern chtype walls;
-extern chtype enemy;
-extern chtype road;
-extern chtype goal;
-extern int sLevel, rStatus, lvlCompleted;
+extern chtype blank, walls, enemy, road, goal;
+extern char *pContinue;
+extern int sLevel, rStatus, lvlToDo;
 
 void nclearBuff(void);
 void myPause(void);

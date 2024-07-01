@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <ncurses/ncurses.h>
 #include <string.h>
+#include <time.h>
 
 int fSelect;
 int menupos_ch[3], selectpos[5];
@@ -26,7 +27,7 @@ int loadSaves(){
     if(fp!=NULL){
         fgets(lvltxt,sizeof(lvltxt),fp);
         lvltxt[1]='\0';
-        lvlCompleted=atoi(lvltxt);
+        lvlToDo=atoi(lvltxt);
         fclose(fp);
         free(path);
         return 1;
@@ -39,13 +40,15 @@ void createSaves(){
     char *path=getPath();
     strcat(path, "\\saves\\save.sav");
     FILE *fp=fopen(path,"w");
-    fprintf(fp,"%d\0",lvlCompleted);
+    fprintf(fp,"%d\0",lvlToDo);
     fclose(fp);
     free(path);
 }
 void init_menu(){
     int midScr=getmaxx(stdscr)/2,midCPos=(getmaxy(stdscr)/2)+2;
-    fSelect=loadSaves();
+    if(lvlToDo==0){
+        fSelect=loadSaves();
+    }
     werase(stdscr);
     box(stdscr,0,0);
     artHprint(stdscr,160,logo,6);
@@ -69,9 +72,6 @@ void menu(int *quit){
     keypad(stdscr,TRUE);
     while(rMenu){
         for(int i=0;i<3;i++){
-            if(fSelect==0 && i==1){
-                continue;
-            }
             if(i==highlight){
                 wattron(stdscr, A_REVERSE);
                 mvwprintw(stdscr,menupos_ch[i],midScr-(strlen(menu_choice[i])/2),"%s",menu_choice[i]);
@@ -93,9 +93,6 @@ void menu(int *quit){
                 }else{
                     highlight--;
                 }
-                if(fSelect==0&&highlight==1){
-                    highlight--;
-                }
                 break;
             case 's':
             case 'S':
@@ -103,9 +100,6 @@ void menu(int *quit){
                 if(highlight==2){
                     highlight=0;
                 }else{
-                    highlight++;
-                }
-                if(fSelect==0&&highlight==1){
                     highlight++;
                 }
                 break;
@@ -117,20 +111,33 @@ void menu(int *quit){
     keypad(stdscr,FALSE);
     return;
 }
-void menu_subrun(int mMode, int *pExit, int * lvlPass){
+void menu_subrun(int mMode, int *pExit, int *lvlPass){
     switch(mMode){
         case 0:
-            lvlCompleted=0;
+            lvlToDo=0;
             createSaves();
             *lvlPass=0;
             sLevel=2;
             rStatus=2;
             break;
         case 1:
-            werase(stdscr);
-            mvwprintw(stdscr,1,1,"1 OK");
-            refresh();
-            getch();
+            if(lvlToDo>1){
+                init_selectLvl();
+                selectLvl(lvlPass);
+            }else{
+                time_t cWait=time(NULL);
+                werase(stdscr);
+                box(stdscr,0,0);
+                Cprint(stdscr, "Devi cominciare una nuova partita prima di selezionare un livello!",1,1,1);
+                wmove(stdscr, getcury(stdscr)+1, getcurx(stdscr));
+                Hprint(stdscr, pContinue, 1,0);
+                nclearBuff();
+                nodelay(stdscr, TRUE);
+                while(getch()!='\n'&&(time(NULL)-cWait)<10);
+                nodelay(stdscr, FALSE);
+                nclearBuff();
+                *lvlPass=0;
+            }
             break;
         case 2:
             werase(stdscr);
@@ -144,20 +151,29 @@ void menu_subrun(int mMode, int *pExit, int * lvlPass){
     }
 }
 void init_selectLvl(){
-    int midScr=getmaxx(stdscr), midPos;
-
+    int midScr=getmaxx(stdscr)/2, midPos=getmaxy(stdscr)/2,idx=0,fPrint=1;
+    werase(stdscr);
+    box(stdscr, 0,0);
+    for(int i=-2;i<3;i++){
+        selectpos[idx]=midPos+(i*4);
+        idx++;
+    }
+    for(int i=0;i<lvlToDo;i++){
+        mvwprintw(stdscr, selectpos[i], midScr-(strlen(lvl_choice[i])/2),"%s", lvl_choice[i]);
+    }
+    getch();
 }
-void selectLvl(){
+void selectLvl(int *rQuit){
     int fBreak=1, focus=0, choice=0, midScr=getmaxx(stdscr)/2;
     while(fBreak)
     {
-        for(int i=0;i<5;i++){
+        for(int i=0;i<lvlToDo;i++){
             if(focus==i){
                 wattron(stdscr, A_REVERSE);
-                mvwprintw(stdscr, selectpos, midScr-(strlen(lvl_choice[i])/2),"%s",lvl_choice[i]);
+                mvwprintw(stdscr, selectpos[i], midScr-(strlen(lvl_choice[i])/2),"%s",lvl_choice[i]);
                 wattroff(stdscr, A_REVERSE);
             }else{
-                mvwprintw(stdscr, selectpos, midScr-(strlen(lvl_choice[i])/2),"%s",lvl_choice[i]);
+                mvwprintw(stdscr, selectpos[i], midScr-(strlen(lvl_choice[i])/2),"%s",lvl_choice[i]);
             }
         }
         nclearBuff();
@@ -169,7 +185,7 @@ void selectLvl(){
             case 'w':
             case KEY_UP:
                 if(focus==0){
-                    focus=4;
+                    focus=lvlToDo-1;
                 }else{
                     focus--;
                 }
@@ -177,7 +193,7 @@ void selectLvl(){
             case 'S':
             case 's':
             case KEY_DOWN:
-                if(focus==4){
+                if(focus==lvlToDo-1){
                     focus=0;
                 }else{
                     focus++;
@@ -189,8 +205,30 @@ void selectLvl(){
                 fBreak=0;
                 break;
             case '\n':
-                selectLvl_subrun();
+                selectLvl_subrun(focus+1);
+                rStatus=2;
+                fBreak=0;
+                *rQuit=0;
                 break;     
         }
+    }
+}
+void selectLvl_subrun(int mode){
+    switch(mode){
+        case 1:
+            sLevel=1;
+            break;
+        case 2:
+            sLevel=2;
+            break;
+        case 3:
+            sLevel=3;
+            break;
+        case 4:
+            sLevel=4;
+            break;
+        case 5:
+            sLevel=5;
+            break;
     }
 }

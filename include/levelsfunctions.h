@@ -12,6 +12,7 @@ void print_add(int *limitact, int limit_size);
 void action_add();
 void action_run();
 void addone();
+int *createAlimit(int *limSize);
 //int check_Econdition(int lastPos);
 int conditionError(int lastPos);
 void ifError();

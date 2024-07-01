@@ -29,6 +29,9 @@ void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
         case '2':
             waddch(tWin, road);
             break;
+        case '3':
+            waddch(tWin, enemy);
+            break;
         case '8':
             setRotation(1);
             waddch(tWin, pg1.icon);
@@ -245,12 +248,43 @@ void action_add(){
             break;
     }
 }
+int *createAlimit(int *limSize){
+    int *aLimit=(int *)malloc(sizeof(int));
+    switch(sLevel){
+        case 1:
+            *limSize=2;
+            aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
+            aLimit[0]=action_WALK;
+            aLimit[1]=action_ENDSTART;
+            //aLimit[2]=action_VAR;
+            break;
+        case 2:
+            *limSize=7;
+            aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
+            aLimit[0]=action_IF;
+            aLimit[1]=action_ENDIF;
+            aLimit[2]=action_WALK;
+            aLimit[3]=action_LROTATE;
+            aLimit[4]=action_RROTATE;
+            aLimit[5]=action_ENDSTART;
+            aLimit[6]=action_isObstacle;
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+    }
+    return aLimit;
+}
 void addone(){
-    int addBreak=1, limitAction_size, onFocus=0, addchoice=0;
-    //int limited_action[]={1, 2, 13, 14, 15, 16}; 
-    int limited_action[]={action_IF,action_ENDIF,action_WALK,action_LROTATE,action_RROTATE,action_ENDSTART, action_isObstacle};
-    limitAction_size=sizeof(limited_action)/sizeof(limited_action[0]);
+    int addBreak=1, limitAction_size=0, onFocus=0, addchoice=0;
+    //int limited_action[]={1, 2, 13, 14, 15, 16};
+    int *limited_action=createAlimit(&limitAction_size);
+    
     print_add(limited_action, limitAction_size);
+    getch();
     while(addBreak){
         for(int i=0;i<limitAction_size;i++){
             if(onFocus==i){
@@ -390,11 +424,8 @@ void action_run(){
 void action_subrun(int status,int *EXITflag){
     switch (status)
     {
-        default:
-            return;
-            break;
         case 0:
-            action_add();
+            addone();
             break;
         case 1:
             delete_action(levelLimitation);
@@ -488,18 +519,16 @@ void setRotation(int isEnd){
     }
 }
 int checkEndLvl(){
-    int cho='\0';
+    //int cho='\0';
     time_t swait=time(NULL);
     if(mapArr[pg1.locate.y][pg1.locate.x]!='8'){
         werase(dialogue);
         box(dialogue,0,0);
-        Cprint(dialogue, "Non hai raggiunto il traguardo. Premi INVIO per ritentare o 'Q' per tornare al menu.",1,1,1);
+        Cprint(dialogue, "Non hai raggiunto il traguardo. Premi INVIO per ritentare",1,1,1);
         nclearBuff();
         wmove(action,getcury(action), getcurx(action));
         nodelay(action,TRUE);
-        while((cho!='\n'||cho!='q'||cho!='Q')&&(time(NULL)-swait)<10){
-            cho=wgetch(action);
-        }
+        while(wgetch(action)&&(time(NULL)-swait)<10);
         nclearBuff();
         nodelay(action,FALSE);
         //aggiungere la condizione per tornare al menu
@@ -530,19 +559,19 @@ int checkEndLvl(){
         Cprint(stdscr,"Hai superato il livello!",1,1,0);
         mvwprintw(stdscr,getcury(stdscr)+1,(getmaxx(stdscr)/2)-(strlen("CONGRATULAZIONI!")/2),"CONGRATULAZIONI!");
         wrefresh(stdscr);
-        switch(sLevel){
-            case 1:
-                lvlCompleted=1;
-                break;
-            case 2:
-                lvlCompleted=2;
-                break;
+        if(lvlToDo<=sLevel){
+            switch(sLevel){
+                case 1:
+                    lvlToDo=2;
+                    break;
+                case 2:
+                    lvlToDo=3;
+                    break;
+            }
         }
         nodelay(stdscr,TRUE);
         nclearBuff();
-        while((cho!='\n')&&(time(NULL)-swait)<10){
-            cho=getch();
-        }
+        while(getch()!='\n'&&(time(NULL)-swait)<10);
         nclearBuff();
         nodelay(stdscr,FALSE);
         return 0;

@@ -16,7 +16,7 @@ int curAction_pos, levelLimitation=0;
 char** init_map(int lPad, int uPad){
     FILE *fp;
     char *exePath=getPath();
-    char fileName[23], buffer[160];
+    char fileName[25], buffer[160];
     char *fullpath=(char*)malloc(max_path);
     for(int i=0;i<max_path;i++){
         fullpath[i]='\0';
@@ -29,6 +29,15 @@ char** init_map(int lPad, int uPad){
             break;
         case 2:
             strcpy(fileName, "resources\\leveltwo.txt");
+            break;
+        case 3:
+            strcpy(fileName, "resources\\levelthree.txt");
+            break;
+        case 4:
+            strcpy(fileName, "resources\\levelfour.txt");
+            break;
+        case 5:
+            strcpy(fileName, "resources\\levelfive.txt");
             break;
     }
     strcat(fullpath, exePath);
@@ -166,7 +175,15 @@ void init_action(){
     switch (sLevel)
     {
         case 1:
-
+            curAction_size++;
+            var_size=1;
+            action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+            action_buffer[1]=action_VAR+2;
+            var_buffer=(int *)realloc(var_buffer, var_size*sizeof(int));
+            var_buffer[0]=var_nSteps;
+            mvwprintw(action, auPad+1, alPad+3, "int %s = %d;", correctVar[var_buffer[0]].name,action_buffer[1]-action_VAR);
+            curAction_pos++;
+            levelLimitation=2;
             break;
         case 2:
             curAction_size++;
