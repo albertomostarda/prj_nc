@@ -117,7 +117,7 @@ void menu_subrun(int mMode, int *pExit, int *lvlPass){
             lvlToDo=0;
             createSaves();
             *lvlPass=0;
-            sLevel=2;
+            sLevel=1;
             rStatus=2;
             break;
         case 1:
@@ -161,14 +161,13 @@ void init_selectLvl(){
     for(int i=0;i<lvlToDo;i++){
         mvwprintw(stdscr, selectpos[i], midScr-(strlen(lvl_choice[i])/2),"%s", lvl_choice[i]);
     }
-    getch();
 }
 void selectLvl(int *rQuit){
     int fBreak=1, focus=0, choice=0, midScr=getmaxx(stdscr)/2;
     while(fBreak)
     {
         for(int i=0;i<lvlToDo;i++){
-            if(focus==i){
+            if(i==focus){
                 wattron(stdscr, A_REVERSE);
                 mvwprintw(stdscr, selectpos[i], midScr-(strlen(lvl_choice[i])/2),"%s",lvl_choice[i]);
                 wattroff(stdscr, A_REVERSE);

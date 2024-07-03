@@ -9,7 +9,7 @@ void printcolor_str(WINDOW *tWin, char *colStr, int pLines, int tmpY);
 void printcolor_char(WINDOW *tWin,char ch, int locX, int locY);
 void print_action();
 void print_add(int *limitact, int limit_size);
-void action_add();
+//void action_add();
 void action_run();
 void addone();
 int *createAlimit(int *limSize);

@@ -4,7 +4,7 @@
 #include "features.h"
 #include <ncurses/ncurses.h>
 
-int nSteps; // non ancora usata
+int nSteps,nRot, isWalkEnd=1; // non ancora usata
 
 int checkObstacle(){
     switch(pg1.rotation){
@@ -68,6 +68,11 @@ int if_run(int condition, int condPos){
                 break;
             case action_RROTATE:
                 rotclock();
+                break;
+            default:
+                if(action_buffer[idx]>=action_VAR){
+                    set_steps(action_buffer[idx]-action_VAR);
+                }
                 break;
         }
         idx++;
@@ -134,11 +139,12 @@ void walk(){
             print_map(map);
             i++;
         }
-        
+        isWalkEnd=1;
     }else{
         werase(dialogue);
         box(dialogue,0,0);
         Cprint(dialogue,"L'eroe non puo continuare per questa direzione.",1,1,0);    
+        isWalkEnd=0;
     }
 }
 void while_run(int condition){

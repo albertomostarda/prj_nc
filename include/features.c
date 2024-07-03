@@ -26,6 +26,7 @@ void start(){
     time_t start_time;
     int halfContinue=strlen(pContinue)/2;
     system("MODE 160,35");
+    SetConsoleTitle("Code Adventure");
     //system("resize -s 35 160 >/dev/null"); //per windows;
     //signal(SIGWINCH, handle_resize);
     initscr();
@@ -43,13 +44,13 @@ void start(){
     mvwprintw(stdscr,24,(getmaxx(stdscr)/2)-halfContinue,"%s", pContinue);
     wmove(stdscr,25,11);
     SBHprint(stdscr,sizeWarn,20);
-    if(!can_change_color()){
-        mvwprintw(stdscr,1,1,"%d",COLORS);
-        getch();
-    }else{
-        mvwprintw(stdscr,1,1,"supporta i colori");
-        getch();
-    }
+    // if(!can_change_color()){
+    //     mvwprintw(stdscr,1,1,"%d",COLORS);
+    //     getch();
+    // }else{
+    //     mvwprintw(stdscr,1,1,"supporta i colori");
+    //     getch();
+    // }
     start_time=time(NULL);
     nodelay(stdscr,TRUE);
     while(getch()!='\n'&&(time(NULL)-start_time)<10);
@@ -69,6 +70,7 @@ void run(){
             case 2:
                 printLvl();
                 level_run();
+                createSaves();
                 rStatus=1;
                 break;
         }
@@ -283,7 +285,6 @@ void artHprint(WINDOW *tmp, int hSize, char **draw, int dHeight){
     }
     wrefresh(tmp);
 }
-
 int fCountLines(FILE *tmpFile){
     int fLines=0;
     char eFlag='\0';
@@ -296,15 +297,15 @@ int fCountLines(FILE *tmpFile){
     return fLines;
 }
 
-int fCountCols(FILE *tmpFile){
-    int fCols=0;
-    char eFlag='\0';
-    while((eFlag=fgetc(tmpFile))!='\n'){
-        fCols++;
-    }
-    rewind(tmpFile);
-    return fCols;
-}
+// int fCountCols(FILE *tmpFile){
+//     int fCols=0;
+//     char eFlag='\0';
+//     while((eFlag=fgetc(tmpFile))!='\n'){
+//         fCols++;
+//     }
+//     rewind(tmpFile);
+//     return fCols;
+// }
 void initColors(){
     init_pair(1, COLOR_WHITE, COLOR_BLACK); //testo normale
     init_pair(2, COLOR_WHITE, COLOR_WHITE); // per #

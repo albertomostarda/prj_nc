@@ -42,7 +42,7 @@ void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
     }
 }
 void print_action(){
-    int conLenght=0, actY=0, indent=1, isCond=0,canGo=1, checkEnd=0;//
+    int conLenght=0, actY=0, indent=1, isCond=0,canGo=1, checkEnd=0, varPos=0;//
     werase(action);
     box(action, 0,0);
     for(int i=0;i<curAction_size&&canGo;i++){
@@ -118,7 +118,8 @@ void print_action(){
                         }
                     }
                     else if(action_buffer[i]>=action_VAR){
-                        mvwprintw(action, auPad+actY, alPad+(3*indent),"int nPassi= %d;", action_buffer[i]-action_VAR);
+                        mvwprintw(action, auPad+actY, alPad+(3*indent),"int %s= %d;", correctVar[var_buffer[varPos]].name,action_buffer[i]-action_VAR);
+                        varPos++;
                         actY++;
                     }else if(conLenght!=0){
                         conLenght+=strlen(correctAction[action_buffer[i-1]].name);
@@ -230,7 +231,7 @@ void print_add(int *limitact, int limit_size){
     box(action, 0,0);
     int isFound=1;
     for(int aidx=0;aidx<limit_size;aidx++){
-        for(int i=0;i<18&&isFound;i++){
+        for(int i=0;i<12&&isFound;i++){
             if(limitact[aidx]==correctAction[i].id){
                 mvwprintw(action, auPad+aidx,alPad,"%s", correctAction[i].name);
                 isFound=0;
@@ -240,23 +241,23 @@ void print_add(int *limitact, int limit_size){
     }
     wrefresh(action);
 }
-void action_add(){
-    switch(sLevel){
-        case 2:
-            addone();
-            return;
-            break;
-    }
-}
+// void action_add(){
+//     switch(sLevel){
+//         case 2:
+//             addone();
+//             return;
+//             break;
+//     }
+// }
 int *createAlimit(int *limSize){
     int *aLimit=(int *)malloc(sizeof(int));
     switch(sLevel){
         case 1:
-            *limSize=2;
+            *limSize=3;
             aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
             aLimit[0]=action_WALK;
             aLimit[1]=action_ENDSTART;
-            //aLimit[2]=action_VAR;
+            aLimit[2]=action_VAR;
             break;
         case 2:
             *limSize=7;
@@ -282,9 +283,7 @@ void addone(){
     int addBreak=1, limitAction_size=0, onFocus=0, addchoice=0;
     //int limited_action[]={1, 2, 13, 14, 15, 16};
     int *limited_action=createAlimit(&limitAction_size);
-    
     print_add(limited_action, limitAction_size);
-    getch();
     while(addBreak){
         for(int i=0;i<limitAction_size;i++){
             if(onFocus==i){
@@ -521,17 +520,20 @@ void setRotation(int isEnd){
 int checkEndLvl(){
     //int cho='\0';
     time_t swait=time(NULL);
-    if(mapArr[pg1.locate.y][pg1.locate.x]!='8'){
+    if(mapArr[pg1.locate.y][pg1.locate.x]!='8'|| isWalkEnd==0){
         werase(dialogue);
         box(dialogue,0,0);
-        Cprint(dialogue, "Non hai raggiunto il traguardo. Premi INVIO per ritentare",1,1,1);
+        if(isWalkEnd==0){
+            Cprint(dialogue, "Hai camminato oltre il traguardo, e quindi sei andato a sbattere contro il muro. Riprova!",1,1,1);
+        }else{
+            Cprint(dialogue, "Non hai raggiunto il traguardo. Premi INVIO per ritentare",1,1,1);
+        }
         nclearBuff();
         wmove(action,getcury(action), getcurx(action));
         nodelay(action,TRUE);
         while(wgetch(action)&&(time(NULL)-swait)<10);
         nclearBuff();
         nodelay(action,FALSE);
-        //aggiungere la condizione per tornare al menu
         mapArr=init_map(26,1);
         switch (sLevel)
         {
