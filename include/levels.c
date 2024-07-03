@@ -12,7 +12,8 @@ WINDOW *map;
 WINDOW *action;
 WINDOW *dialogue;
 char **mapArr;
-int* action_buffer, *var_buffer;
+int* action_buffer;
+linked_var *var_buffer;
 int curAction_size, var_size=2;
 Hero pg1;
 fullVariables correctVar[2];
@@ -44,6 +45,8 @@ void level_run(){
     action_run();
 }
 void freeabuffer(){
+    free(var_buffer);
     free(action_buffer);
     curAction_size=1;
+    var_size=1;
 }

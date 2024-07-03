@@ -34,6 +34,10 @@ typedef struct fullvar{
     char *name;
     char *descr;
 }fullVariables;
+typedef struct linkVar{
+    int type;
+    int actIndex;
+}linked_var;
 typedef struct fullact{
     actionCode id;
     char *name;
@@ -56,7 +60,8 @@ extern WINDOW *dialogue;
 extern Hero pg1;
 extern fullVariables correctVar[2];
 extern int var_size, curAction_size;
-extern int *action_buffer, *var_buffer;
+extern int *action_buffer;
+extern linked_var *var_buffer;
 extern char **mapArr;
 
 void printLvl();

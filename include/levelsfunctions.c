@@ -118,7 +118,7 @@ void print_action(){
                         }
                     }
                     else if(action_buffer[i]>=action_VAR){
-                        mvwprintw(action, auPad+actY, alPad+(3*indent),"int %s= %d;", correctVar[var_buffer[varPos]].name,action_buffer[i]-action_VAR);
+                        mvwprintw(action, auPad+actY, alPad+(3*indent),"int %s= %d;", correctVar[var_buffer[varPos].type].name,action_buffer[var_buffer[varPos].actIndex]-action_VAR);
                         varPos++;
                         actY++;
                     }else if(conLenght!=0){
@@ -194,7 +194,6 @@ void delete_action(int lim) {
             }
             wrefresh(action);
             confirmChoice = wgetch(action);
-
             switch (confirmChoice) {
                 case 'a':
                 case 'A':
@@ -294,9 +293,10 @@ void addone(){
                 box(dialogue,0,0);
                 Cprint(dialogue,correctAction[limited_action[i]].descr, 1,1,0);
             }else{
-                mvwprintw(action, auPad+i, alPad, "%s",correctAction[limited_action[i]].name);;
+                mvwprintw(action, auPad+i, alPad, "%s",correctAction[limited_action[i]].name);
             }
         }
+        wrefresh(action);
         nclearBuff();
         addchoice=wgetch(action);
         nclearBuff();
@@ -321,9 +321,13 @@ void addone(){
                 break;
             case '\n':
                 werase(action);
-                curAction_size++;
-                action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
-                action_buffer[curAction_size-1]=correctAction[limited_action[onFocus]].id;
+                if(correctAction[limited_action[onFocus]].id==action_VAR){
+                    addVar(&addBreak);
+                }else{
+                    curAction_size++;
+                    action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                    action_buffer[curAction_size-1]=correctAction[limited_action[onFocus]].id;
+                }
                 print_action();
                 wrefresh(action);
                 addBreak=0;
@@ -336,6 +340,112 @@ void addone(){
         }
     }
     //aggiungere reset dialoghi
+}
+void addVar(int *qAdd){
+    int limvar_size=1, value=0, vBreak=1;
+    int* lim_var;
+    switch(sLevel){
+        case 1:
+            limvar_size=1;
+            lim_var=(int *)realloc(lim_var, limvar_size*sizeof(int));
+            lim_var[0]=var_nSteps;
+            break;
+        // case 2:
+        //     limvar_size=0;
+        //     break;
+        // case 3:
+        //     break;
+        // case 4:
+        //     break;
+        // case 5:
+        //     break;
+        default:
+            limvar_size=0;
+            break;
+    }
+    if(limvar_size!=0){
+        int high=0, vChoice=0;
+        print_addVar(lim_var, limvar_size);
+        while(vBreak){
+            for(int i=0;i<limvar_size;i++){
+                if(high==i){
+                    wattron(action, A_REVERSE);
+                    mvwprintw(action, auPad+i, alPad, "%s", correctVar[lim_var[i]].name);
+                    wattroff(action, A_REVERSE);
+                    werase(dialogue);
+                    box(dialogue,0,0);
+                    Cprint(dialogue, correctVar[lim_var[i]].descr, 1,1,0);
+                }else{
+                    mvwprintw(action, auPad+i, alPad, "%s", correctAction[lim_var[i]].name);
+                }
+            }
+            wrefresh(action);
+            nclearBuff();
+            vChoice=wgetch(action);
+            nclearBuff();
+            switch (vChoice)
+            {
+                case 'w':
+                case 'W':
+                case KEY_UP:
+                    if(high==0){
+                        high=limvar_size-1;
+                    }else{
+                        high--;
+                    }
+                    break;
+                case 's':
+                case 'S':
+                case KEY_DOWN:
+                    if(high==limvar_size-1){
+                        high=0;
+                    }else{
+                        high++;
+                    }
+                    break;
+                case '\n':
+                    curAction_size++;
+                    action_buffer[curAction_size-1]=addValue()+action_VAR;
+                    var_size++;
+                    var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
+                    var_buffer[var_size-1].type=lim_var[high];
+                    var_buffer[var_size-1].actIndex=curAction_size-1;
+                    vBreak=0;
+                    *qAdd=0;
+                    break;
+                case 'q':
+                case 'Q':
+                    return;
+                    break;
+            }
+        }
+    }
+}
+void print_addVar(int *var_limited, int lVar_size){
+    int isFound=1;
+    werase(action);
+    box(action,0,0);
+    for(int i=0;i<lVar_size;i++){
+        for(int j=0;isFound&&j<2;j++){
+            if(var_limited[i]==correctVar[j].id){
+                mvwprintw(action, auPad+i, alPad, "%s", correctVar[var_limited[i]].name);
+                isFound=0;
+            }
+        }
+        isFound=1;
+    }
+    wrefresh(action);
+}
+void print_addValue(int *val_limited, int lVal_size){
+    werase(action);
+    box(action,0,0);
+    for(int i=0;i<lVal_size;i++){
+        mvwprintw(action, auPad+i, alPad, "%d", val_limited[i]);
+    }
+    wrefresh(action);
+}
+int addValue(){
+
 }
 void run_actions(int *fexit){
     int i=1,vidx=0;
@@ -357,9 +467,9 @@ void run_actions(int *fexit){
                     break;
                 default:
                     if(action_buffer[i]>=action_VAR){
-                        switch(var_buffer[vidx]){
+                        switch(var_buffer[vidx].type){
                             case var_nSteps:
-                                set_steps(action_buffer[i]-action_VAR);
+                                set_steps(action_buffer[var_buffer[vidx].actIndex]-action_VAR);
                                 break;
                         }
                         vidx++;
@@ -571,6 +681,9 @@ int checkEndLvl(){
                     break;
             }
         }
+        freeabuffer();
+        free_actionBND();
+        free_varBND();
         nodelay(stdscr,TRUE);
         nclearBuff();
         while(getch()!='\n'&&(time(NULL)-swait)<10);

@@ -6,7 +6,6 @@
 #include <string.h>
 #include <time.h>
 
-int fSelect;
 int menupos_ch[3], selectpos[5];
 static char* menu_choice[]={"[NUOVA PARTITA]","[SELEZIONA LIVELLO]","[ESCI]"};
 static char* lvl_choice[]={"Livello 1","Livello 2","Livello 3","Livello 4","Livello 5"};
@@ -19,7 +18,7 @@ static char* logo[]={
 "  \\_____\\___/ \\__,_|\\___| /_/    \\_\\__,_| \\_/ \\___|_| |_|\\__|\\__,_|_|  \\___|"
 };
 
-int loadSaves(){
+void loadSaves(){
     //se i livelli saranno piu di 9 modificare grandezza lvltxt e terminatore
     char *path=getPath(), lvltxt[2];
     strcat(path, "\\saves\\save.sav");
@@ -30,10 +29,8 @@ int loadSaves(){
         lvlToDo=atoi(lvltxt);
         fclose(fp);
         free(path);
-        return 1;
     }else{
         fclose(fp);
-        return 0;
     }
 }
 void createSaves(){
@@ -47,24 +44,17 @@ void createSaves(){
 void init_menu(){
     int midScr=getmaxx(stdscr)/2,midCPos=(getmaxy(stdscr)/2)+2;
     if(lvlToDo==0){
-        fSelect=loadSaves();
+        loadSaves();
     }
     werase(stdscr);
     box(stdscr,0,0);
     artHprint(stdscr,160,logo,6);
-    if(fSelect!=0){
-        menupos_ch[0]=midCPos-4;
-        menupos_ch[1]=midCPos;
-        menupos_ch[2]=midCPos+4;
-        mvwprintw(stdscr,menupos_ch[0],midScr-(strlen(menu_choice[0])/2),"%s",menu_choice[0]);
-        mvwprintw(stdscr,menupos_ch[1],midScr-(strlen(menu_choice[1])/2),"%s",menu_choice[1]);
-        mvwprintw(stdscr,menupos_ch[2],midScr-(strlen(menu_choice[2])/2),"%s",menu_choice[2]);
-    }else{
-        menupos_ch[0]=midCPos-2;
-        menupos_ch[2]=midCPos+2;
-        mvwprintw(stdscr,menupos_ch[0],midScr-(strlen(menu_choice[0])/2),"%s",menu_choice[0]);
-        mvwprintw(stdscr,menupos_ch[2],midScr-(strlen(menu_choice[2])/2),"%s",menu_choice[2]);
-    }
+    menupos_ch[0]=midCPos-4;
+    menupos_ch[1]=midCPos;
+    menupos_ch[2]=midCPos+4;
+    mvwprintw(stdscr,menupos_ch[0],midScr-(strlen(menu_choice[0])/2),"%s",menu_choice[0]);
+    mvwprintw(stdscr,menupos_ch[1],midScr-(strlen(menu_choice[1])/2),"%s",menu_choice[1]);
+    mvwprintw(stdscr,menupos_ch[2],midScr-(strlen(menu_choice[2])/2),"%s",menu_choice[2]);
     wrefresh(stdscr);
 }
 void menu(int *quit){

@@ -90,7 +90,6 @@ int getEndif(int posi){
     }
     return posi-1;
 }
-
 void walk(){
     int i=0;
     if(checkObstacle()!=1){

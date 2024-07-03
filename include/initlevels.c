@@ -11,7 +11,7 @@ char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
 fullAction correctAction[12];
 Pos choicePos[4];
 int alPad=5, auPad=3;
-int curAction_pos, levelLimitation=0;
+int levelLimitation=0;
 
 char** init_map(int lPad, int uPad){
     FILE *fp;
@@ -162,11 +162,9 @@ void init_action(){
     bond_action();
     bondVar();
     action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
-    curAction_pos=0;
     getmaxyx(action,vSize,hSize);
     action_buffer[0]=action_START;
     levelLimitation=1;
-    curAction_pos++;
     switch (sLevel)
     {
         case 1:
@@ -174,10 +172,10 @@ void init_action(){
             var_size=1;
             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
             action_buffer[1]=action_VAR+2;
-            var_buffer=(int *)realloc(var_buffer, var_size*sizeof(int));
-            var_buffer[0]=var_nSteps;
-            mvwprintw(action, auPad+1, alPad+3, "int %s = %d;", correctVar[var_buffer[0]].name,action_buffer[1]-action_VAR);
-            curAction_pos++;
+            var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
+            var_buffer[0].type=var_nSteps;
+            var_buffer[0].actIndex=curAction_size-1;
+            mvwprintw(action, auPad+1, alPad+3, "int %s = %d;", correctVar[var_buffer[0].type].name,action_buffer[1]-action_VAR);
             levelLimitation=2;
             break;
         case 2:
@@ -185,10 +183,10 @@ void init_action(){
             var_size=1;
             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
             action_buffer[1]=action_VAR+2;
-            var_buffer=(int *)realloc(var_buffer, var_size*sizeof(int));
-            var_buffer[0]=var_nSteps;
-            mvwprintw(action, auPad+1, alPad+3, "int %s = %d;", correctVar[var_buffer[0]].name,action_buffer[1]-action_VAR);
-            curAction_pos++;
+            var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
+            var_buffer[0].type=var_nSteps;
+            var_buffer[0].actIndex=curAction_size-1;
+            mvwprintw(action, auPad+1, alPad+3, "int %s = %d;", correctVar[var_buffer[0].type].name,action_buffer[1]-action_VAR);
             levelLimitation=2;
             break;
         default:
