@@ -214,6 +214,10 @@ void delete_action(int lim) {
         if (highlight == 0) {
             halfY = getmaxy(dialogue) / 2;
             halfX = getmaxx(dialogue) / 2;
+            if(action_buffer[curAction_size-1]>=action_VAR){
+                var_size--;
+                var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
+            }
             curAction_size--;
             action_buffer = (int *)realloc(action_buffer, curAction_size * sizeof(int));
             napms(500);
@@ -342,8 +346,8 @@ void addone(){
     //aggiungere reset dialoghi
 }
 void addVar(int *qAdd){
-    int limvar_size=1, value=0, vBreak=1;
-    int* lim_var;
+    int limvar_size=1, value=0, vBreak=1, var_val=0;
+    int* lim_var=NULL;
     switch(sLevel){
         case 1:
             limvar_size=1;
@@ -404,14 +408,20 @@ void addVar(int *qAdd){
                     }
                     break;
                 case '\n':
-                    curAction_size++;
-                    action_buffer[curAction_size-1]=addValue()+action_VAR;
-                    var_size++;
-                    var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
-                    var_buffer[var_size-1].type=lim_var[high];
-                    var_buffer[var_size-1].actIndex=curAction_size-1;
-                    vBreak=0;
-                    *qAdd=0;
+                    var_val=addValue();
+                    if(var_val!=0){
+                        curAction_size++;
+                        action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                        action_buffer[curAction_size-1]=var_val+action_VAR;
+                        var_size++;
+                        var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
+                        var_buffer[var_size-1].type=lim_var[high];
+                        var_buffer[var_size-1].actIndex=curAction_size-1;
+                        vBreak=0;
+                        *qAdd=0;
+                    }else{
+                        print_addVar(lim_var, limvar_size);
+                    }
                     break;
                 case 'q':
                 case 'Q':
@@ -436,16 +446,79 @@ void print_addVar(int *var_limited, int lVar_size){
     }
     wrefresh(action);
 }
-void print_addValue(int *val_limited, int lVal_size){
+void print_addValue(int *val_limit, int lVal_size){
     werase(action);
     box(action,0,0);
     for(int i=0;i<lVal_size;i++){
-        mvwprintw(action, auPad+i, alPad, "%d", val_limited[i]);
+        mvwprintw(action, auPad+i, alPad, "%d", val_limit[i]);
     }
     wrefresh(action);
 }
 int addValue(){
-
+    int valBreak=1, val_size=0, focus=0, valCho=0;
+    int *val_lim=NULL;
+    switch(sLevel){
+        case 1:
+            val_size=2;
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+    }
+    if(val_size!=0){
+        val_lim=(int *)realloc(val_lim, val_size*sizeof(int));
+        for(int i=0;i<val_size;i++){
+            val_lim[i]=i+1;
+        }
+        print_addValue(val_lim, val_size);
+        while(valBreak){
+            for(int i=0;i<val_size;i++){
+                if(i==focus){
+                    wattron(action,A_REVERSE);
+                    mvwprintw(action, auPad+i,alPad,"%d", val_lim[i]);
+                    wattroff(action, A_REVERSE);
+                }else{
+                    mvwprintw(action, auPad+i,alPad,"%d", val_lim[i]);
+                }
+            }
+            nclearBuff();
+            valCho=wgetch(action);
+            nclearBuff();
+            switch (valCho)
+            {
+                case 'W':
+                case 'w':
+                case KEY_UP:
+                    if(focus==0){
+                        focus=val_size-1;
+                    }else{
+                        focus--;
+                    }
+                    break;
+                case 'S':
+                case 's':
+                case KEY_DOWN:
+                    if(focus==val_size-1){
+                        focus=0;
+                    }else{
+                        focus++;
+                    }
+                    break;
+                case '\n':
+                    return val_lim[focus];
+                    break;
+                case 'q':
+                case 'Q':
+                    return 0;
+                    break;
+            }
+        }
+    }
 }
 void run_actions(int *fexit){
     int i=1,vidx=0;
@@ -681,9 +754,6 @@ int checkEndLvl(){
                     break;
             }
         }
-        freeabuffer();
-        free_actionBND();
-        free_varBND();
         nodelay(stdscr,TRUE);
         nclearBuff();
         while(getch()!='\n'&&(time(NULL)-swait)<10);
