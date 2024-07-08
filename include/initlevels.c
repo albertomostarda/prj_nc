@@ -41,7 +41,7 @@ char** init_map(int lPad, int uPad){
             break;
     }
     strcat(fullpath, exePath);
-    if (strlen(fullpath)!='\\')
+    if (fullpath[strlen(fullpath)]-1!='\\')
     {
         fullpath[strlen(fullpath)]='\\';
     }

@@ -1,8 +1,13 @@
 #ifndef FEATURES_H
 #define FEATURES_H
+#include <windows.h>
 #include <ncurses/ncurses.h>
 
 typedef enum fStatus{fSTART, fRUN} state_t;
+typedef struct cSizes{
+    SHORT con_width;
+    SHORT con_height;
+} ConsoleSize;
 //typedef enum customPos{custDEFAULT, custTOP, custBOT} custPos;
 extern WINDOW *win;
 extern const int max_path;
@@ -25,6 +30,6 @@ char* getPath(); // Da cambiare in caso di passaggio a windows
 int fCountLines(FILE *tmpFile);
 int fCountCols(FILE *tmpFile);
 void initColors();
-void freeVar();
+// void resize_handler();
 
 #endif

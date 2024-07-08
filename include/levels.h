@@ -53,13 +53,17 @@ typedef struct player{
     int rotation;
     char **art;
 } Hero;
+typedef struct passThread{
+    WINDOW *activeWin;
+    int *gLight;
+} ThreadParam;
 
 extern WINDOW *map;
 extern WINDOW *action;
 extern WINDOW *dialogue;
 extern Hero pg1;
 extern fullVariables correctVar[2];
-extern int var_size, curAction_size;
+extern int var_size, curAction_size, needDReload;
 extern int *action_buffer;
 extern linked_var *var_buffer;
 extern char **mapArr;

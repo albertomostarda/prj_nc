@@ -14,7 +14,6 @@
 //Per tornare a un punto specifico dopo il signal potrei utilizzare il setjmp e longjmp implementando la libreria setjmp.h
 //Mi devo ricordare di implementare una var globale per tenere traccia dello funzione in cui si trova il programma
 //state_t curState;
-
 const int max_path=8192;
 static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD. Buona Programmazione";
 char *pContinue="Premi INVIO per continuare";
@@ -22,23 +21,56 @@ static char *sizeWarn="Per favore evita di ridimensionare la finestra del termin
 // Giacomo 5-1, avevo la necessita' di un testo abbastanza grande per il testing;
 static char *testBible="Ora a voi, ricchi: piangete e gridate per le sciagure che cadranno su di voi! Le vostre ricchezze sono marce, i vostri vestiti sono mangiati dalle tarme. Il vostro oro e il vostro argento sono consumati dalla ruggine, la loro ruggine si alzerà ad accusarvi e divorerà le vostre carni come un fuoco.";
 int sLevel, rStatus, lvlToDo=0;
+ConsoleSize defaultSize;
+jmp_buf env;
+
+// void resize_handler(){
+//     time_t sContinue;
+//     SHORT cols = 0, rows = 0;
+//     CONSOLE_SCREEN_BUFFER_INFO csbi;
+//     SMALL_RECT def={0,0,160,35};
+
+//     while (1) {
+//         GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+//         rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+//         cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+
+//         if (rows != 35 || cols != 160) {
+//             COORD coord = { 160, 35 };
+//             SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+//             SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &def);
+//             system("MODE 160,35");
+//         }
+
+//         Sleep(100);
+//     }
+// }
 void start(){
+    // HANDLE resizeThread;
+    // DWORD tid;
     time_t start_time;
     int halfContinue=strlen(pContinue)/2;
-    system("MODE 160,35");
+    defaultSize.con_height=35;
+    defaultSize.con_width=160;
     SetConsoleTitle("Code Adventure");
-    //system("resize -s 35 160 >/dev/null"); //per windows;
+    //system("resize -s 35 160 >/dev/null"); //per linux;
     //signal(SIGWINCH, handle_resize);
+    system("MODE 160,35");
+    
     initscr();
     cbreak();
     noecho();
     start_color();
     initColors();
+    wresize(stdscr,35,160);
     refresh();
+    // resizeThread=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)resize_handler,NULL,0,&tid);
+    //while(getchar()!='q');
     //win=newwin(35,160,0,0);
     box(stdscr,0,0);
     wrefresh(stdscr);
     rStatus=1;
+    
     Cprint(stdscr,initTxt,20,0,1);
     //Hprint(win, pContinue,20,0);
     mvwprintw(stdscr,24,(getmaxx(stdscr)/2)-halfContinue,"%s", pContinue);
@@ -60,6 +92,7 @@ void start(){
     refresh();
 }
 void run(){
+    setjmp(env);
     int isRun=1;
     while(isRun){
         switch(rStatus){
