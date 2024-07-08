@@ -3,10 +3,10 @@
 #include <windows.h>
 
 extern char **dialogue_buffer;
-extern int dialBuff_size;
+extern int dialBuff_size, dialPos;
 
 void reloadDialogue(LPVOID *data);
-void printDialogue();
+void printOneDLine();
 void loadDialogue();
 char* getDialPath();
 

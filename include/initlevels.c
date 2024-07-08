@@ -21,7 +21,7 @@ char** init_map(int lPad, int uPad){
     for(int i=0;i<max_path;i++){
         fullpath[i]='\0';
     }
-    int fLines=0, fCols=0,wBegy=0, wBegx=0;
+    int fLines=0, fCols=0,wBegy=0, wBegx=0, lenght=0;
     switch (sLevel)
     {
         case 1:
@@ -41,7 +41,7 @@ char** init_map(int lPad, int uPad){
             break;
     }
     strcat(fullpath, exePath);
-    if (fullpath[strlen(fullpath)]-1!='\\')
+    if (fullpath[strlen(fullpath)]!='\\')
     {
         fullpath[strlen(fullpath)]='\\';
     }
@@ -50,9 +50,9 @@ char** init_map(int lPad, int uPad){
     if(fp==NULL){
         mvwprintw(dialogue, 1,1, "File non trovato");
         wrefresh(dialogue);
-        napms(5000);
         free(fullpath);
-        getch();
+        return 0;
+        //aggiungere chiusura/ritorno al Menu
     }
     fLines=fCountLines(fp);
     //fCols=fCountCols(fp);
@@ -64,11 +64,11 @@ char** init_map(int lPad, int uPad){
     }
    for (int i = 0; i < fLines; i++) {
         if (fgets(buffer, sizeof(buffer), fp) != NULL) {
-            if(buffer[strlen(buffer)-1]=='\n'){
-                buffer[strlen(buffer)-1]='\0';
+            lenght = strlen(buffer);
+            if(buffer[lenght-1]=='\n'){
+                buffer[lenght-1]='\0';
             }
-            int length = strlen(buffer);
-            Mmap[i] = (char*)malloc(length * sizeof(char));
+            Mmap[i] = (char*)malloc(lenght * sizeof(char));
             if (Mmap[i] != NULL) {
                 strcpy(Mmap[i], buffer);
             }

@@ -3,6 +3,7 @@
 #include "initlevels.h"
 #include "levelsfunctions.h"
 #include "dialfunctions.h"
+#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +19,7 @@ linked_var *var_buffer;
 int curAction_size, var_size=2, needDReload=0;
 Hero pg1;
 fullVariables correctVar[2];
+HANDLE dialogueThread;
 chtype blank=219|COLOR_PAIR(5);
 chtype walls=219|COLOR_PAIR(2);
 chtype enemy=219|COLOR_PAIR(3);
@@ -25,7 +27,6 @@ chtype road=219|COLOR_PAIR(4);
 chtype goal=219|COLOR_PAIR(6);
 
 void printLvl(){
-    HANDLE dialogueThread;
     ThreadParam passingTd;
     map=newwin(24,110,0,0);
     action=newwin(35,50,0,110);
@@ -41,10 +42,11 @@ void printLvl(){
     wrefresh(map);
     wrefresh(action);
     wrefresh(dialogue);
-    //dialogueThread=CreateThread(NULL,0, reloadDialogue, &passingTd,0,NULL);
     pg1.rotation=0;
     mapArr=init_map(26,1);
     init_action();
+    loadDialogue();
+    dialogueThread=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE) reloadDialogue, &passingTd,0,NULL);
 }
 void level_run(){
     action_run();

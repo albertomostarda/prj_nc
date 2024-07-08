@@ -105,6 +105,8 @@ void run(){
                 level_run();
                 createSaves();
                 rStatus=1;
+                TerminateThread(dialogueThread, 0);
+                CloseHandle(dialogueThread);
                 break;
         }
     }

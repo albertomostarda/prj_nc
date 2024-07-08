@@ -1,5 +1,6 @@
 #ifndef LEVELS_H
 #define LEVELS_H
+#include <windows.h>
 #include <ncurses/ncurses.h>
 
 //pulire mapArr
@@ -67,6 +68,7 @@ extern int var_size, curAction_size, needDReload;
 extern int *action_buffer;
 extern linked_var *var_buffer;
 extern char **mapArr;
+extern HANDLE dialogueThread;
 
 void printLvl();
 void level_run();
