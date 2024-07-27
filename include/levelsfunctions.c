@@ -603,14 +603,14 @@ void action_run(){
                 break;
             case 'P':
             case 'p':
-                if(dialPos>0){
+                if(dialPos>0&&isEmpty==0){
                     dialPos--;
                 }
                 printOneDLine();
                 break;
             case 'N':
             case 'n':
-                if(dialPos<dialBuff_size-1){
+                if(dialPos<dialBuff_size-1&&isEmpty==0){
                     dialPos++;
                 }
                 printOneDLine();

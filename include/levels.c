@@ -19,7 +19,7 @@ linked_var *var_buffer;
 int curAction_size, var_size=2, needDReload=0;
 Hero pg1;
 fullVariables correctVar[2];
-HANDLE dialogueThread;
+// HANDLE dialogueThread;
 chtype blank=219|COLOR_PAIR(5);
 chtype walls=219|COLOR_PAIR(2);
 chtype enemy=219|COLOR_PAIR(3);
@@ -46,14 +46,20 @@ void printLvl(){
     mapArr=init_map(26,1);
     init_action();
     loadDialogue();
-    dialogueThread=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE) reloadDialogue, &passingTd,0,NULL);
+    dialPos=0;
+    printOneDLine();
+    //dialogueThread=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE) reloadDialogue, &passingTd,0,NULL);
 }
 void level_run(){
     action_run();
 }
 void freeabuffer(){
-    free(var_buffer);
-    free(action_buffer);
-    curAction_size=1;
-    var_size=1;
+    // free(var_buffer);
+    // free(action_buffer);
+    // curAction_size=1;
+    // var_size=1;
+    for(int i=0;i<12;i++){
+        free(correctAction[i].name);
+        free(correctAction[i].descr);
+    }
 }

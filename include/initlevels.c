@@ -16,36 +16,43 @@ int levelLimitation=0;
 char** init_map(int lPad, int uPad){
     FILE *fp;
     char *exePath=getPath();
-    char fileName[25], buffer[160];
+    char *fileName[]={
+        "resources\\levelone.txt",
+        "resources\\leveltwo.txt",
+        "resources\\levelthree.txt",
+        "resources\\levelfour.txt",
+        "resources\\levelfive.txt"
+    };
+    char buffer[160];
     char *fullpath=(char*)malloc(max_path);
     for(int i=0;i<max_path;i++){
         fullpath[i]='\0';
     }
     int fLines=0, fCols=0,wBegy=0, wBegx=0, lenght=0;
-    switch (sLevel)
-    {
-        case 1:
-            strcpy(fileName, "resources\\levelone.txt");
-            break;
-        case 2:
-            strcpy(fileName, "resources\\leveltwo.txt");
-            break;
-        case 3:
-            strcpy(fileName, "resources\\levelthree.txt");
-            break;
-        case 4:
-            strcpy(fileName, "resources\\levelfour.txt");
-            break;
-        case 5:
-            strcpy(fileName, "resources\\levelfive.txt");
-            break;
-    }
+    // switch (sLevel)
+    // {
+    //     case 1:
+    //         strcpy(fileName, "resources\\levelone.txt");
+    //         break;
+    //     case 2:
+    //         strcpy(fileName, "resources\\leveltwo.txt");
+    //         break;
+    //     case 3:
+    //         strcpy(fileName, "resources\\levelthree.txt");
+    //         break;
+    //     case 4:
+    //         strcpy(fileName, "resources\\levelfour.txt");
+    //         break;
+    //     case 5:
+    //         strcpy(fileName, "resources\\levelfive.txt");
+    //         break;
+    // }
     strcat(fullpath, exePath);
     if (fullpath[strlen(fullpath)]!='\\')
     {
         fullpath[strlen(fullpath)]='\\';
     }
-    strcat(fullpath,fileName);
+    strcat(fullpath,fileName[sLevel-1]);
     fp=fopen(fullpath,"r");
     if(fp==NULL){
         mvwprintw(dialogue, 1,1, "File non trovato");
@@ -108,8 +115,8 @@ void bond_action(){
     strcpy(correctAction[2].descr, "Serve per chiudere il codice che fa parte del 'SE'.");
     correctAction[3].name = (char *)realloc(correctAction[3].name,strlen("MENTRE") + 1);
     strcpy(correctAction[3].name, "MENTRE");
-    correctAction[3].descr = (char *)realloc(correctAction[3].descr,strlen("Il codice al suo interno verra' ripetuto fin quando la condizone e' VERA.") + 1);
-    strcpy(correctAction[3].descr, "Il codice al suo interno verra' ripetuto fin quando la condizone e' VERA.");
+    correctAction[3].descr = (char *)realloc(correctAction[3].descr,strlen("Il codice al suo interno verra' ripetuto fin quando la condizione e' VERA.") + 1);
+    strcpy(correctAction[3].descr, "Il codice al suo interno verra' ripetuto fin quando la condizione e' VERA.");
     correctAction[4].name = (char *)realloc(correctAction[4].name,strlen("FAI") + 1);
     strcpy(correctAction[4].name, "FAI");
     correctAction[4].descr = (char *)realloc(correctAction[4].descr,strlen("Il codice all'interno viene eseguito almeno una volta e poi se la condizione e' VERA verra' ripetuto.") + 1);

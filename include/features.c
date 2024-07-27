@@ -21,7 +21,7 @@ static char *sizeWarn="Per favore evita di ridimensionare la finestra del termin
 // Giacomo 5-1, avevo la necessita' di un testo abbastanza grande per il testing;
 static char *testBible="Ora a voi, ricchi: piangete e gridate per le sciagure che cadranno su di voi! Le vostre ricchezze sono marce, i vostri vestiti sono mangiati dalle tarme. Il vostro oro e il vostro argento sono consumati dalla ruggine, la loro ruggine si alzerà ad accusarvi e divorerà le vostre carni come un fuoco.";
 int sLevel, rStatus, lvlToDo=0;
-ConsoleSize defaultSize;
+//ConsoleSize defaultSize;
 jmp_buf env;
 
 // void resize_handler(){
@@ -50,8 +50,8 @@ void start(){
     // DWORD tid;
     time_t start_time;
     int halfContinue=strlen(pContinue)/2;
-    defaultSize.con_height=35;
-    defaultSize.con_width=160;
+    // defaultSize.con_height=35;
+    // defaultSize.con_width=160;
     SetConsoleTitle("Code Adventure");
     //system("resize -s 35 160 >/dev/null"); //per linux;
     //signal(SIGWINCH, handle_resize);
@@ -105,8 +105,8 @@ void run(){
                 level_run();
                 createSaves();
                 rStatus=1;
-                TerminateThread(dialogueThread, 0);
-                CloseHandle(dialogueThread);
+                // TerminateThread(dialogueThread, 0);
+                // CloseHandle(dialogueThread);
                 break;
         }
     }
