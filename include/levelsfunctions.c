@@ -6,6 +6,8 @@
 #include <ncurses/ncurses.h>
 #include <time.h>
 
+int dReload=0;
+
 void printcolor_str(WINDOW *tWin,char *colStr, int pLines, int tmpY){
     for(int i=0;i<pLines;i++){
         printcolor_char(tWin,colStr[i],i, tmpY);
@@ -50,10 +52,20 @@ void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
     }
 }
 void print_action(){
-    int conLenght=0, actY=0, indent=1, isCond=0,canGo=1, checkEnd=0, varPos=0;//
+    int conLenght=0, actY=0, indent=1, isCond=0,canGo=1, checkEnd=0, varPos=0, endStart=0;//
     werase(action);
     box(action, 0,0);
     for(int i=0;i<curAction_size&&canGo;i++){
+        if(endStart){
+            werase(dialogue);
+            box(dialogue,0,0);
+            Cprint(dialogue, "Non puoi inserire altre cose dopo il FINE_PROGRAMMA.",1,1,0);
+            curAction_size--;
+            action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+            endStart=0;
+            dReload=1;
+        }
+        else{
             switch (action_buffer[i])
             {
                 case action_START:
@@ -70,7 +82,7 @@ void print_action(){
                     }
                     break;
                 case action_ENDIF:
-                    checkEnd=endError(i+1);
+                    checkEnd=endIFError(i+1);
                     if(isCond>=0){
                         if(checkEnd==0){
                             if(indent>1){
@@ -85,6 +97,7 @@ void print_action(){
                             curAction_size--;
                             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
                             print_action();
+                            dReload=1;
                         }
                     }else{
                         werase(dialogue);
@@ -92,6 +105,7 @@ void print_action(){
                         Cprint(dialogue, "Devi inserire una condizione valida",1,1,0);
                         curAction_size--;
                         action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                        dReload=1;
                     }
                     break;
                 case action_ENDSTART:
@@ -101,9 +115,11 @@ void print_action(){
                         Cprint(dialogue, "Il 'FINE_PROGRAMMA' VA inserito alla fine del programma",1,1,0);
                         curAction_size--;
                         action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                        dReload=1;
                     }else{
                         mvwprintw(action, auPad+actY, alPad,"%s", correctAction[action_buffer[i]].name);
                         actY++;
+                        endStart=1;
                     }
                     break;
                 default:
@@ -123,6 +139,7 @@ void print_action(){
                             werase(dialogue);
                             box(dialogue, 0, 0);
                             Cprint(dialogue,"Questa e' una condizione e deve essere inserita solo dopo un 'IF','WHILE,'DO-WHILE'",1,1,0);
+                            dReload=1;
                         }
                     }
                     else if(action_buffer[i]>=action_VAR){
@@ -138,6 +155,7 @@ void print_action(){
                     }
                     break;
             }
+        }
         wrefresh(action);
     }
 }
@@ -147,6 +165,7 @@ void ifError(){
     Cprint(dialogue,"Non puoi inserire due 'IF' di seguito",1,1,0);
     curAction_size--;
     action_buffer=(int *)realloc(action_buffer,curAction_size*sizeof(int));
+    dReload=1;
 }
 int conditionError(int lastPos){
     if(action_buffer[lastPos]<=action_ENDSTART||action_buffer[lastPos]>=action_VAR){
@@ -159,6 +178,7 @@ int conditionError(int lastPos){
         mvwprintw(dialogue,halfY+1, halfX-txtLen, "Per favore inseriscine una valida.");
         wmove(dialogue, 3,1);
         wrefresh(dialogue);
+        dReload=1;
         curAction_size--;
         action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
         print_action();
@@ -545,10 +565,10 @@ void run_actions(int *fexit){
                     i=if_run(action_buffer[i+1],i+1);
                     break;
                 case action_WHILE:
-                    while_run(action_buffer[i+1],i+1);
+                    i=while_run(action_buffer[i+1],i+1);
                     break;
                 case action_DO:
-                    do_run(action_buffer[i+1],i+1);
+                    i=do_run(action_buffer[i+1],i+1);
                     break;
                 case action_WALK:
                     walk();
@@ -560,7 +580,12 @@ void run_actions(int *fexit){
                     rotcclock();
                     break;
                 case action_attack:
-                    attack();
+                    if(attack()){
+                        werase(dialogue);
+                        box(dialogue,0,0);
+                        Cprint(dialogue, "Non puoi attaccare a vuoto!",1,1,0);
+                        dReload=1;
+                    }
                     break;
                 default:
                     if(action_buffer[i]>=action_VAR){
@@ -583,6 +608,7 @@ void run_actions(int *fexit){
         werase(dialogue);
         box(dialogue,0,0);
         Cprint(dialogue, "Devi inserire alla fine del programma 'FINE_PROGRAMMA' per farlo funzionare.",1,1,1);
+        dReload=1;
     }
 }
 void action_run(){
@@ -624,7 +650,12 @@ void action_run(){
             case '\n':
                 action_subrun(highlight,&fBreak);
                 if(fBreak){
-                    printOneDLine();
+                    if(dReload){
+                        reloadDialogue();
+                        printOneDLine();
+                    }else{
+                        printOneDLine();
+                    }
                 }
                 break;
             case 'P':
@@ -693,7 +724,7 @@ void print_map(WINDOW *tmp){
         wrefresh(tmp);
     }
 }
-int endError(int lPos){
+int endIFError(int lPos){
     int ifCount=0;
     for(int i=0;i<lPos;i++){
         if(action_buffer[i]==action_IF){
@@ -763,6 +794,8 @@ int checkEndLvl(){
         switch (sLevel)
         {
             case 1:
+            case 2:
+            case 3:
                 pg1.rotation=0;
                 break;
         }
@@ -803,4 +836,15 @@ int checkEndLvl(){
         nodelay(stdscr,FALSE);
         return 0;
     }
+}
+void reloadDialogue(){
+    time_t countDwn=time(NULL);
+    int inputCh=0;
+    SBHprint(dialogue, pContinue,1);
+    nodelay(stdscr,TRUE);
+    nclearBuff();
+    while(getch()!='\n'&&(time(NULL)-countDwn)>10);
+    nclearBuff();
+    nodelay(stdscr,FALSE);
+    dReload=0;
 }

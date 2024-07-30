@@ -5,6 +5,7 @@
 #include <ncurses/ncurses.h>
 
 int nSteps,nRot, isWalkEnd=1; // non ancora usata
+Pos lastEnemy={0,0};
 
 int checkObstacle(){
     switch(pg1.rotation){
@@ -55,13 +56,13 @@ int if_run(int condition, int condPos){
         switch (action_buffer[idx])
         {
             case action_IF:
-                if_run(action_buffer[idx+1], idx+1);
+                idx=if_run(action_buffer[idx+1], idx+1);
                 break;
             case action_WHILE:
-                while_run(action_buffer[idx+1], idx+1);
+                idx=while_run(action_buffer[idx+1], idx+1);
                 break;
             case action_DO:
-                do_run(action_buffer[idx+1],idx+1);
+                idx=do_run(action_buffer[idx+1],idx+1);
                 break;
             case action_WALK:
                 walk();
@@ -153,14 +154,135 @@ void walk(){
         isWalkEnd=0;
     }
 }
-void while_run(int condition, int condPos){
-
+int while_run(int condition, int condPos){
+    int idx=condPos+1, isClear=0;
+    switch (condition)
+    {
+        case action_isObstacle:
+            isClear=checkObstacle();
+            break;
+        case action_isEnemy:
+            isClear=checkEnemy();
+            break;
+        // nel caso di piu' condizioni
+    }
+    while(isClear){
+        switch (condition)
+        {
+            case action_isObstacle:
+                isClear=checkObstacle();
+                break;
+            case action_isEnemy:
+                isClear=checkEnemy();
+                break;
+            // nel caso di piu' condizioni
+        }
+        while(action_buffer[idx]!=action_ENDCICLE){
+            switch (action_buffer[idx])
+            {
+                case action_IF:
+                    idx=if_run(action_buffer[idx+1], idx+1);
+                    break;
+                case action_WHILE:
+                    idx=while_run(action_buffer[idx+1], idx+1);
+                    break;
+                case action_DO:
+                    idx=do_run(action_buffer[idx+1],idx+1);
+                    break;
+                case action_WALK:
+                    walk();
+                    break;
+                case action_LROTATE:
+                    rotcclock();
+                    break;
+                case action_RROTATE:
+                    rotclock();
+                    break;
+                case action_attack:
+                    attack();
+                    break;
+                default:
+                    if(action_buffer[idx]>=action_VAR){
+                        set_steps(action_buffer[idx]-action_VAR);
+                    }
+                    break;
+            }
+            idx++;
+        }
+    }
+    if(action_buffer[idx]==action_ENDCICLE){
+        return idx-1;
+    }else{
+        //return getEndif(condPos+1);
+    }
 }
-void do_run(int condition, int condPos){
-
+int do_run(int condition, int condPos){
+    int idx=condPos+1, isClear=1;
+    
+    while(isClear){
+        while(action_buffer[idx]!=action_ENDCICLE){
+            switch (action_buffer[idx])
+            {
+                case action_IF:
+                    idx=if_run(action_buffer[idx+1], idx+1);
+                    break;
+                case action_WHILE:
+                    idx=while_run(action_buffer[idx+1], idx+1);
+                    break;
+                case action_DO:
+                    idx=do_run(action_buffer[idx+1],idx+1);
+                    break;
+                case action_WALK:
+                    walk();
+                    break;
+                case action_LROTATE:
+                    rotcclock();
+                    break;
+                case action_RROTATE:
+                    rotclock();
+                    break;
+                case action_attack:
+                    attack();
+                    break;
+                default:
+                    if(action_buffer[idx]>=action_VAR){
+                        set_steps(action_buffer[idx]-action_VAR);
+                    }
+                    break;
+            }
+            idx++;
+        }
+        switch (condition)
+        {
+            case action_isObstacle:
+                isClear=checkObstacle();
+                break;
+            case action_isEnemy:
+                isClear=checkEnemy();
+                break;
+            // nel caso di piu' condizioni
+        }
+    }
+    if(action_buffer[idx]==action_ENDCICLE){
+        return idx-1;
+    }else{
+        //return getEndif(condPos+1);
+    }
 }
-void attack(){
 
+int attack(){
+    if(checkEnemy){
+        int curEnemyHP=mapArr[lastEnemy.y][lastEnemy.x]-5;
+        if(curEnemyHP-1>=0){
+            mapArr[lastEnemy.y][lastEnemy.x]--;
+        }else{
+            mapArr[lastEnemy.y][lastEnemy.x]=2;
+        }
+        return 0;
+    }else{
+        return 1;
+    }
+    
 }
 void rotcclock(){
     if(pg1.rotation==0){
@@ -184,6 +306,8 @@ int checkEnemy(){
     switch(pg1.rotation){
         case 0:
             if(mapArr[pg1.locate.y-1][pg1.locate.x]>='5'){
+                lastEnemy.y=pg1.locate.y-1;
+                lastEnemy.x=pg1.locate.x;
                 return 1;
             }else{
                 return 0;
@@ -191,6 +315,8 @@ int checkEnemy(){
             break;
         case 1:
             if(mapArr[pg1.locate.y][pg1.locate.x+1]>='5'){
+                lastEnemy.y=pg1.locate.y;
+                lastEnemy.x=pg1.locate.x+1;
                 return 1;
             }else{
                 return 0;
@@ -198,6 +324,8 @@ int checkEnemy(){
             break;
         case 2:
             if(mapArr[pg1.locate.y+1][pg1.locate.x]>='5'){
+                lastEnemy.y=pg1.locate.y+1;
+                lastEnemy.x=pg1.locate.x;
                 return 1;
             }else{
                 return 0;
@@ -205,6 +333,8 @@ int checkEnemy(){
             break;
         case 3:
             if(mapArr[pg1.locate.y][pg1.locate.x-1]>='5'){
+                lastEnemy.y=pg1.locate.y;
+                lastEnemy.x=pg1.locate.x-1;
                 return 1;
             }else{
                 return 0;
