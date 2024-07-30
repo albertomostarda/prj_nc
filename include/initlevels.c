@@ -8,7 +8,7 @@
 #include <ncurses/ncurses.h>
 
 char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
-fullAction correctAction[13];
+fullAction correctAction[14];
 Pos choicePos[4];
 int alPad=5, auPad=3;
 int levelLimitation=0;
