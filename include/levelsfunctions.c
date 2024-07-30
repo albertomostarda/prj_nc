@@ -31,14 +31,21 @@ void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
             waddch(tWin, road);
             break;
         case '3':
-            waddch(tWin, enemy);
-            break;
-        case '8':
             setRotation(1);
             waddch(tWin, pg1.icon);
             break;
-        case '9':
+        case '4':
             waddch(tWin, goal);
+            break;
+        default:
+            if(cch>='5'){
+                enemy_size++;
+                enemy=(Ostile *)realloc(enemy, enemy_size*sizeof(Ostile));
+                enemy[enemy_size-1].icon=(cch-5)|COLOR_PAIR(3);
+                enemy[enemy_size-1].location.y=locY;
+                enemy[enemy_size-1].location.x=locX;
+                waddch(tWin, enemy[enemy_size-1].icon);
+            }
             break;
     }
 }
@@ -119,7 +126,7 @@ void print_action(){
                         }
                     }
                     else if(action_buffer[i]>=action_VAR){
-                        mvwprintw(action, auPad+actY, alPad+(3*indent),"int %s= %d;", correctVar[var_buffer[varPos].type].name,action_buffer[var_buffer[varPos].actIndex]-action_VAR);
+                        mvwprintw(action, auPad+actY, alPad+(3*indent),"%s= %d;", correctVar[var_buffer[varPos].type].name,action_buffer[var_buffer[varPos].actIndex]-action_VAR);
                         varPos++;
                         actY++;
                     }else if(conLenght!=0){
@@ -264,6 +271,14 @@ int *createAlimit(int *limSize){
             aLimit[2]=action_VAR;
             break;
         case 2:
+            *limSize=4;
+            aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
+            aLimit[0]=action_WALK;
+            aLimit[1]=action_LROTATE;
+            aLimit[2]=action_RROTATE;
+            aLimit[3]=action_ENDSTART;
+            break;
+        case 3:
             *limSize=7;
             aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
             aLimit[0]=action_IF;
@@ -274,9 +289,8 @@ int *createAlimit(int *limSize){
             aLimit[5]=action_ENDSTART;
             aLimit[6]=action_isObstacle;
             break;
-        case 3:
-            break;
         case 4:
+
             break;
         case 5:
             break;
@@ -530,6 +544,12 @@ void run_actions(int *fexit){
                 case action_IF:
                     i=if_run(action_buffer[i+1],i+1);
                     break;
+                case action_WHILE:
+                    while_run(action_buffer[i+1],i+1);
+                    break;
+                case action_DO:
+                    do_run(action_buffer[i+1],i+1);
+                    break;
                 case action_WALK:
                     walk();
                     break;
@@ -538,6 +558,9 @@ void run_actions(int *fexit){
                     break;
                 case action_LROTATE:
                     rotcclock();
+                    break;
+                case action_attack:
+                    attack();
                     break;
                 default:
                     if(action_buffer[i]>=action_VAR){
@@ -600,6 +623,9 @@ void action_run(){
                 break;
             case '\n':
                 action_subrun(highlight,&fBreak);
+                if(fBreak){
+                    printOneDLine();
+                }
                 break;
             case 'P':
             case 'p':
@@ -719,7 +745,7 @@ void setRotation(int isEnd){
 int checkEndLvl(){
     //int cho='\0';
     time_t swait=time(NULL);
-    if(mapArr[pg1.locate.y][pg1.locate.x]!='8'|| isWalkEnd==0){
+    if(mapArr[pg1.locate.y][pg1.locate.x]!='3'|| isWalkEnd==0){
         werase(dialogue);
         box(dialogue,0,0);
         if(isWalkEnd==0){

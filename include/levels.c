@@ -16,23 +16,24 @@ WINDOW *dialogue;
 char **mapArr;
 int* action_buffer;
 linked_var *var_buffer;
-int curAction_size, var_size=2, needDReload=0;
+int curAction_size, var_size=2, enemy_size=0;
 Hero pg1;
+Ostile *enemy=NULL;
 fullVariables correctVar[2];
 // HANDLE dialogueThread;
 chtype blank=219|COLOR_PAIR(5);
 chtype walls=219|COLOR_PAIR(2);
-chtype enemy=219|COLOR_PAIR(3);
+// chtype enemy=219|COLOR_PAIR(3);
 chtype road=219|COLOR_PAIR(4);
 chtype goal=219|COLOR_PAIR(6);
 
 void printLvl(){
-    ThreadParam passingTd;
+    //ThreadParam passingTd;
     map=newwin(24,110,0,0);
     action=newwin(35,50,0,110);
     dialogue=newwin(11,110,24,0);
-    passingTd.activeWin=dialogue;
-    passingTd.gLight=&needDReload;
+    // passingTd.activeWin=dialogue;
+    // passingTd.gLight=&needDReload;
     wrefresh(map);
     wrefresh(action);
     wrefresh(dialogue);
@@ -43,6 +44,7 @@ void printLvl(){
     wrefresh(action);
     wrefresh(dialogue);
     pg1.rotation=0;
+    //enemy.icon=219|COLOR_PAIR(3);
     mapArr=init_map(26,1);
     init_action();
     loadDialogue();

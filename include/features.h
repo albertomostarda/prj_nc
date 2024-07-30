@@ -11,7 +11,7 @@ typedef struct cSizes{
 //typedef enum customPos{custDEFAULT, custTOP, custBOT} custPos;
 extern WINDOW *win;
 extern const int max_path;
-extern chtype blank, walls, enemy, road, goal;
+extern chtype blank, walls, road, goal;
 extern char *pContinue;
 extern int sLevel, rStatus, lvlToDo;
 

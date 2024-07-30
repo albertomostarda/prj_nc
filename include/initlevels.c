@@ -8,7 +8,7 @@
 #include <ncurses/ncurses.h>
 
 char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
-fullAction correctAction[12];
+fullAction correctAction[13];
 Pos choicePos[4];
 int alPad=5, auPad=3;
 int levelLimitation=0;
@@ -98,7 +98,7 @@ char** init_map(int lPad, int uPad){
 }
 void bond_action(){
     actionCode i=0;
-    for(int idx=0;idx<12;i++,idx++){
+    for(int idx=0;idx<14;i++,idx++){
         correctAction[idx].id=i;
     }
     correctAction[0].name = (char *)realloc(correctAction[0].name,strlen("INIZIO") + 1);
@@ -137,29 +137,38 @@ void bond_action(){
     strcpy(correctAction[8].name, "ruota_orario");
     correctAction[8].descr = (char *)realloc(correctAction[8].descr,strlen("Funzione che permette al personaggio di ruotare verso destra.") + 1);
     strcpy(correctAction[8].descr, "Funzione che permette al personaggio di ruotare verso destra.");
-    correctAction[9].name = (char *)realloc(correctAction[9].name,strlen("FINE_PROGRAMMA") + 1);
-    strcpy(correctAction[9].name, "FINE_PROGRAMMA");
-    correctAction[9].descr = (char *)realloc(correctAction[9].descr,strlen("Si utilizza per terminare il programma.") + 1);
-    strcpy(correctAction[9].descr, "Si utilizza per terminare il programma");
-    correctAction[10].name = (char *)realloc(correctAction[10].name,strlen("BLOCCATO") + 1);
-    strcpy(correctAction[10].name, "BLOCCATO");
-    correctAction[10].descr = (char *)realloc(correctAction[10].descr,strlen("Condizione che e' VERA se il personaggio e' bloccato.") + 1);
-    strcpy(correctAction[10].descr, "Condizione che e' VERA se il personaggio e' bloccato.");
+    correctAction[9].name = (char *)realloc(correctAction[9].name,strlen("Attacca") + 1);
+    strcpy(correctAction[9].name, "Attacca");
+    correctAction[9].descr = (char *)realloc(correctAction[9].descr,strlen("Attacca il nemico togliendogli un punto vita.") + 1);
+    strcpy(correctAction[9].descr, "Attacca il nemico togliendogli un punto vita.");
+    correctAction[10].name = (char *)realloc(correctAction[10].name,strlen("FINE_PROGRAMMA") + 1);
+    strcpy(correctAction[10].name, "FINE_PROGRAMMA");
+    correctAction[10].descr = (char *)realloc(correctAction[10].descr,strlen("Si utilizza per terminare il programma.") + 1);
+    strcpy(correctAction[10].descr, "Si utilizza per terminare il programma");
+    correctAction[11].name = (char *)realloc(correctAction[11].name,strlen("BLOCCATO") + 1);
+    strcpy(correctAction[11].name, "BLOCCATO");
+    correctAction[11].descr = (char *)realloc(correctAction[11].descr,strlen("Condizione che e' VERA se il personaggio e' bloccato.") + 1);
+    strcpy(correctAction[11].descr, "Condizione che e' VERA se il personaggio e' bloccato.");
     //correctAction[11].id=action_VAR;
-    correctAction[11].name = (char *)realloc(correctAction[11].name,strlen("Variabile") + 1);
-    strcpy(correctAction[11].name, "Variabile");
-    correctAction[11].descr = (char *)realloc(correctAction[11].descr,strlen("Contenitore di valori (numeri).") + 1);
-    strcpy(correctAction[11].descr, "Contenitore di valori (numeri).");
+    correctAction[12].name = (char *)realloc(correctAction[12].name,strlen("E' UN NEMICO?!?") + 1);
+    strcpy(correctAction[12].name, "E' UN NEMICO?!?");
+    correctAction[12].descr = (char *)realloc(correctAction[12].descr,strlen("Controlla se nel blocco successivo c'e' un nemico. Restituisce VERO se c'e' il nemico, senno' e' FALSO.") + 1);
+    strcpy(correctAction[12].descr, "Controlla se nel blocco successivo c'e' un nemico. Restituisce VERO se c'e' il nemico, senno' e' FALSO.");
+    
+    correctAction[13].name = (char *)realloc(correctAction[13].name,strlen("Variabile") + 1);
+    strcpy(correctAction[13].name, "Variabile");
+    correctAction[13].descr = (char *)realloc(correctAction[13].descr,strlen("Contenitore di valori (numeri).") + 1);
+    strcpy(correctAction[13].descr, "Contenitore di valori (numeri).");
 }
 void bondVar(){
     correctVar[0].id=var_nSteps;
     correctVar[0].name=(char *)malloc(strlen("nPassi")+1);
-    strcpy(correctVar[0].name, "nPassi");
+    strcpy(correctVar[0].name, "Passi");
     correctVar[0].descr=(char *)malloc(strlen("Variabile che indica quanti passi deve fare il personaggio.")+1);
     strcpy(correctVar[0].descr,"Variabile che indica quanti passi deve fare il personaggio.");
     correctVar[1].id=var_nTurns;
     correctVar[1].name=(char *)malloc(strlen("nGiri")+1);
-    strcpy(correctVar[1].name, "nGiri");
+    strcpy(correctVar[1].name, "Giri");
     correctVar[1].descr=(char *)malloc(strlen("Variabile che indica quanti giri deve fare il personaggio.")+1);
     strcpy(correctVar[1].descr,"Variabile che indica quanti giri deve fare il personaggio.");
 }
@@ -175,17 +184,8 @@ void init_action(){
     switch (sLevel)
     {
         case 1:
-            curAction_size++;
-            var_size=1;
-            action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
-            action_buffer[1]=action_VAR+2;
-            var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
-            var_buffer[0].type=var_nSteps;
-            var_buffer[0].actIndex=curAction_size-1;
-            mvwprintw(action, auPad+1, alPad+3, "int %s = %d;", correctVar[var_buffer[0].type].name,action_buffer[1]-action_VAR);
-            levelLimitation=2;
-            break;
         case 2:
+        case 3:
             curAction_size++;
             var_size=1;
             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
@@ -193,7 +193,7 @@ void init_action(){
             var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
             var_buffer[0].type=var_nSteps;
             var_buffer[0].actIndex=curAction_size-1;
-            mvwprintw(action, auPad+1, alPad+3, "int %s = %d;", correctVar[var_buffer[0].type].name,action_buffer[1]-action_VAR);
+            mvwprintw(action, auPad+1, alPad+3, "%s = %d;", correctVar[var_buffer[0].type].name,action_buffer[1]-action_VAR);
             levelLimitation=2;
             break;
         default:

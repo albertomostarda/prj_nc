@@ -8,7 +8,7 @@ extern char *action_choice[];
 extern Pos choicePos[4];
 extern char *action_codename[];
 extern int levelLimitation;
-extern fullAction correctAction[12];
+extern fullAction correctAction[13];
 extern int auPad, alPad;
 
 void init_menu();

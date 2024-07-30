@@ -21,10 +21,12 @@ typedef enum actionCode{
         action_WALK,        //6
         action_LROTATE,     //7
         action_RROTATE,     //8
-        action_ENDSTART,    //9
-        action_isObstacle,  //10
+        action_attack,      //9
+        action_ENDSTART,    //10
+        action_isObstacle,  //11
+        action_isEnemy,     //12
         //action_FUNC,
-        action_VAR       //11+varVAULUE
+        action_VAR       //13+varVAULUE
 }actionCode;
 typedef enum varCode{
     var_nSteps,
@@ -52,19 +54,25 @@ typedef struct player{
     chtype icon;
     Pos locate;
     int rotation;
-    char **art;
+    //char **art;
 } Hero;
-typedef struct passThread{
-    WINDOW *activeWin;
-    int *gLight;
-} ThreadParam;
+// typedef struct passThread{
+//     WINDOW *activeWin;
+//     int *gLight;
+// } ThreadParam;
+typedef struct ostile{
+    chtype icon;
+    Pos location;
+} Ostile;
+
 
 extern WINDOW *map;
 extern WINDOW *action;
 extern WINDOW *dialogue;
 extern Hero pg1;
+extern Ostile *enemy;
 extern fullVariables correctVar[2];
-extern int var_size, curAction_size, needDReload;
+extern int var_size, curAction_size, enemy_size;
 extern int *action_buffer;
 extern linked_var *var_buffer;
 extern char **mapArr;

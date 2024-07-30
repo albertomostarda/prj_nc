@@ -344,10 +344,10 @@ int fCountLines(FILE *tmpFile){
 void initColors(){
     init_pair(1, COLOR_WHITE, COLOR_BLACK); //testo normale
     init_pair(2, COLOR_WHITE, COLOR_WHITE); // per #
-    init_pair(3, COLOR_RED,COLOR_RED);    // per eventuali nemici
+    init_pair(3, COLOR_WHITE,COLOR_RED);    // per eventuali nemici
     init_pair(4, COLOR_YELLOW, COLOR_YELLOW); // per il percorso utilizzabile 2
     init_pair(5,COLOR_BLACK,COLOR_BLACK); // per lo spazio vuoto 0
-    init_pair(6, COLOR_GREEN, COLOR_GREEN); // per il traguardo 9
+    init_pair(6, COLOR_GREEN, COLOR_GREEN); // per il traguardo 4
     init_pair(7, COLOR_WHITE, COLOR_BLUE);   // per il personaggio
-    init_pair(8, COLOR_WHITE, COLOR_GREEN);
+    init_pair(8, COLOR_WHITE, COLOR_GREEN); // per il personaggio sul traguardo
 }
