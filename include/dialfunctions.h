@@ -3,9 +3,9 @@
 #include <windows.h>
 
 extern char **dialogue_buffer;
-extern int dialBuff_size, dialPos, isEmpty;
+extern int dialBuff_size, dialPos, isEmpty,dReload;
 
-//void reloadDialogue(LPVOID *data);
+void reloadDialogue();
 void printOneDLine();
 void loadDialogue();
 char* getDialPath();

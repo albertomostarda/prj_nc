@@ -2,36 +2,37 @@
 #include "levels.h"
 #include "levelsfunctions.h"
 #include "features.h"
+#include "dialfunctions.h"
 #include <ncurses/ncurses.h>
 
 int nSteps,nRot, isWalkEnd=1; // non ancora usata
-Pos lastEnemy={0,0};
+Pos lastEnemy;
 
 int checkObstacle(){
     switch(pg1.rotation){
         case 0:
-            if(mapArr[pg1.locate.y-1][pg1.locate.x]=='0'||mapArr[pg1.locate.y-1][pg1.locate.x]=='#'||mapArr[pg1.locate.y-1][pg1.locate.x]>='5'){
+            if(mapArr[pg1.locate.y-1][pg1.locate.x]=='0'||mapArr[pg1.locate.y-1][pg1.locate.x]=='#'||(mapArr[pg1.locate.y-1][pg1.locate.x]>='5'&&mapArr[pg1.locate.y-1][pg1.locate.x]<='9')){
                 return 1;
             }else{
                 return 0;
             }
             break;
         case 1:
-            if(mapArr[pg1.locate.y][pg1.locate.x+1]=='0'||mapArr[pg1.locate.y][pg1.locate.x+1]=='#'||mapArr[pg1.locate.y][pg1.locate.x+1]>='5'){
+            if(mapArr[pg1.locate.y][pg1.locate.x+1]=='0'||mapArr[pg1.locate.y][pg1.locate.x+1]=='#'||(mapArr[pg1.locate.y][pg1.locate.x+1]>='5'&&mapArr[pg1.locate.y][pg1.locate.x+1]<='9')){
                 return 1;
             }else{
                 return 0;
             }
             break;
         case 2:
-            if(mapArr[pg1.locate.y+1][pg1.locate.x]=='0'||mapArr[pg1.locate.y+1][pg1.locate.x]=='#'||mapArr[pg1.locate.y+1][pg1.locate.x]>='5'){
+            if(mapArr[pg1.locate.y+1][pg1.locate.x]=='0'||mapArr[pg1.locate.y+1][pg1.locate.x]=='#'||(mapArr[pg1.locate.y+1][pg1.locate.x]>='5'&&mapArr[pg1.locate.y+1][pg1.locate.x]<='9')){
                 return 1;
             }else{
                 return 0;
             }
             break;
         case 3:
-            if(mapArr[pg1.locate.y][pg1.locate.x-1]=='0'||mapArr[pg1.locate.y][pg1.locate.x-1]=='#'||mapArr[pg1.locate.y][pg1.locate.x-1]>='5'){
+            if(mapArr[pg1.locate.y][pg1.locate.x-1]=='0'||mapArr[pg1.locate.y][pg1.locate.x-1]=='#'||(mapArr[pg1.locate.y][pg1.locate.x-1]>='5'&&mapArr[pg1.locate.y][pg1.locate.x-1]<='9')){
                 return 1;
             }else{
                 return 0;
@@ -271,13 +272,24 @@ int do_run(int condition, int condPos){
 }
 
 int attack(){
-    if(checkEnemy){
-        int curEnemyHP=mapArr[lastEnemy.y][lastEnemy.x]-5;
+    if(checkEnemy()){
+        int curEnemyHP=(int)mapArr[lastEnemy.y][lastEnemy.x]-5;
+        mvwprintw(dialogue,1,1,"%d, %d",lastEnemy.y,lastEnemy.x);
+        wrefresh(dialogue);
+        getch();
         if(curEnemyHP-1>=0){
+            mvwprintw(dialogue,1,1,"%c",mapArr[lastEnemy.y][lastEnemy.x]);
+            wrefresh(dialogue);
+            getch();
             mapArr[lastEnemy.y][lastEnemy.x]--;
+            mvwprintw(dialogue,1,1,"%c",mapArr[lastEnemy.y][lastEnemy.x]);
+            wrefresh(dialogue);
+            getch();
         }else{
             mapArr[lastEnemy.y][lastEnemy.x]=2;
         }
+        print_map(map);
+        //attack_splash();
         return 0;
     }else{
         return 1;
@@ -302,43 +314,101 @@ void set_steps(int value){
     nSteps=value;
 }
 
-int checkEnemy(){
-    switch(pg1.rotation){
-        case 0:
-            if(mapArr[pg1.locate.y-1][pg1.locate.x]>='5'){
-                lastEnemy.y=pg1.locate.y-1;
-                lastEnemy.x=pg1.locate.x;
-                return 1;
-            }else{
-                return 0;
+// int checkEnemy(){
+//     switch(pg1.rotation){
+//         case 0:
+//             if(mapArr[pg1.locate.y-1][pg1.locate.x]>='5'&&mapArr[pg1.locate.y-1][pg1.locate.x]<='9'){
+//                 lastEnemy.y=pg1.locate.y-1;
+//                 lastEnemy.x=pg1.locate.x;
+//                 return 1;
+//             }else{
+//                 return 0;
+//             }
+//             break;
+//         case 1:
+//             if(mapArr[pg1.locate.y][pg1.locate.x+1]>='5'&&mapArr[pg1.locate.y][pg1.locate.x+1]<='9'){
+//                 lastEnemy.y=pg1.locate.y;
+//                 lastEnemy.x=pg1.locate.x+1;
+//                 return 1;
+//             }else{
+//                 return 0;
+//             }
+//             break;
+//         case 2:
+//             if(mapArr[pg1.locate.y+1][pg1.locate.x]>='5'&&mapArr[pg1.locate.y+1][pg1.locate.x]<='9'){
+//                 lastEnemy.y=pg1.locate.y+1;
+//                 lastEnemy.x=pg1.locate.x;
+//                 return 1;
+//             }else{
+//                 return 0;
+//             }
+//             break;
+//         case 3:
+//             if(mapArr[pg1.locate.y][pg1.locate.x-1]>='5'&&mapArr[pg1.locate.y][pg1.locate.x-1]<='9'){
+//                 lastEnemy.y=pg1.locate.y;
+//                 lastEnemy.x=pg1.locate.x-1;
+//                 return 1;
+//             }else{
+//                 return 0;
+//             }
+//             break;
+//     }
+// }
+
+int checkEnemy() {
+    int y = pg1.locate.y;
+    int x = pg1.locate.x;
+    int found = 0;
+
+    switch(pg1.rotation) {
+        case 0: // Se si trova sopra al pg
+            if (mapArr[y-1][x] >= '5' && mapArr[y-1][x] <= '9') {
+                lastEnemy.y = y - 1;
+                lastEnemy.x = x;
+                found = 1;
             }
             break;
-        case 1:
-            if(mapArr[pg1.locate.y][pg1.locate.x+1]>='5'){
-                lastEnemy.y=pg1.locate.y;
-                lastEnemy.x=pg1.locate.x+1;
-                return 1;
-            }else{
-                return 0;
+
+        case 1: // Se si trova a destra
+            if (mapArr[y][x+1] >= '5' && mapArr[y][x+1] <= '9') {
+                lastEnemy.y = y;
+                lastEnemy.x = x + 1;
+                found = 1;
             }
             break;
-        case 2:
-            if(mapArr[pg1.locate.y+1][pg1.locate.x]>='5'){
-                lastEnemy.y=pg1.locate.y+1;
-                lastEnemy.x=pg1.locate.x;
-                return 1;
-            }else{
-                return 0;
+
+        case 2: // Se si trova sotto il pg
+            if (mapArr[y+1][x] >= '5' && mapArr[y+1][x] <= '9') {
+                lastEnemy.y = y + 1;
+                lastEnemy.x = x;
+                found = 1;
             }
             break;
-        case 3:
-            if(mapArr[pg1.locate.y][pg1.locate.x-1]>='5'){
-                lastEnemy.y=pg1.locate.y;
-                lastEnemy.x=pg1.locate.x-1;
-                return 1;
-            }else{
-                return 0;
+
+        case 3: // Se si trova a sinitra
+            if (mapArr[y][x-1] >= '5' && mapArr[y][x-1] <= '9') {
+                lastEnemy.y = y;
+                lastEnemy.x = x - 1;
+                found = 1;
             }
+            break;
+        default:
+            found = 0;
             break;
     }
+
+    return found;
+}
+
+void attack_splash(){
+    chtype ogColor= getbkgd(stdscr);
+    erase();
+    bkgd(COLOR_PAIR(9));
+    refresh();
+    napms(200);
+    bkgd(ogColor);
+    refresh();
+    print_map(map);
+    print_action();
+    printOneDLine();
 }

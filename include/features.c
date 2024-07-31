@@ -70,7 +70,6 @@ void start(){
     box(stdscr,0,0);
     wrefresh(stdscr);
     rStatus=1;
-    
     Cprint(stdscr,initTxt,20,0,1);
     //Hprint(win, pContinue,20,0);
     mvwprintw(stdscr,24,(getmaxx(stdscr)/2)-halfContinue,"%s", pContinue);
@@ -350,4 +349,5 @@ void initColors(){
     init_pair(6, COLOR_GREEN, COLOR_GREEN); // per il traguardo 4
     init_pair(7, COLOR_WHITE, COLOR_BLUE);   // per il personaggio
     init_pair(8, COLOR_WHITE, COLOR_GREEN); // per il personaggio sul traguardo
+    init_pair(9,COLOR_RED,COLOR_RED);       //red splash
 }

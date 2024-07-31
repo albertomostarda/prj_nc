@@ -16,5 +16,6 @@ int attack();
 int checkEnemy();
 int checkObstacle();
 int getEndif(int posi);
+void attack_splash();
 
 #endif

@@ -27,5 +27,4 @@ void run_anim(WINDOW *tmp);
 void print_map(WINDOW *tmp);
 void setRotation(int isEnd);
 int checkEndLvl();
-void reloadDialogue();
 #endif

@@ -7,7 +7,7 @@
 #include <time.h>
 
 char **dialogue_buffer;
-int dialBuff_size=0, dialPos=0, isEmpty=1;
+int dialBuff_size=0, dialPos=0, isEmpty=1,dReload=0;
 
 // void reloadDialogue(LPVOID *data){
 //     ThreadParam *tParam = (ThreadParam*)data;
@@ -115,4 +115,14 @@ void printOneDLine(){
     
     
 }
-
+void reloadDialogue(){
+    time_t countDwn=time(NULL);
+    int inputCh=0;
+    SBHprint(dialogue, pContinue,1);
+    nodelay(stdscr,TRUE);
+    nclearBuff();
+    while(getch()!='\n'&&(time(NULL)-countDwn)>10);
+    nclearBuff();
+    nodelay(stdscr,FALSE);
+    dReload=0;
+}

@@ -6,8 +6,6 @@
 #include <ncurses/ncurses.h>
 #include <time.h>
 
-int dReload=0;
-
 void printcolor_str(WINDOW *tWin,char *colStr, int pLines, int tmpY){
     for(int i=0;i<pLines;i++){
         printcolor_char(tWin,colStr[i],i, tmpY);
@@ -84,7 +82,7 @@ void print_action(){
                 case action_ENDIF:
                     checkEnd=endIFError(i+1);
                     if(isCond>=0){
-                        if(checkEnd==0){
+                        if(checkEnd>=0){
                             if(indent>1){
                                 indent--;
                             }
@@ -193,6 +191,7 @@ void delete_action(int lim) {
         werase(dialogue);
             box(dialogue, 0, 0);
             Cprint(dialogue, "Non posso cancellare oltre.", 1, 1, 0);
+            dReload=1;
     }else{
         int halfY = getmaxy(action) / 2;
         int halfX = getmaxx(action) / 2;
@@ -252,6 +251,7 @@ void delete_action(int lim) {
             werase(dialogue);
             box(dialogue, 0, 0);
             Cprint(dialogue, "Istruzione Eliminata con successo.", 1, 1, 0);
+            dReload=1;
         }
         nclearBuff();
         print_action();
@@ -299,7 +299,7 @@ int *createAlimit(int *limSize){
             aLimit[3]=action_ENDSTART;
             break;
         case 3:
-            *limSize=7;
+            *limSize=8;
             aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
             aLimit[0]=action_IF;
             aLimit[1]=action_ENDIF;
@@ -308,9 +308,13 @@ int *createAlimit(int *limSize){
             aLimit[4]=action_RROTATE;
             aLimit[5]=action_ENDSTART;
             aLimit[6]=action_isObstacle;
+            aLimit[7]=action_isEnemy;
             break;
         case 4:
-
+            *limSize=2;
+            aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
+            aLimit[0]=action_attack;
+            aLimit[1]=action_ENDSTART;
             break;
         case 5:
             break;
@@ -787,7 +791,8 @@ int checkEndLvl(){
         nclearBuff();
         wmove(action,getcury(action), getcurx(action));
         nodelay(action,TRUE);
-        while(wgetch(action)&&(time(NULL)-swait)<10);
+        nclearBuff();
+        while(wgetch(action)!='\n'&&(time(NULL)-swait)<10);
         nclearBuff();
         nodelay(action,FALSE);
         mapArr=init_map(26,1);
@@ -827,6 +832,12 @@ int checkEndLvl(){
                 case 2:
                     lvlToDo=3;
                     break;
+                case 3:
+                    lvlToDo=4;
+                    break;
+                case 4:
+                    lvlToDo=5;
+                    break;
             }
         }
         nodelay(stdscr,TRUE);
@@ -836,15 +847,4 @@ int checkEndLvl(){
         nodelay(stdscr,FALSE);
         return 0;
     }
-}
-void reloadDialogue(){
-    time_t countDwn=time(NULL);
-    int inputCh=0;
-    SBHprint(dialogue, pContinue,1);
-    nodelay(stdscr,TRUE);
-    nclearBuff();
-    while(getch()!='\n'&&(time(NULL)-countDwn)>10);
-    nclearBuff();
-    nodelay(stdscr,FALSE);
-    dReload=0;
 }
