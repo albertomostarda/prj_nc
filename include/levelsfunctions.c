@@ -3,6 +3,7 @@
 #include "levels.h"
 #include "herofunctions.h"
 #include "dialfunctions.h"
+#include "errors.h"
 #include <ncurses/ncurses.h>
 #include <time.h>
 
@@ -72,7 +73,7 @@ void print_action(){
                     break;
                 case action_IF:
                     if(isCond){
-                        ifError();
+                        ifErrorMSG();
                     }else{
                         mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
                         conLenght+=strlen(correctAction[action_buffer[i]].name)+alPad+(3*indent)+1;
@@ -92,6 +93,43 @@ void print_action(){
                             werase(dialogue);
                             box(dialogue,0,0);
                             Cprint(dialogue,"La struttura 'FINE_SE' va sempre inserita dopo la fine dell'utilizzo del 'SE'",1,1,0);
+                            curAction_size--;
+                            action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                            print_action();
+                            dReload=1;
+                        }
+                    }else{
+                        werase(dialogue);
+                        box(dialogue,0,0);
+                        Cprint(dialogue, "Devi inserire una condizione valida",1,1,0);
+                        curAction_size--;
+                        action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+                        dReload=1;
+                    }
+                    break;
+                case action_WHILE:
+                case action_DO:
+                    if(isCond){
+                        cicleErrorMSG(i);
+                    }else{
+                        mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
+                        conLenght+=strlen(correctAction[action_buffer[i]].name)+alPad+(3*indent)+1;
+                        isCond=-1;
+                    }
+                    break;
+                case action_ENDCICLE:
+                    checkEnd=endCicleError(i+1);
+                    if(isCond>=0){
+                        if(checkEnd>=0){
+                            if(indent>1){
+                                indent--;
+                            }
+                            mvwprintw(action,auPad+actY,alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
+                            actY++;
+                        }else if(checkEnd<0){
+                            werase(dialogue);
+                            box(dialogue,0,0);
+                            Cprint(dialogue,"La struttura 'FINE_CICLO' va sempre inserita dopo la fine dell'utilizzo del 'MENTRE' o 'FAI-MENTRE'",1,1,0);
                             curAction_size--;
                             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
                             print_action();
@@ -155,35 +193,6 @@ void print_action(){
             }
         }
         wrefresh(action);
-    }
-}
-void ifError(){
-    werase(dialogue);
-    box(dialogue,0,0);
-    Cprint(dialogue,"Non puoi inserire due 'IF' di seguito",1,1,0);
-    curAction_size--;
-    action_buffer=(int *)realloc(action_buffer,curAction_size*sizeof(int));
-    dReload=1;
-}
-int conditionError(int lastPos){
-    if(action_buffer[lastPos]<=action_ENDSTART||action_buffer[lastPos]>=action_VAR){
-        int halfY=getmaxy(dialogue)/2, halfX=getmaxx(dialogue)/2, txtLen=0;
-        werase(dialogue);
-        box(dialogue, 0, 0);
-        txtLen=strlen("Nella struttura '%s' non e' presente una condizione valida.")/2;
-        mvwprintw(dialogue, halfY-1, halfX-txtLen, "Nella struttura '%s' non e' presente una condizione valida.",correctAction[action_buffer[lastPos-1]].name);
-        txtLen=strlen("Per favore inseriscine una valida.")/2;
-        mvwprintw(dialogue,halfY+1, halfX-txtLen, "Per favore inseriscine una valida.");
-        wmove(dialogue, 3,1);
-        wrefresh(dialogue);
-        dReload=1;
-        curAction_size--;
-        action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
-        print_action();
-        return 0;
-    }
-    else{
-        return 1;
     }
 }
 void delete_action(int lim) {
@@ -311,10 +320,14 @@ int *createAlimit(int *limSize){
             aLimit[7]=action_isEnemy;
             break;
         case 4:
-            *limSize=2;
+            *limSize=6;
             aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
-            aLimit[0]=action_attack;
-            aLimit[1]=action_ENDSTART;
+            aLimit[0]=action_WHILE;
+            aLimit[1]=action_ENDCICLE;
+            aLimit[2]=action_WALK;
+            aLimit[3]=action_attack;
+            aLimit[4]=action_isEnemy;
+            aLimit[5]=action_ENDSTART;
             break;
         case 5:
             break;
@@ -584,12 +597,7 @@ void run_actions(int *fexit){
                     rotcclock();
                     break;
                 case action_attack:
-                    if(attack()){
-                        werase(dialogue);
-                        box(dialogue,0,0);
-                        Cprint(dialogue, "Non puoi attaccare a vuoto!",1,1,0);
-                        dReload=1;
-                    }
+                    attack();
                     break;
                 default:
                     if(action_buffer[i]>=action_VAR){
@@ -727,20 +735,6 @@ void print_map(WINDOW *tmp){
         printcolor_str(tmp,mapArr[i], strlen(mapArr[i]), -1);
         wrefresh(tmp);
     }
-}
-int endIFError(int lPos){
-    int ifCount=0;
-    for(int i=0;i<lPos;i++){
-        if(action_buffer[i]==action_IF){
-            ifCount++;
-        }else if(action_buffer[i]==action_ENDIF){
-            ifCount--;
-            if(ifCount<0){
-                return -1;
-            }
-        }
-    }
-    return ifCount; // se =0 tutti gli if chiusi, se >0 mancano degli if aperti, <0 troppi endif
 }
 void setRotation(int isEnd){
     if(isEnd){

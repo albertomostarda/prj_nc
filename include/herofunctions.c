@@ -88,10 +88,10 @@ int if_run(int condition, int condPos){
     if(action_buffer[idx]==action_ENDIF){
         return idx-1;
     }else{
-        return getEndif(condPos+1);
+        return getEndIf(condPos+1);
     }
 }
-int getEndif(int posi){
+int getEndIf(int posi){
     while (action_buffer[posi]!=action_ENDIF)
     {
         posi++;
@@ -168,6 +168,7 @@ int while_run(int condition, int condPos){
         // nel caso di piu' condizioni
     }
     while(isClear){
+        idx=condPos+1;
         switch (condition)
         {
             case action_isObstacle:
@@ -214,13 +215,13 @@ int while_run(int condition, int condPos){
     if(action_buffer[idx]==action_ENDCICLE){
         return idx-1;
     }else{
-        //return getEndif(condPos+1);
+        return getEndCicle(condPos+1);
     }
 }
 int do_run(int condition, int condPos){
     int idx=condPos+1, isClear=1;
-    
     while(isClear){
+        idx=condPos+1;
         while(action_buffer[idx]!=action_ENDCICLE){
             switch (action_buffer[idx])
             {
@@ -267,34 +268,20 @@ int do_run(int condition, int condPos){
     if(action_buffer[idx]==action_ENDCICLE){
         return idx-1;
     }else{
-        //return getEndif(condPos+1);
+        return getEndCicle(condPos+1);
     }
 }
 
-int attack(){
-    if(checkEnemy()){
-        int curEnemyHP=(int)mapArr[lastEnemy.y][lastEnemy.x]-5;
-        mvwprintw(dialogue,1,1,"%d, %d",lastEnemy.y,lastEnemy.x);
-        wrefresh(dialogue);
-        getch();
-        if(curEnemyHP-1>=0){
-            mvwprintw(dialogue,1,1,"%c",mapArr[lastEnemy.y][lastEnemy.x]);
-            wrefresh(dialogue);
-            getch();
+void attack(){
+        char curEnemyHP=mapArr[lastEnemy.y][lastEnemy.x]-5;
+        if((curEnemyHP-1)>'0'){
             mapArr[lastEnemy.y][lastEnemy.x]--;
-            mvwprintw(dialogue,1,1,"%c",mapArr[lastEnemy.y][lastEnemy.x]);
-            wrefresh(dialogue);
-            getch();
-        }else{
-            mapArr[lastEnemy.y][lastEnemy.x]=2;
+        }else if((curEnemyHP-1)=='0'){
+            mapArr[lastEnemy.y][lastEnemy.x]='2';
         }
+        napms(1000);
         print_map(map);
         //attack_splash();
-        return 0;
-    }else{
-        return 1;
-    }
-    
 }
 void rotcclock(){
     if(pg1.rotation==0){
@@ -316,7 +303,7 @@ void set_steps(int value){
 
 // int checkEnemy(){
 //     switch(pg1.rotation){
-//         case 0:
+//         case 0:  // Se si trova sopra al pg
 //             if(mapArr[pg1.locate.y-1][pg1.locate.x]>='5'&&mapArr[pg1.locate.y-1][pg1.locate.x]<='9'){
 //                 lastEnemy.y=pg1.locate.y-1;
 //                 lastEnemy.x=pg1.locate.x;
@@ -325,7 +312,7 @@ void set_steps(int value){
 //                 return 0;
 //             }
 //             break;
-//         case 1:
+//         case 1:  // Se si trova a destra
 //             if(mapArr[pg1.locate.y][pg1.locate.x+1]>='5'&&mapArr[pg1.locate.y][pg1.locate.x+1]<='9'){
 //                 lastEnemy.y=pg1.locate.y;
 //                 lastEnemy.x=pg1.locate.x+1;
@@ -334,7 +321,7 @@ void set_steps(int value){
 //                 return 0;
 //             }
 //             break;
-//         case 2:
+//         case 2:  // Se si trova sotto il pg
 //             if(mapArr[pg1.locate.y+1][pg1.locate.x]>='5'&&mapArr[pg1.locate.y+1][pg1.locate.x]<='9'){
 //                 lastEnemy.y=pg1.locate.y+1;
 //                 lastEnemy.x=pg1.locate.x;
@@ -343,7 +330,7 @@ void set_steps(int value){
 //                 return 0;
 //             }
 //             break;
-//         case 3:
+//         case 3:  // Se si trova a sinitra
 //             if(mapArr[pg1.locate.y][pg1.locate.x-1]>='5'&&mapArr[pg1.locate.y][pg1.locate.x-1]<='9'){
 //                 lastEnemy.y=pg1.locate.y;
 //                 lastEnemy.x=pg1.locate.x-1;
@@ -398,6 +385,13 @@ int checkEnemy() {
     }
 
     return found;
+}
+int getEndCicle(int lsPos){
+    while (action_buffer[lsPos]!=action_ENDCICLE)
+    {
+        lsPos++;
+    }
+    return lsPos-1;
 }
 
 void attack_splash(){

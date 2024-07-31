@@ -18,9 +18,7 @@ int addValue();
 void print_addValue(int *val_limited, int lVal_size);
 int *createAlimit(int *limSize);
 //int check_Econdition(int lastPos);
-int conditionError(int lastPos);
-void ifError();
-int endIFError(int lPos);
+
 void run_actions(int *fexit);
 void delete_action(int lim);
 void run_anim(WINDOW *tmp);

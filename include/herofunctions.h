@@ -12,10 +12,11 @@ void walk();
 void rotcclock();
 void rotclock();
 void set_steps(int value);
-int attack();
+void attack();
 int checkEnemy();
 int checkObstacle();
-int getEndif(int posi);
+int getEndIf(int posi);
+int getEndCicle(int lsPos);
 void attack_splash();
 
 #endif

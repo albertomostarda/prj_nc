@@ -186,6 +186,7 @@ void init_action(){
         case 1:
         case 2:
         case 3:
+        case 4:
             curAction_size++;
             var_size=1;
             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
