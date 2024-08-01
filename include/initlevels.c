@@ -8,7 +8,7 @@
 #include <ncurses/ncurses.h>
 
 char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
-fullAction correctAction[14];
+fullAction correctAction[16];
 Pos choicePos[4];
 int alPad=5, auPad=3;
 int levelLimitation=0;
@@ -98,7 +98,7 @@ char** init_map(int lPad, int uPad){
 }
 void bond_action(){
     actionCode i=0;
-    for(int idx=0;idx<14;i++,idx++){
+    for(int idx=0;idx<16;i++,idx++){
         correctAction[idx].id=i;
     }
     correctAction[0].name = (char *)realloc(correctAction[0].name,strlen("INIZIO") + 1);
@@ -113,52 +113,59 @@ void bond_action(){
     strcpy(correctAction[2].name, "FINE_SE");
     correctAction[2].descr = (char *)realloc(correctAction[2].descr,strlen("Serve per chiudere il codice che fa parte del 'SE'.") + 1);
     strcpy(correctAction[2].descr, "Serve per chiudere il codice che fa parte del 'SE'.");
-    correctAction[3].name = (char *)realloc(correctAction[3].name,strlen("MENTRE") + 1);
-    strcpy(correctAction[3].name, "MENTRE");
-    correctAction[3].descr = (char *)realloc(correctAction[3].descr,strlen("Il codice al suo interno verra' ripetuto fin quando la condizione e' VERA.") + 1);
-    strcpy(correctAction[3].descr, "Il codice al suo interno verra' ripetuto fin quando la condizione e' VERA.");
-    correctAction[4].name = (char *)realloc(correctAction[4].name,strlen("FAI") + 1);
-    strcpy(correctAction[4].name, "FAI");
-    correctAction[4].descr = (char *)realloc(correctAction[4].descr,strlen("Il codice all'interno viene eseguito almeno una volta e poi se la condizione e' VERA verra' ripetuto.") + 1);
-    strcpy(correctAction[4].descr, "Il codice all'interno viene eseguito almeno una volta e poi se la condizione e' VERA verra' ripetuto.");
-    correctAction[5].name = (char *)realloc(correctAction[5].name,strlen("FINE_CICLO") + 1);
-    strcpy(correctAction[5].name, "FINE_CICLO");
-    correctAction[5].descr = (char *)realloc(correctAction[5].descr,strlen("Serve per chiudere il codice che fa parte del 'MENTRE', 'FAI'.") + 1);
-    strcpy(correctAction[5].descr, "Serve per chiudere il codice che fa parte del 'MENTRE', 'FAI'.");
-    correctAction[6].name = (char *)realloc(correctAction[6].name,strlen("cammina") + 1);
-    strcpy(correctAction[6].name, "cammina");
-    correctAction[6].descr = (char *)realloc(correctAction[6].descr,strlen("Funzione che permette al personaggio di camminare.") + 1);
-    strcpy(correctAction[6].descr, "Funzione che permette al personaggio di camminare.");
-    correctAction[7].name = (char *)realloc(correctAction[7].name,strlen("ruota_antiorario") + 1);
-    strcpy(correctAction[7].name, "ruota_antiorario");
-    correctAction[7].descr = (char *)realloc(correctAction[7].descr,strlen("Funzione che permette al personaggio di ruotare verso sinistra.") + 1);
-    strcpy(correctAction[7].descr, "Funzione che permette al personaggio di ruotare verso sinistra.");
-    correctAction[8].name = (char *)realloc(correctAction[8].name,strlen("ruota_orario") + 1);
-    strcpy(correctAction[8].name, "ruota_orario");
-    correctAction[8].descr = (char *)realloc(correctAction[8].descr,strlen("Funzione che permette al personaggio di ruotare verso destra.") + 1);
-    strcpy(correctAction[8].descr, "Funzione che permette al personaggio di ruotare verso destra.");
-    correctAction[9].name = (char *)realloc(correctAction[9].name,strlen("Attacca") + 1);
-    strcpy(correctAction[9].name, "Attacca");
-    correctAction[9].descr = (char *)realloc(correctAction[9].descr,strlen("Attacca il nemico togliendogli un punto vita.") + 1);
-    strcpy(correctAction[9].descr, "Attacca il nemico togliendogli un punto vita.");
-    correctAction[10].name = (char *)realloc(correctAction[10].name,strlen("FINE_PROGRAMMA") + 1);
-    strcpy(correctAction[10].name, "FINE_PROGRAMMA");
-    correctAction[10].descr = (char *)realloc(correctAction[10].descr,strlen("Si utilizza per terminare il programma.") + 1);
-    strcpy(correctAction[10].descr, "Si utilizza per terminare il programma");
-    correctAction[11].name = (char *)realloc(correctAction[11].name,strlen("BLOCCATO") + 1);
-    strcpy(correctAction[11].name, "BLOCCATO");
-    correctAction[11].descr = (char *)realloc(correctAction[11].descr,strlen("Condizione che e' VERA se il personaggio e' bloccato.") + 1);
-    strcpy(correctAction[11].descr, "Condizione che e' VERA se il personaggio e' bloccato.");
-    //correctAction[11].id=action_VAR;
-    correctAction[12].name = (char *)realloc(correctAction[12].name,strlen("E' UN NEMICO?!?") + 1);
-    strcpy(correctAction[12].name, "E' UN NEMICO?!?");
-    correctAction[12].descr = (char *)realloc(correctAction[12].descr,strlen("Controlla se nel blocco successivo c'e' un nemico. Restituisce VERO se c'e' il nemico, senno' e' FALSO.") + 1);
-    strcpy(correctAction[12].descr, "Controlla se nel blocco successivo c'e' un nemico. Restituisce VERO se c'e' il nemico, senno' e' FALSO.");
+    correctAction[3].name = (char *)realloc(correctAction[3].name,strlen("ALTRIMENTI") + 1);
+    strcpy(correctAction[3].name, "ALTRIMENTI");
+    correctAction[3].descr = (char *)realloc(correctAction[3].descr,strlen("Viene usato dopo aver chiuso il 'SE' (dopo il FINE_SE). Se la condizione del 'SE' e' FALSA viene eseguito il suo codice.") + 1);
+    strcpy(correctAction[3].descr, "Viene usato dopo aver chiuso il 'SE' (dopo il FINE_SE). Se la condizione del 'SE' e' FALSA viene eseguito il suo codice.");
+    correctAction[4].name = (char *)realloc(correctAction[4].name,strlen("FINE_ALTRIMENTI") + 1);
+    strcpy(correctAction[4].name, "FINE_ALTRIMENTI");
+    correctAction[4].descr = (char *)realloc(correctAction[4].descr,strlen("Serve per chiudere il codice che fa parte dell' 'ALTRIMETI'.") + 1);
+    strcpy(correctAction[4].descr, "Serve per chiudere il codice che fa parte dell' 'ALTRIMETI'.");
+    correctAction[5].name = (char *)realloc(correctAction[5].name,strlen("MENTRE") + 1);
+    strcpy(correctAction[5].name, "MENTRE");
+    correctAction[5].descr = (char *)realloc(correctAction[5].descr,strlen("Il codice al suo interno verra' ripetuto fin quando la condizione e' VERA.") + 1);
+    strcpy(correctAction[5].descr, "Il codice al suo interno verra' ripetuto fin quando la condizione e' VERA.");
+    correctAction[6].name = (char *)realloc(correctAction[6].name,strlen("FAI") + 1);
+    strcpy(correctAction[6].name, "FAI");
+    correctAction[6].descr = (char *)realloc(correctAction[6].descr,strlen("Il codice all'interno viene eseguito almeno una volta e poi se la condizione e' VERA verra' ripetuto.") + 1);
+    strcpy(correctAction[6].descr, "Il codice all'interno viene eseguito almeno una volta e poi se la condizione e' VERA verra' ripetuto.");
+    correctAction[7].name = (char *)realloc(correctAction[7].name,strlen("FINE_CICLO") + 1);
+    strcpy(correctAction[7].name, "FINE_CICLO");
+    correctAction[7].descr = (char *)realloc(correctAction[7].descr,strlen("Serve per chiudere il codice che fa parte del 'MENTRE', 'FAI'.") + 1);
+    strcpy(correctAction[7].descr, "Serve per chiudere il codice che fa parte del 'MENTRE', 'FAI'.");
+    correctAction[8].name = (char *)realloc(correctAction[8].name,strlen("cammina") + 1);
+    strcpy(correctAction[8].name, "cammina");
+    correctAction[8].descr = (char *)realloc(correctAction[8].descr,strlen("Funzione che permette al personaggio di camminare.") + 1);
+    strcpy(correctAction[8].descr, "Funzione che permette al personaggio di camminare.");
+    correctAction[9].name = (char *)realloc(correctAction[9].name,strlen("ruota_antiorario") + 1);
+    strcpy(correctAction[9].name, "ruota_antiorario");
+    correctAction[9].descr = (char *)realloc(correctAction[9].descr,strlen("Funzione che permette al personaggio di ruotare verso sinistra.") + 1);
+    strcpy(correctAction[9].descr, "Funzione che permette al personaggio di ruotare verso sinistra.");
+    correctAction[10].name = (char *)realloc(correctAction[10].name,strlen("ruota_orario") + 1);
+    strcpy(correctAction[10].name, "ruota_orario");
+    correctAction[10].descr = (char *)realloc(correctAction[10].descr,strlen("Funzione che permette al personaggio di ruotare verso destra.") + 1);
+    strcpy(correctAction[10].descr, "Funzione che permette al personaggio di ruotare verso destra.");
+    correctAction[11].name = (char *)realloc(correctAction[11].name,strlen("Attacca") + 1);
+    strcpy(correctAction[11].name, "Attacca");
+    correctAction[11].descr = (char *)realloc(correctAction[11].descr,strlen("Attacca il nemico togliendogli un punto vita.") + 1);
+    strcpy(correctAction[11].descr, "Attacca il nemico togliendogli un punto vita.");
+    correctAction[12].name = (char *)realloc(correctAction[12].name,strlen("FINE_PROGRAMMA") + 1);
+    strcpy(correctAction[12].name, "FINE_PROGRAMMA");
+    correctAction[12].descr = (char *)realloc(correctAction[12].descr,strlen("Si utilizza per terminare il programma.") + 1);
+    strcpy(correctAction[12].descr, "Si utilizza per terminare il programma");
+    correctAction[13].name = (char *)realloc(correctAction[13].name,strlen("BLOCCATO") + 1);
+    strcpy(correctAction[13].name, "BLOCCATO");
+    correctAction[13].descr = (char *)realloc(correctAction[13].descr,strlen("Condizione che e' VERA se il personaggio e' bloccato.") + 1);
+    strcpy(correctAction[13].descr, "Condizione che e' VERA se il personaggio e' bloccato.");
+    correctAction[14].name = (char *)realloc(correctAction[14].name,strlen("E' UN NEMICO?!?") + 1);
+    strcpy(correctAction[14].name, "E' UN NEMICO?!?");
+    correctAction[14].descr = (char *)realloc(correctAction[14].descr,strlen("Controlla se nel blocco successivo c'e' un nemico. Restituisce VERO se c'e' il nemico, senno' e' FALSO.") + 1);
+    strcpy(correctAction[14].descr, "Controlla se nel blocco successivo c'e' un nemico. Restituisce VERO se c'e' il nemico, senno' e' FALSO.");
     
-    correctAction[13].name = (char *)realloc(correctAction[13].name,strlen("Variabile") + 1);
-    strcpy(correctAction[13].name, "Variabile");
-    correctAction[13].descr = (char *)realloc(correctAction[13].descr,strlen("Contenitore di valori (numeri).") + 1);
-    strcpy(correctAction[13].descr, "Contenitore di valori (numeri).");
+    correctAction[15].name = (char *)realloc(correctAction[15].name,strlen("Variabile") + 1);
+    strcpy(correctAction[15].name, "Variabile");
+    correctAction[15].descr = (char *)realloc(correctAction[15].descr,strlen("Contenitore di valori (numeri).") + 1);
+    strcpy(correctAction[15].descr, "Contenitore di valori (numeri).");
 }
 void bondVar(){
     correctVar[0].id=var_nSteps;
