@@ -582,10 +582,10 @@ void run_actions(int *fexit){
                     i=if_run(action_buffer[i+1],i+1,&vidx);
                     break;
                 case action_WHILE:
-                    i=while_run(action_buffer[i+1],i+1,&vidx);
+                    i=cicle_run(action_buffer[i],action_buffer[i+1],i+1,&vidx);
                     break;
                 case action_DO:
-                    i=do_run(action_buffer[i+1],i+1,&vidx);
+                    i=cicle_run(action_buffer[i],action_buffer[i+1],i+1,&vidx);
                     break;
                 case action_WALK:
                     walk();
