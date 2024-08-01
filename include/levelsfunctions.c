@@ -579,13 +579,13 @@ void run_actions(int *fexit){
             switch (action_buffer[i])
             {
                 case action_IF:
-                    i=if_run(action_buffer[i+1],i+1);
+                    i=if_run(action_buffer[i+1],i+1,&vidx);
                     break;
                 case action_WHILE:
-                    i=while_run(action_buffer[i+1],i+1);
+                    i=while_run(action_buffer[i+1],i+1,&vidx);
                     break;
                 case action_DO:
-                    i=do_run(action_buffer[i+1],i+1);
+                    i=do_run(action_buffer[i+1],i+1,&vidx);
                     break;
                 case action_WALK:
                     walk();
@@ -604,6 +604,9 @@ void run_actions(int *fexit){
                         switch(var_buffer[vidx].type){
                             case var_nSteps:
                                 set_steps(action_buffer[var_buffer[vidx].actIndex]-action_VAR);
+                                break;
+                            case var_nTurns:
+                                set_turns(action_buffer[var_buffer[vidx].actIndex]-action_VAR);
                                 break;
                         }
                         vidx++;

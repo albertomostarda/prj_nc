@@ -4,14 +4,15 @@
 
 extern int nSteps, nRot, isWalkEnd;
 
-int if_run(int condition, int condPos);
-int while_run(int condition, int condPos);
-int do_run(int condition, int condPos);
+int if_run(int condition, int condPos, int *varPos);
+int while_run(int condition, int condPos, int *varPos);
+int do_run(int condition, int condPos, int *varPos);
 //void for_run(int condition);
 void walk();
 void rotcclock();
 void rotclock();
 void set_steps(int value);
+void set_turns(int value);
 void attack();
 int checkEnemy();
 int checkObstacle();
