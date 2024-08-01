@@ -398,6 +398,7 @@ void addone(){
     //aggiungere reset dialoghi
 }
 void addVar(int *qAdd){
+    // menu di aggiunta delle variavili ad action_buffer se le varaibili sono attive nel livello
     int limvar_size=1, value=0, vBreak=1, var_val=0;
     int* lim_var=NULL;
     switch(sLevel){

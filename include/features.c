@@ -10,7 +10,7 @@
 #include <time.h>
 #include <windows.h>
 // #include <signal.h>
-#include <setjmp.h> //Probabilmente non lo utilizzero'
+//#include <setjmp.h> //Probabilmente non lo utilizzero'
 //Per tornare a un punto specifico dopo il signal potrei utilizzare il setjmp e longjmp implementando la libreria setjmp.h
 //Mi devo ricordare di implementare una var globale per tenere traccia dello funzione in cui si trova il programma
 //state_t curState;
@@ -18,11 +18,11 @@ const int max_path=8192;
 static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD. Buona Programmazione";
 char *pContinue="Premi INVIO per continuare";
 static char *sizeWarn="Per favore evita di ridimensionare la finestra del terminale";
-// Giacomo 5-1, avevo la necessita' di un testo abbastanza grande per il testing;
+// v Giacomo 5-1, avevo la necessita' di un testo abbastanza grande per il testing. v
 static char *testBible="Ora a voi, ricchi: piangete e gridate per le sciagure che cadranno su di voi! Le vostre ricchezze sono marce, i vostri vestiti sono mangiati dalle tarme. Il vostro oro e il vostro argento sono consumati dalla ruggine, la loro ruggine si alzerà ad accusarvi e divorerà le vostre carni come un fuoco.";
 int sLevel, rStatus, lvlToDo=0;
 //ConsoleSize defaultSize;
-jmp_buf env;
+//jmp_buf env;
 
 // void resize_handler(){
 //     time_t sContinue;
@@ -91,7 +91,7 @@ void start(){
     refresh();
 }
 void run(){
-    setjmp(env);
+    //setjmp(env);
     int isRun=1;
     while(isRun){
         switch(rStatus){
@@ -110,7 +110,6 @@ void run(){
         }
     }
 }
-
 void nclearBuff(void){
     int buff;
     nodelay(stdscr, TRUE);
@@ -165,7 +164,6 @@ void myPause(void){
     refresh();
     getch();
 }
-
 void Cprint(WINDOW *tmp,  char *pText, int hPad, int vPad, int fNL){
     //da aggiustare in vista di righe pari
     int hSize=getmaxx(tmp), vSize=getmaxy(tmp);
@@ -231,7 +229,6 @@ void Cprint(WINDOW *tmp,  char *pText, int hPad, int vPad, int fNL){
     free(final_txt);
     wrefresh(tmp);
 }
-
 char** Hsplit(int HSIZE,  char *pText, char **split_txt,int padding, int forceNL, int *nLines) {
     int textLength = strlen(pText);
 
@@ -330,7 +327,6 @@ int fCountLines(FILE *tmpFile){
     rewind(tmpFile);
     return fLines;
 }
-
 // int fCountCols(FILE *tmpFile){
 //     int fCols=0;
 //     char eFlag='\0';

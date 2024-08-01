@@ -382,7 +382,6 @@ int checkEnemy() {
     int y = pg1.locate.y;
     int x = pg1.locate.x;
     int found = 0;
-
     switch(pg1.rotation) {
         case 0: // Se si trova sopra al pg
             if (mapArr[y-1][x] >= '5' && mapArr[y-1][x] <= '9') {
@@ -391,7 +390,6 @@ int checkEnemy() {
                 found = 1;
             }
             break;
-
         case 1: // Se si trova a destra
             if (mapArr[y][x+1] >= '5' && mapArr[y][x+1] <= '9') {
                 lastEnemy.y = y;
@@ -399,7 +397,6 @@ int checkEnemy() {
                 found = 1;
             }
             break;
-
         case 2: // Se si trova sotto il pg
             if (mapArr[y+1][x] >= '5' && mapArr[y+1][x] <= '9') {
                 lastEnemy.y = y + 1;
@@ -407,7 +404,6 @@ int checkEnemy() {
                 found = 1;
             }
             break;
-
         case 3: // Se si trova a sinitra
             if (mapArr[y][x-1] >= '5' && mapArr[y][x-1] <= '9') {
                 lastEnemy.y = y;
@@ -419,7 +415,6 @@ int checkEnemy() {
             found = 0;
             break;
     }
-
     return found;
 }
 int getEndCicle(int lsPos){
@@ -429,15 +424,15 @@ int getEndCicle(int lsPos){
     }
     return lsPos-1;
 }
-void attack_splash(){
-    chtype ogColor= getbkgd(stdscr);
-    erase();
-    bkgd(COLOR_PAIR(9));
-    refresh();
-    napms(200);
-    bkgd(ogColor);
-    refresh();
-    print_map(map);
-    print_action();
-    printOneDLine();
-}
+// void attack_splash(){
+//     chtype ogColor= getbkgd(stdscr);
+//     erase();
+//     bkgd(COLOR_PAIR(9));
+//     refresh();
+//     napms(200);
+//     bkgd(ogColor);
+//     refresh();
+//     print_map(map);
+//     print_action();
+//     printOneDLine();
+// }
