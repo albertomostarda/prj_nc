@@ -27,6 +27,36 @@ void ifErrorMSG(){
     action_buffer=(int *)realloc(action_buffer,curAction_size*sizeof(int));
     dReload=1;
 }
+void elseErrorMSG(){
+    werase(dialogue);
+    box(dialogue,0,0);
+    Cprint(dialogue,"Puoi inserire l' 'ALTRIMENTI' solamente dopo il 'FINE_SE'.",1,1,0);
+    curAction_size--;
+    action_buffer=(int *)realloc(action_buffer,curAction_size*sizeof(int));
+    dReload=1;
+}
+int elseEndError(int lPos){
+    int elseCount=0;
+    for(int i=0;i<lPos;i++){
+        if(action_buffer[i]==action_ELSE){
+            elseCount++;
+        }else if(action_buffer[i]==action_ENDELSE){
+            elseCount--;
+            if(elseCount<0){
+                return -1;
+            }
+        }
+    }
+    return elseCount;
+}
+void elseEndErrorMSG(){
+    werase(dialogue);
+    box(dialogue,0,0);
+    Cprint(dialogue,"Puoi inserire il' 'FINE_ALTRIMENTI' solamente dopo aver utilizzato l' 'ALTRIMENTI'.",1,1,0);
+    curAction_size--;
+    action_buffer=(int *)realloc(action_buffer,curAction_size*sizeof(int));
+    dReload=1;
+}
 int conditionError(int lastPos){
     if(action_buffer[lastPos]<=action_ENDSTART||action_buffer[lastPos]>=action_VAR){
         int halfY=getmaxy(dialogue)/2, halfX=getmaxx(dialogue)/2, txtLen=0;

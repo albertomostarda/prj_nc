@@ -51,7 +51,7 @@ void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
     }
 }
 void print_action(){
-    int conLenght=0, actY=0, indent=1, isCond=0,canGo=1, checkEnd=0, varPos=0, endStart=0;//
+    int conLenght=0, actY=0, indent=1, isCond=0,canGo=1, checkEnd=0, varPos=0, endStart=0, canElse=0, checkEndElse=0;//
     werase(action);
     box(action, 0,0);
     for(int i=0;i<curAction_size&&canGo;i++){
@@ -78,6 +78,7 @@ void print_action(){
                         mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
                         conLenght+=strlen(correctAction[action_buffer[i]].name)+alPad+(3*indent)+1;
                         isCond=-1;
+                        canElse=0;
                     }
                     break;
                 case action_ENDIF:
@@ -89,6 +90,7 @@ void print_action(){
                             }
                             mvwprintw(action,auPad+actY,alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
                             actY++;
+                            canElse=1;
                         }else if(checkEnd<0){
                             werase(dialogue);
                             box(dialogue,0,0);
@@ -107,6 +109,29 @@ void print_action(){
                         dReload=1;
                     }
                     break;
+                case action_ELSE:
+                    if(canElse){
+                        mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
+                        actY++;
+                        indent++;
+                        canElse=-1;
+                    }else{
+                        elseErrorMSG();
+                    }
+                    break;
+                case action_ENDELSE:
+                    checkEndElse=elseEndError(i+1);
+                    if(checkEndElse>=0){
+                        if(indent>1){
+                            indent--;
+                        }
+                        mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
+                        actY++;
+                        canElse=0;
+                    }else{
+                        elseEndErrorMSG();
+                    }
+                    break;
                 case action_WHILE:
                 case action_DO:
                     if(isCond){
@@ -115,6 +140,7 @@ void print_action(){
                         mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
                         conLenght+=strlen(correctAction[action_buffer[i]].name)+alPad+(3*indent)+1;
                         isCond=-1;
+                        canElse=0;
                     }
                     break;
                 case action_ENDCICLE:
@@ -126,6 +152,7 @@ void print_action(){
                             }
                             mvwprintw(action,auPad+actY,alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
                             actY++;
+                            canElse=0;
                         }else if(checkEnd<0){
                             werase(dialogue);
                             box(dialogue,0,0);
@@ -168,6 +195,7 @@ void print_action(){
                                 conLenght=0;
                                 actY++;
                                 indent++;
+                                canElse=0;
                             }else{
                                 actY--;
                             }
@@ -182,12 +210,15 @@ void print_action(){
                         mvwprintw(action, auPad+actY, alPad+(3*indent),"%s= %d;", correctVar[var_buffer[varPos].type].name,action_buffer[var_buffer[varPos].actIndex]-action_VAR);
                         varPos++;
                         actY++;
+                        canElse=0;
                     }else if(conLenght!=0){
                         conLenght+=strlen(correctAction[action_buffer[i-1]].name);
                         mvwprintw(action, auPad+actY, conLenght,"%s", correctAction[action_buffer[i]].name);
+                        canElse=0;
                     }else{
                         mvwprintw(action, auPad+actY, alPad+(3*indent),"%s", correctAction[action_buffer[i]].name);
                         actY++;
+                        canElse=0;
                     }
                     break;
             }
@@ -308,16 +339,18 @@ int *createAlimit(int *limSize){
             aLimit[3]=action_ENDSTART;
             break;
         case 3:
-            *limSize=8;
+            *limSize=10;
             aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
             aLimit[0]=action_IF;
             aLimit[1]=action_ENDIF;
-            aLimit[2]=action_WALK;
-            aLimit[3]=action_LROTATE;
-            aLimit[4]=action_RROTATE;
-            aLimit[5]=action_ENDSTART;
-            aLimit[6]=action_isObstacle;
-            aLimit[7]=action_isEnemy;
+            aLimit[2]=action_ELSE;
+            aLimit[3]=action_ENDELSE;
+            aLimit[4]=action_WALK;
+            aLimit[5]=action_LROTATE;
+            aLimit[6]=action_RROTATE;
+            aLimit[7]=action_ENDSTART;
+            aLimit[8]=action_isObstacle;
+            aLimit[9]=action_isEnemy;
             break;
         case 4:
             *limSize=6;
@@ -581,6 +614,9 @@ void run_actions(int *fexit){
             {
                 case action_IF:
                     i=if_run(action_buffer[i+1],i+1,&vidx);
+                    break;
+                case action_ELSE:
+                    i=else_run(i+1,&vidx);
                     break;
                 case action_WHILE:
                     i=cicle_run(action_buffer[i],action_buffer[i+1],i+1,&vidx);
