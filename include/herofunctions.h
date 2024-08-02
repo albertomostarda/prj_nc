@@ -17,6 +17,7 @@ void set_turns(int value);
 void attack();
 int checkEnemy();
 int checkObstacle();
+int checkNGoal();
 int getEndStruct(int posi, int type);
 //int getEndCicle(int lsPos);
 //void attack_splash();

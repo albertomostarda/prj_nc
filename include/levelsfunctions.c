@@ -203,6 +203,8 @@ void print_action(){
                             werase(dialogue);
                             box(dialogue, 0, 0);
                             Cprint(dialogue,"Questa e' una condizione e deve essere inserita solo dopo un 'IF','WHILE,'DO-WHILE'",1,1,0);
+                            curAction_size--;
+                            action_buffer=(int *)realloc(action_buffer,curAction_size*sizeof(int));
                             dReload=1;
                         }
                     }
@@ -339,18 +341,16 @@ int *createAlimit(int *limSize){
             aLimit[3]=action_ENDSTART;
             break;
         case 3:
-            *limSize=10;
+            *limSize=8;
             aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
             aLimit[0]=action_IF;
             aLimit[1]=action_ENDIF;
-            aLimit[2]=action_ELSE;
-            aLimit[3]=action_ENDELSE;
-            aLimit[4]=action_WALK;
-            aLimit[5]=action_LROTATE;
-            aLimit[6]=action_RROTATE;
-            aLimit[7]=action_ENDSTART;
-            aLimit[8]=action_isObstacle;
-            aLimit[9]=action_isEnemy;
+            aLimit[2]=action_WALK;
+            aLimit[3]=action_LROTATE;
+            aLimit[4]=action_RROTATE;
+            aLimit[5]=action_ENDSTART;
+            aLimit[6]=action_isObstacle;
+            aLimit[7]=action_isEnemy;
             break;
         case 4:
             *limSize=6;
@@ -363,6 +363,19 @@ int *createAlimit(int *limSize){
             aLimit[5]=action_ENDSTART;
             break;
         case 5:
+            *limSize=11;
+            aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
+            aLimit[0]=action_IF;
+            aLimit[1]=action_ENDIF;
+            aLimit[2]=action_ELSE;
+            aLimit[3]=action_ENDELSE;
+            aLimit[4]=action_WHILE;
+            aLimit[5]=action_ENDCICLE;
+            aLimit[6]=action_WALK;
+            aLimit[7]=action_RROTATE;
+            aLimit[8]=action_isObstacle;
+            aLimit[9]=action_isNotGoal;
+            aLimit[10]=action_ENDSTART;
             break;
     }
     return aLimit;
@@ -835,7 +848,11 @@ int checkEndLvl(){
             case 1:
             case 2:
             case 3:
+            case 4:
                 pg1.rotation=0;
+                break;
+            case 5:
+                pg1.rotation=1;
                 break;
         }
         // free(action_buffer);

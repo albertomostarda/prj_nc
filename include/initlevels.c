@@ -8,7 +8,7 @@
 #include <ncurses/ncurses.h>
 
 char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
-fullAction correctAction[16];
+fullAction correctAction[17];
 Pos choicePos[4];
 int alPad=5, auPad=3;
 int levelLimitation=0;
@@ -87,7 +87,17 @@ char** init_map(int lPad, int uPad){
     free(fullpath);
     fclose(fp);
     getbegyx(map,wBegy,wBegy);
-
+    switch(sLevel){
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            pg1.rotation=0;
+            break;
+        case 5:
+            pg1.rotation=1;
+            break;
+    }
     for(int i=0;i<fLines;i++){
         wmove(map,wBegy+uPad+i,wBegx+lPad);
         printcolor_str(map,Mmap[i], strlen(Mmap[i]), i);
@@ -98,7 +108,7 @@ char** init_map(int lPad, int uPad){
 }
 void bond_action(){
     actionCode i=0;
-    for(int idx=0;idx<16;i++,idx++){
+    for(int idx=0;idx<17;i++,idx++){
         correctAction[idx].id=i;
     }
     correctAction[0].name = (char *)realloc(correctAction[0].name,strlen("INIZIO") + 1);
@@ -119,8 +129,8 @@ void bond_action(){
     strcpy(correctAction[3].descr, "Viene usato dopo aver chiuso il 'SE' (dopo il FINE_SE). Se la condizione del 'SE' e' FALSA viene eseguito il suo codice.");
     correctAction[4].name = (char *)realloc(correctAction[4].name,strlen("FINE_ALTRIMENTI") + 1);
     strcpy(correctAction[4].name, "FINE_ALTRIMENTI");
-    correctAction[4].descr = (char *)realloc(correctAction[4].descr,strlen("Serve per chiudere il codice che fa parte dell' 'ALTRIMETI'.") + 1);
-    strcpy(correctAction[4].descr, "Serve per chiudere il codice che fa parte dell' 'ALTRIMETI'.");
+    correctAction[4].descr = (char *)realloc(correctAction[4].descr,strlen("Serve per chiudere il codice che fa parte dell' 'ALTRIMENTI'.") + 1);
+    strcpy(correctAction[4].descr, "Serve per chiudere il codice che fa parte dell' 'ALTRIMENTI'.");
     correctAction[5].name = (char *)realloc(correctAction[5].name,strlen("MENTRE") + 1);
     strcpy(correctAction[5].name, "MENTRE");
     correctAction[5].descr = (char *)realloc(correctAction[5].descr,strlen("Il codice al suo interno verra' ripetuto fin quando la condizione e' VERA.") + 1);
@@ -161,11 +171,15 @@ void bond_action(){
     strcpy(correctAction[14].name, "E' UN NEMICO?!?");
     correctAction[14].descr = (char *)realloc(correctAction[14].descr,strlen("Controlla se nel blocco successivo c'e' un nemico. Restituisce VERO se c'e' il nemico, senno' e' FALSO.") + 1);
     strcpy(correctAction[14].descr, "Controlla se nel blocco successivo c'e' un nemico. Restituisce VERO se c'e' il nemico, senno' e' FALSO.");
-    
-    correctAction[15].name = (char *)realloc(correctAction[15].name,strlen("Variabile") + 1);
-    strcpy(correctAction[15].name, "Variabile");
-    correctAction[15].descr = (char *)realloc(correctAction[15].descr,strlen("Contenitore di valori (numeri).") + 1);
-    strcpy(correctAction[15].descr, "Contenitore di valori (numeri).");
+    correctAction[15].name = (char *)realloc(correctAction[15].name,strlen("La Fine non e' Giunta") + 1);
+    strcpy(correctAction[15].name, "La Fine non e' Giunta");
+    correctAction[15].descr = (char *)realloc(correctAction[15].descr,strlen("Condizione che controlla se si e' arrivati al traguardo (rettangolo VERDE).") + 1);
+    strcpy(correctAction[15].descr, "Condizione che controlla se si e' arrivati al traguardo (rettangolo VERDE).");
+
+    correctAction[16].name = (char *)realloc(correctAction[16].name,strlen("Variabile") + 1);
+    strcpy(correctAction[16].name, "Variabile");
+    correctAction[16].descr = (char *)realloc(correctAction[16].descr,strlen("Contenitore di valori (numeri).") + 1);
+    strcpy(correctAction[16].descr, "Contenitore di valori (numeri).");
 }
 void bondVar(){
     correctVar[0].id=var_nSteps;
@@ -198,6 +212,17 @@ void init_action(){
             var_size=1;
             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
             action_buffer[1]=action_VAR+2;
+            var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
+            var_buffer[0].type=var_nSteps;
+            var_buffer[0].actIndex=curAction_size-1;
+            mvwprintw(action, auPad+1, alPad+3, "%s = %d;", correctVar[var_buffer[0].type].name,action_buffer[1]-action_VAR);
+            levelLimitation=2;
+            break;
+        case 5:
+            curAction_size++;
+            var_size=1;
+            action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
+            action_buffer[1]=action_VAR+1;
             var_buffer=(linked_var *)realloc(var_buffer, var_size*sizeof(linked_var));
             var_buffer[0].type=var_nSteps;
             var_buffer[0].actIndex=curAction_size-1;

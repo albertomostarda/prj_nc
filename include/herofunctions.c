@@ -50,6 +50,9 @@ int if_run(int condition, int condPos,int *varPos){
         case action_isEnemy:
             isClear=checkEnemy();
             break;
+        case action_isNotGoal:
+            isClear=checkNGoal();
+            break;
         // nel caso di piu' condizioni
     }
     while(isClear&&action_buffer[idx]!=action_ENDIF){
@@ -171,63 +174,112 @@ int getEndStruct(int posi, int type){
     return posi-1;
 }
 void walk(){
-    int i=0, isObstacle=checkObstacle(),lastCheck=0;
-    while(isObstacle!=1&&i<nSteps){
-        switch (pg1.rotation)
-        {
-            case 0:
-                mapArr[pg1.locate.y][pg1.locate.x]='2';
-                pg1.locate.y=pg1.locate.y-1;
-                if(mapArr[pg1.locate.y][pg1.locate.x]=='4'){
-                    mapArr[pg1.locate.y][pg1.locate.x]='3';
-                }else{
-                    mapArr[pg1.locate.y][pg1.locate.x]='1';
-                }
+    int i = 0, isObstacle = checkObstacle(), lastCheck = 0;
+    while(isObstacle != 1 && i < nSteps){
+        // Salva la posizione corrente del personaggio
+        int oldX = pg1.locate.x;
+        int oldY = pg1.locate.y;
+
+        switch (pg1.rotation) {
+            case 0: // Rotazione verso l'alto
+                pg1.locate.y -= 1;
                 break;
-            case 1:
-                mapArr[pg1.locate.y][pg1.locate.x]='2';
-                pg1.locate.x++;
-                if(mapArr[pg1.locate.y][pg1.locate.x]=='4'){
-                    mapArr[pg1.locate.y][pg1.locate.x]='3';
-                }else{
-                    mapArr[pg1.locate.y][pg1.locate.x]='1';
-                }
+            case 1: // Rotazione verso destra
+                pg1.locate.x += 1;
                 break;
-            case 2:
-                mapArr[pg1.locate.y][pg1.locate.x]='2';
-                pg1.locate.y++;
-                if(mapArr[pg1.locate.y][pg1.locate.x]=='4'){
-                    mapArr[pg1.locate.y][pg1.locate.x]='3';
-                }else{
-                    mapArr[pg1.locate.y][pg1.locate.x]='1';
-                }
+            case 2: // Rotazione verso il basso
+                pg1.locate.y += 1;
                 break;
-            case 3:
-                mapArr[pg1.locate.y][pg1.locate.x]='2';
-                pg1.locate.x--;
-                if(mapArr[pg1.locate.y][pg1.locate.x]=='4'){
-                    mapArr[pg1.locate.y][pg1.locate.x]='3';
-                }else{
-                    mapArr[pg1.locate.y][pg1.locate.x]='1';
-                }
+            case 3: // Rotazione verso sinistra
+                pg1.locate.x -= 1;
                 break;
         }
+
+        // Controlla se il personaggio è arrivato su un ostacolo o un elemento speciale
+        if(mapArr[pg1.locate.y][pg1.locate.x] == '4'){
+            mapArr[pg1.locate.y][pg1.locate.x] = '3';
+        } else {
+            mapArr[pg1.locate.y][pg1.locate.x] = '1';
+        }
+        if (mapArr[oldY][oldX] != '4') { // Evita di sovrascrivere un traguardo
+            mapArr[oldY][oldX] = '2'; // Segna come visitata
+        }
+
         run_anim(action);
         napms(500);
         print_map(map);
-        lastCheck=isObstacle;
-        isObstacle=checkObstacle();
+        lastCheck = isObstacle;
+        isObstacle = checkObstacle();
         i++;
     }
-    if(lastCheck!=1){
-        isWalkEnd=1;
-    }else{
+
+    if(lastCheck != 1){
+        isWalkEnd = 1;
+    } else {
         werase(dialogue);
-        box(dialogue,0,0);
-        Cprint(dialogue,"L'eroe non puo continuare per questa direzione.",1,1,0);    
-        isWalkEnd=0;
+        box(dialogue, 0, 0);
+        Cprint(dialogue, "L'eroe non può continuare per questa direzione.", 1, 1, 0);    
+        isWalkEnd = 0;
     }
 }
+// void walk(){
+//     int i=0, isObstacle=checkObstacle(),lastCheck=0;
+//     while(isObstacle!=1&&i<nSteps){
+//         switch (pg1.rotation)
+//         {
+//             case 0:
+//                 mapArr[pg1.locate.y][pg1.locate.x]='2';
+//                 pg1.locate.y=pg1.locate.y-1;
+//                 if(mapArr[pg1.locate.y][pg1.locate.x]=='4'){
+//                     mapArr[pg1.locate.y][pg1.locate.x]='3';
+//                 }else{
+//                     mapArr[pg1.locate.y][pg1.locate.x]='1';
+//                 }
+//                 break;
+//             case 1:
+//                 mapArr[pg1.locate.y][pg1.locate.x]='2';
+//                 pg1.locate.x++;
+//                 if(mapArr[pg1.locate.y][pg1.locate.x]=='4'){
+//                     mapArr[pg1.locate.y][pg1.locate.x]='3';
+//                 }else{
+//                     mapArr[pg1.locate.y][pg1.locate.x]='1';
+//                 }
+//                 break;
+//             case 2:
+//                 mapArr[pg1.locate.y][pg1.locate.x]='2';
+//                 pg1.locate.y++;
+//                 if(mapArr[pg1.locate.y][pg1.locate.x]=='4'){
+//                     mapArr[pg1.locate.y][pg1.locate.x]='3';
+//                 }else{
+//                     mapArr[pg1.locate.y][pg1.locate.x]='1';
+//                 }
+//                 break;
+//             case 3:
+//                 mapArr[pg1.locate.y][pg1.locate.x]='2';
+//                 pg1.locate.x--;
+//                 if(mapArr[pg1.locate.y][pg1.locate.x]=='4'){
+//                     mapArr[pg1.locate.y][pg1.locate.x]='3';
+//                 }else{
+//                     mapArr[pg1.locate.y][pg1.locate.x]='1';
+//                 }
+//                 break;
+//         }
+//         run_anim(action);
+//         napms(500);
+//         print_map(map);
+//         lastCheck=isObstacle;
+//         isObstacle=checkObstacle();
+//         i++;
+//     }
+//     if(lastCheck!=1){
+//         isWalkEnd=1;
+//     }else{
+//         werase(dialogue);
+//         box(dialogue,0,0);
+//         Cprint(dialogue,"L'eroe non puo continuare per questa direzione.",1,1,0);    
+//         isWalkEnd=0;
+//     }
+// }
 int cicle_run(int cType, int condition, int condPos, int *varPos){
     int idx=condPos+1, isClear=0, tempVPos=*varPos;
     if(cType==action_WHILE){
@@ -238,6 +290,9 @@ int cicle_run(int cType, int condition, int condPos, int *varPos){
                 break;
             case action_isEnemy:
                 isClear=checkEnemy();
+                break;
+            case action_isNotGoal:
+                isClear=checkNGoal();
                 break;
             // nel caso aggiungere piu' condizioni
         }
@@ -297,6 +352,9 @@ int cicle_run(int cType, int condition, int condPos, int *varPos){
                 break;
             case action_isEnemy:
                 isClear=checkEnemy();
+                break;
+            case action_isNotGoal:
+                isClear=checkNGoal();
                 break;
             // nel caso aggiungere piu' condizioni
         }
@@ -484,6 +542,13 @@ int checkEnemy() {
             break;
     }
     return found;
+}
+int checkNGoal(){
+    if(mapArr[pg1.locate.y][pg1.locate.x]=='3'){
+        return 0;
+    }else{
+        return 1;
+    }
 }
 // int getEndCicle(int lsPos){
 //     while (action_buffer[lsPos]!=action_ENDCICLE)

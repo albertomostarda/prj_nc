@@ -25,8 +25,9 @@ typedef enum actionCode{
         action_ENDSTART,    //12
         action_isObstacle,  //13
         action_isEnemy,     //14
+        action_isNotGoal,      //15
         //action_FUNC,
-        action_VAR       //15+varVAULUE
+        action_VAR       //16+varVAULUE
 }actionCode;
 typedef enum varCode{
     var_nSteps,
