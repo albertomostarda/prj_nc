@@ -21,9 +21,12 @@ static char* logo[]={
 void loadSaves(){
     //se i livelli saranno piu di 9 modificare grandezza lvltxt e terminatore
     char *path=getPath(), lvltxt[2];
+    int nLenght=strlen(path)+strlen("\\saves\\save.sav");
+    path=(char *)realloc(path,nLenght*sizeof(char));
     strcat(path, "\\saves\\save.sav");
     FILE *fp=fopen(path,"r");
     if(fp!=NULL){
+        werase(stdscr);
         fgets(lvltxt,sizeof(lvltxt),fp);
         lvltxt[1]='\0';
         lvlToDo=atoi(lvltxt);
@@ -35,6 +38,8 @@ void loadSaves(){
 }
 void createSaves(){
     char *path=getPath();
+    int nLenght=strlen(path)+strlen("\\saves\\save.sav");
+    path=(char *)realloc(path,nLenght*sizeof(char));
     strcat(path, "\\saves\\save.sav");
     FILE *fp=fopen(path,"w");
     fprintf(fp,"%d\0",lvlToDo);

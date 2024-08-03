@@ -16,12 +16,19 @@ int levelLimitation=0;
 char** init_map(int lPad, int uPad){
     FILE *fp;
     char *exePath=getPath();
+    // char *fileName[]={
+    //     "resources\\levelone.txt",
+    //     "resources\\leveltwo.txt",
+    //     "resources\\levelthree.txt",
+    //     "resources\\levelfour.txt",
+    //     "resources\\levelfive.txt"
+    // };
     char *fileName[]={
-        "resources\\levelone.txt",
-        "resources\\leveltwo.txt",
-        "resources\\levelthree.txt",
-        "resources\\levelfour.txt",
-        "resources\\levelfive.txt"
+        "resources/levelone.txt",
+        "resources/leveltwo.txt",
+        "resources/levelthree.txt",
+        "resources/levelfour.txt",
+        "resources/levelfive.txt"
     };
     char buffer[160];
     char *fullpath=(char*)malloc(max_path);
@@ -53,7 +60,7 @@ char** init_map(int lPad, int uPad){
         fullpath[strlen(fullpath)]='\\';
     }
     strcat(fullpath,fileName[sLevel-1]);
-    fp=fopen(fullpath,"r");
+    fp=fopen(fileName[sLevel-1],"r");
     if(fp==NULL){
         mvwprintw(dialogue, 1,1, "File non trovato");
         wrefresh(dialogue);
@@ -92,10 +99,10 @@ char** init_map(int lPad, int uPad){
         case 2:
         case 3:
         case 4:
-            pg1.rotation=0;
+            pg1.rotation=1;
             break;
         case 5:
-            pg1.rotation=1;
+            pg1.rotation=0;
             break;
     }
     for(int i=0;i<fLines;i++){
@@ -207,7 +214,7 @@ void init_action(){
         case 1:
         case 2:
         case 3:
-        case 4:
+        case 5:
             curAction_size++;
             var_size=1;
             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
@@ -218,7 +225,7 @@ void init_action(){
             mvwprintw(action, auPad+1, alPad+3, "%s = %d;", correctVar[var_buffer[0].type].name,action_buffer[1]-action_VAR);
             levelLimitation=2;
             break;
-        case 5:
+        case 4:
             curAction_size++;
             var_size=1;
             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));

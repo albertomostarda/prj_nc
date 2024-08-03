@@ -56,7 +56,6 @@ void start(){
     //system("resize -s 35 160 >/dev/null"); //per linux;
     //signal(SIGWINCH, handle_resize);
     system("MODE 160,35");
-    
     initscr();
     cbreak();
     noecho();

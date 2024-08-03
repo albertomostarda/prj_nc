@@ -22,50 +22,57 @@ int dialBuff_size=0, dialPos=0, isEmpty=1,dReload=0;
 //         Sleep(500);
 //     }
 // }
-char* getDialPath(){
-    char *pPath=getPath();
-    char *fName[]={
-        "resources\\dialogueone.txt\0",
-        "resources\\dialoguetwo.txt\0",
-        "resources\\dialoguethree.txt\0",
-        "resources\\dialoguefour.txt\0",
-        "resources\\dialoguefive.txt\0"
-    };
-    // switch(sLevel){
-    //     case 1:
-    //         strcpy(fName, "resources\\dialogueone.txt");
-    //         break;
-    //     case 2:
-    //         strcpy(fName, "resources\\dialoguetwo.txt");
-    //         break;
-    //     case 3:
-    //         strcpy(fName, "resources\\dialoguethree.txt");
-    //         break;
-    //     case 4:
-    //         strcpy(fName, "resources\\dialoguefour.txt");
-    //         break;
-    //     case 5:
-    //         strcpy(fName, "resources\\dialoguefive.txt");
-    //         break;
-    // }
-    char *dialPath=(char *)malloc(max_path);
-    strcpy(dialPath, pPath);
-    if (dialPath[strlen(dialPath)] != '\\') {
-       dialPath[strlen(dialPath)]='\\';
-    }
-    strcat(dialPath, fName[sLevel-1]);
-    return dialPath;
-}
+// char* getDialPath(){
+//     char *pPath=getPath();
+//     char *fName[]={
+//         "resources\\dialogueone.txt\0",
+//         "resources\\dialoguetwo.txt\0",
+//         "resources\\dialoguethree.txt\0",
+//         "resources\\dialoguefour.txt\0",
+//         "resources\\dialoguefive.txt\0"
+//     };
+//     // switch(sLevel){
+//     //     case 1:
+//     //         strcpy(fName, "resources\\dialogueone.txt");
+//     //         break;
+//     //     case 2:
+//     //         strcpy(fName, "resources\\dialoguetwo.txt");
+//     //         break;
+//     //     case 3:
+//     //         strcpy(fName, "resources\\dialoguethree.txt");
+//     //         break;
+//     //     case 4:
+//     //         strcpy(fName, "resources\\dialoguefour.txt");
+//     //         break;
+//     //     case 5:
+//     //         strcpy(fName, "resources\\dialoguefive.txt");
+//     //         break;
+//     // }
+//     char *dialPath=(char *)malloc(max_path);
+//     strcpy(dialPath, pPath);
+//     if (dialPath[strlen(dialPath)] != '\\') {
+//        dialPath[strlen(dialPath)]='\\';
+//     }
+//     strcat(dialPath, fName[sLevel-1]);
+//     return dialPath;
+// }
 void loadDialogue(){
     FILE *fp;
-    char *pDial=getDialPath(), buffer[2048];
+    char /**pDial=getDialPath(),*/buffer[2048];
     int dLength=0;
-    fp=fopen(pDial,"r");
+    char *fName[]={
+        "resources/dialogueone.txt",
+        "resources/dialoguetwo.txt",
+        "resources/dialoguethree.txt",
+        "resources/dialoguefour.txt",
+        "resources/dialoguefive.txt"
+    };
+    fp=fopen(fName[sLevel-1],"r");
     if(fp==NULL){
         mvwprintw(dialogue,1,1,"Dialoghi non caricati");
         wrefresh(dialogue);
         fclose(fp);
-        free(pDial);
+        //free(pDial);
         isEmpty=1;
         return ;
         //aggiungere chiusura/ritorno al Menu
@@ -88,7 +95,7 @@ void loadDialogue(){
         }
     }
     fclose(fp);
-    free(pDial);
+    //free(pDial);
 }
 void printOneDLine(){
     int maxDY=getmaxy(dialogue)-2, maxDX=getmaxx(dialogue)-1;
