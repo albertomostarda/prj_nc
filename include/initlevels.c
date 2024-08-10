@@ -143,7 +143,7 @@ void bond_action(){
     correctAction[5].descr = (char *)realloc(correctAction[5].descr,strlen("Il codice al suo interno verra' ripetuto fin quando la condizione e' VERA.") + 1);
     strcpy(correctAction[5].descr, "Il codice al suo interno verra' ripetuto fin quando la condizione e' VERA.");
     correctAction[6].name = (char *)realloc(correctAction[6].name,strlen("FAI") + 1);
-    strcpy(correctAction[6].name, "FAI");
+    strcpy(correctAction[6].name, "FAI MENTRE");
     correctAction[6].descr = (char *)realloc(correctAction[6].descr,strlen("Il codice all'interno viene eseguito almeno una volta e poi se la condizione e' VERA verra' ripetuto.") + 1);
     strcpy(correctAction[6].descr, "Il codice all'interno viene eseguito almeno una volta e poi se la condizione e' VERA verra' ripetuto.");
     correctAction[7].name = (char *)realloc(correctAction[7].name,strlen("FINE_CICLO") + 1);
@@ -214,7 +214,6 @@ void init_action(){
         case 1:
         case 2:
         case 3:
-        case 5:
             curAction_size++;
             var_size=1;
             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
@@ -226,6 +225,7 @@ void init_action(){
             levelLimitation=2;
             break;
         case 4:
+        case 5:
             curAction_size++;
             var_size=1;
             action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));

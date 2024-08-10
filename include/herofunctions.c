@@ -3,6 +3,7 @@
 #include "levelsfunctions.h"
 #include "features.h"
 #include "dialfunctions.h"
+#include "errors.h"
 #include <ncurses/ncurses.h>
 
 int nSteps,nRot=1, isWalkEnd=1; // non ancora usata
@@ -40,8 +41,8 @@ int checkObstacle(){
             break;
     }
 }
-int if_run(int condition, int condPos,int *varPos){
-    int idx=condPos+1, isClear=0;
+int if_run(int condition, int condPos,int *varPos, int *RCond){
+    int idx=condPos+1, isClear=0,lRCond=-1;
     switch (condition)
     {
         case action_isObstacle:
@@ -55,14 +56,21 @@ int if_run(int condition, int condPos,int *varPos){
             break;
         // nel caso di piu' condizioni
     }
+    if(isClear==1){
+        *RCond=0;
+    }else{
+        *RCond=1;
+    }
     while(isClear&&action_buffer[idx]!=action_ENDIF){
         switch (action_buffer[idx])
         {
             case action_IF:
-                idx=if_run(action_buffer[idx+1], idx+1, varPos);
+                idx=if_run(action_buffer[idx+1], idx+1, varPos, &lRCond);
                 break;
             case action_ELSE:
-                idx=else_run(idx+1, varPos);
+                if(lRCond!=-1){
+                    idx=else_run(idx+1, varPos,&lRCond);
+                }
                 break;
             case action_WHILE:
                 idx=cicle_run(action_buffer[idx],action_buffer[idx+1], idx+1, varPos);
@@ -104,51 +112,56 @@ int if_run(int condition, int condPos,int *varPos){
         return getEndStruct(condPos+1,1);
     }
 }
-int else_run(int nxtPos, int *varPos){
-    int idx=nxtPos;
-    while(action_buffer[idx]!=action_ENDELSE){
-        switch (action_buffer[idx])
-        {
-            case action_IF:
-                idx=if_run(action_buffer[idx+1], idx+1, varPos);
-                break;
-            case action_ELSE:
-                idx=else_run(idx+1, varPos);
-                break;
-            case action_WHILE:
-                idx=cicle_run(action_buffer[idx],action_buffer[idx+1], idx+1, varPos);
-                break;
-            case action_DO:
-                idx=cicle_run(action_buffer[idx],action_buffer[idx+1], idx+1, varPos);
-                break;
-            case action_WALK:
-                walk();
-                break;
-            case action_LROTATE:
-                rotcclock();
-                break;
-            case action_RROTATE:
-                rotclock();
-                break;
-            case action_attack:
-                attack();
-                break;
-            default:
-                if(action_buffer[idx]>=action_VAR){
-                    switch(var_buffer[*varPos].type){
-                            case var_nSteps:
-                                set_steps(action_buffer[var_buffer[*varPos].actIndex]-action_VAR);
-                                break;
-                            case var_nTurns:
-                                set_turns(action_buffer[var_buffer[*varPos].actIndex]-action_VAR);
-                                break;
-                        }
-                        *varPos++;
-                }
-                break;
+int else_run(int nxtPos, int *varPos, int *lastCond){
+    int idx=nxtPos, passRCond=-1;
+    if(*lastCond==0){
+        while(lastCond&&action_buffer[idx]!=action_ENDELSE){
+            switch (action_buffer[idx])
+            {
+                case action_IF:
+                    idx=if_run(action_buffer[idx+1], idx+1, varPos, &passRCond);
+                    break;
+                case action_ELSE:
+                    if(passRCond!=-1){
+                        idx=else_run(idx+1, varPos, &passRCond);
+                    }
+                    break;
+                case action_WHILE:
+                    idx=cicle_run(action_buffer[idx],action_buffer[idx+1], idx+1, varPos);
+                    break;
+                case action_DO:
+                    idx=cicle_run(action_buffer[idx],action_buffer[idx+1], idx+1, varPos);
+                    break;
+                case action_WALK:
+                    walk();
+                    break;
+                case action_LROTATE:
+                    rotcclock();
+                    break;
+                case action_RROTATE:
+                    rotclock();
+                    break;
+                case action_attack:
+                    attack();
+                    break;
+                default:
+                    if(action_buffer[idx]>=action_VAR){
+                        switch(var_buffer[*varPos].type){
+                                case var_nSteps:
+                                    set_steps(action_buffer[var_buffer[*varPos].actIndex]-action_VAR);
+                                    break;
+                                case var_nTurns:
+                                    set_turns(action_buffer[var_buffer[*varPos].actIndex]-action_VAR);
+                                    break;
+                            }
+                            *varPos++;
+                    }
+                    break;
+            }
+            idx++;
         }
-        idx++;
     }
+    *lastCond=-1;
     if(action_buffer[idx]==action_ENDELSE){
         return idx-1;
     }else{
@@ -281,7 +294,7 @@ void walk(){
 //     }
 // }
 int cicle_run(int cType, int condition, int condPos, int *varPos){
-    int idx=condPos+1, isClear=0, tempVPos=*varPos;
+    int idx=condPos+1, isClear=0, tempVPos=*varPos, elsePassC=-1, InsTot=0;
     if(cType==action_WHILE){
          switch (condition)
         {
@@ -299,17 +312,20 @@ int cicle_run(int cType, int condition, int condPos, int *varPos){
     }else if(cType==action_DO){
         isClear=1;
     }
-    while(isClear){
+    while(isClear&&InsTot<100){
         idx=condPos+1;
         tempVPos=*varPos;
+        elsePassC=-1;
         while(action_buffer[idx]!=action_ENDCICLE){
             switch (action_buffer[idx])
             {
                 case action_IF:
-                    idx=if_run(action_buffer[idx+1], idx+1, varPos);
+                    idx=if_run(action_buffer[idx+1], idx+1, varPos, &elsePassC);
                     break;
                 case action_ELSE:
-                    idx=else_run(idx+1, varPos);
+                    if(elsePassC!=-1){
+                        idx=else_run(idx+1, varPos, &elsePassC);
+                    }
                     break;
                 case action_WHILE:
                     idx=cicle_run(action_buffer[idx],action_buffer[idx+1], idx+1,varPos);
@@ -358,6 +374,10 @@ int cicle_run(int cType, int condition, int condPos, int *varPos){
                 break;
             // nel caso aggiungere piu' condizioni
         }
+        InsTot++;
+    }
+    if(InsTot>=99){
+        cOverflowErrMSG();
     }
     *varPos=tempVPos+1;
     if(action_buffer[idx]==action_ENDCICLE){

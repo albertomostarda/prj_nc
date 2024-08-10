@@ -4,9 +4,9 @@
 
 extern int nSteps, nRot, isWalkEnd;
 
-int if_run(int condition, int condPos, int *varPos);
+int if_run(int condition, int condPos, int *varPos, int *RCond);
 int cicle_run(int cType,int condition, int condPos, int *varPos);
-int else_run(int nxtPos, int *varPos);
+int else_run(int nxtPos, int *varPos, int *lastCond);
 //int do_run(int condition, int condPos, int *varPos);
 //void for_run(int condition);
 void walk();

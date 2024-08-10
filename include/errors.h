@@ -9,6 +9,7 @@ void elseEndErrorMSG();
 int endIFError(int lPos);
 void cicleErrorMSG(int curPos);
 int endCicleError(int lPos);
+void cOverflowErrMSG();
 
 
 #endif
