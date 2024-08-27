@@ -35,8 +35,8 @@ typedef enum varCode{
 }varCode;
 typedef struct fullvar{
     varCode id;
-    char *name;
-    char *descr;
+    char name[10];
+    char descr[60];
 }fullVariables;
 typedef struct linkVar{
     int type;
@@ -44,8 +44,8 @@ typedef struct linkVar{
 }linked_var;
 typedef struct fullact{
     actionCode id;
-    char *name;
-    char *descr;
+    char name[25];
+    char descr[150];
 } fullAction;
 typedef struct Position{
     int y;

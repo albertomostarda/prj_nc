@@ -43,7 +43,6 @@ void printLvl(){
     wrefresh(map);
     wrefresh(action);
     wrefresh(dialogue);
-    pg1.rotation=0;
     //enemy.icon=219|COLOR_PAIR(3);
     mapArr=init_map(26,1);
     init_action();
@@ -54,14 +53,4 @@ void printLvl(){
 }
 void level_run(){
     action_run();
-}
-void freeabuffer(){
-    // free(var_buffer);
-    // free(action_buffer);
-    // curAction_size=1;
-    // var_size=1;
-    for(int i=0;i<12;i++){
-        free(correctAction[i].name);
-        free(correctAction[i].descr);
-    }
 }

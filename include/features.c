@@ -21,30 +21,7 @@ static char *sizeWarn="Per favore evita di ridimensionare la finestra del termin
 // v Giacomo 5-1, avevo la necessita' di un testo abbastanza grande per il testing. v
 static char *testBible="Ora a voi, ricchi: piangete e gridate per le sciagure che cadranno su di voi! Le vostre ricchezze sono marce, i vostri vestiti sono mangiati dalle tarme. Il vostro oro e il vostro argento sono consumati dalla ruggine, la loro ruggine si alzerà ad accusarvi e divorerà le vostre carni come un fuoco.";
 int sLevel, rStatus, lvlToDo=0;
-//ConsoleSize defaultSize;
-//jmp_buf env;
 
-// void resize_handler(){
-//     time_t sContinue;
-//     SHORT cols = 0, rows = 0;
-//     CONSOLE_SCREEN_BUFFER_INFO csbi;
-//     SMALL_RECT def={0,0,160,35};
-
-//     while (1) {
-//         GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-//         rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-//         cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-
-//         if (rows != 35 || cols != 160) {
-//             COORD coord = { 160, 35 };
-//             SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-//             SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &def);
-//             system("MODE 160,35");
-//         }
-
-//         Sleep(100);
-//     }
-// }
 void start(){
     // HANDLE resizeThread;
     // DWORD tid;
@@ -116,26 +93,7 @@ void nclearBuff(void){
     nodelay(stdscr, FALSE);
 
 }
-// char *getPath() {
-//     int j=0;
-//     char *path = (char *)malloc(max_path * sizeof(char));
-//     if (path == NULL) {
-//         printw("Percorso non allocato");
-//         refresh();
-//         napms(5000);
-//         return NULL;
-//     }
-//     ssize_t len = readlink("/proc/self/exe", path, max_path - 1);
-//     for (ssize_t i = len - 1; i >= 0; i--) {
-//         if (path[i] == '/') {
-//             path[i] = '\0';
-//             break;
-//         }
-//     }
-//     char *exePath = (char *)malloc(strlen(path) + 1);
-//     strcpy(exePath, path);
-//     return exePath;
-// }
+
 char *getPath(){
     int pathsize=0, isFound=1;
     char *path=(char *)malloc(max_path*sizeof(char));
@@ -150,14 +108,6 @@ char *getPath(){
     path=(char *)realloc(path,strlen(path));
     return path;
 }
-// void handle_resize(int sig){
-//     if(curState==fSTART){
-//         //ipotetica chiamata del salto
-//     }
-//     else if(curState==fRUN){
-
-//     }
-// }
 void myPause(void){
     printw("Premi INVIO per continuare . . .");
     refresh();
@@ -326,15 +276,6 @@ int fCountLines(FILE *tmpFile){
     rewind(tmpFile);
     return fLines;
 }
-// int fCountCols(FILE *tmpFile){
-//     int fCols=0;
-//     char eFlag='\0';
-//     while((eFlag=fgetc(tmpFile))!='\n'){
-//         fCols++;
-//     }
-//     rewind(tmpFile);
-//     return fCols;
-// }
 void initColors(){
     init_pair(1, COLOR_WHITE, COLOR_BLACK); //testo normale
     init_pair(2, COLOR_WHITE, COLOR_WHITE); // per #

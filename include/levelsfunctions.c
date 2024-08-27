@@ -314,14 +314,6 @@ void print_add(int *limitact, int limit_size){
     }
     wrefresh(action);
 }
-// void action_add(){
-//     switch(sLevel){
-//         case 2:
-//             addone();
-//             return;
-//             break;
-//     }
-// }
 int *createAlimit(int *limSize){
     int *aLimit=(int *)malloc(sizeof(int));
     switch(sLevel){
@@ -368,7 +360,7 @@ int *createAlimit(int *limSize){
             aLimit[10]=action_ENDSTART;
             break;
         case 5:
-            *limSize=13;
+            *limSize=11;
             aLimit=(int *)realloc(aLimit,(*limSize)*sizeof(int));
             aLimit[0]=action_IF;
             aLimit[1]=action_ENDIF;
@@ -377,12 +369,10 @@ int *createAlimit(int *limSize){
             aLimit[4]=action_DO;
             aLimit[5]=action_ENDCICLE;
             aLimit[6]=action_WALK;
-            aLimit[7]=action_LROTATE;
-            aLimit[8]=action_attack;
-            aLimit[9]=action_isObstacle;
-            aLimit[10]=action_isEnemy;
-            aLimit[11]=action_isNotGoal;
-            aLimit[12]=action_ENDSTART;
+            aLimit[7]=action_attack;
+            aLimit[8]=action_isEnemy;
+            aLimit[9]=action_isNotGoal;
+            aLimit[10]=action_ENDSTART;
             break;
     }
     return aLimit;
@@ -568,11 +558,8 @@ int addValue(){
             val_size=2;
             break;
         case 2:
-            break;
         case 3:
-            break;
         case 4:
-            break;
         case 5:
             break;
     }
@@ -627,22 +614,19 @@ int addValue(){
     }
 }
 void run_actions(int *fexit){
-    int i=1,vidx=0, lastIfCond=-1;
+    int i=1,vidx=0, lastIfCond=0;
     if(action_buffer[curAction_size-1]==action_ENDSTART){
         while(action_buffer[i]!=action_ENDSTART){
             switch (action_buffer[i])
             {
                 case action_IF:
-                    i=if_run(action_buffer[i+1],i+1,&vidx,&lastIfCond);
+                    //lastIfCond=enable_else(action_buffer[i+1]);
+                    i=if_run(i+1,&vidx,&lastIfCond);
                     break;
                 case action_ELSE:
-                    if(lastIfCond!=-1){
-                        i=else_run(i+1,&vidx,&lastIfCond);
-                    }
+                    i=else_run(i+1,&vidx,&lastIfCond);
                     break;
                 case action_WHILE:
-                    i=cicle_run(action_buffer[i],action_buffer[i+1],i+1,&vidx);
-                    break;
                 case action_DO:
                     i=cicle_run(action_buffer[i],action_buffer[i+1],i+1,&vidx);
                     break;
@@ -651,15 +635,9 @@ void run_actions(int *fexit){
                     break;
                 case action_RROTATE:
                     rotclock();
-                    napms(100);
-                    print_map(map);
-                    napms(100);
                     break;
                 case action_LROTATE:
                     rotcclock();
-                    napms(100);
-                    print_map(map);
-                    napms(100);
                     break;
                 case action_attack:
                     attack();
@@ -858,25 +836,17 @@ int checkEndLvl(){
         nclearBuff();
         nodelay(action,FALSE);
         mapArr=init_map(26,1);
-        switch (sLevel)
-        {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                pg1.rotation=1;
-                break;
-            case 5:
-                pg1.rotation=0;
-                break;
-        }
         // free(action_buffer);
         werase(dialogue);
         box(dialogue,0,0);
         wrefresh(dialogue);
+        enemy_size=0;
+        isStart=0;
         init_action();
-        print_map(map);
         print_action();
+        loadDialogue();
+        dialPos=0;
+        printOneDLine();
         return 1;
     }else{
         werase(dialogue);

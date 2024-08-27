@@ -9,19 +9,6 @@
 char **dialogue_buffer;
 int dialBuff_size=0, dialPos=0, isEmpty=1,dReload=0;
 
-// void reloadDialogue(LPVOID *data){
-//     ThreadParam *tParam = (ThreadParam*)data;
-//     time_t waitTime;
-//     while(1){
-//         if(*(tParam->gLight)!=0){
-//             *(tParam->gLight)=0;
-//             waitTime=time(NULL);
-//             while((time(NULL)-waitTime)<30);
-//             printOneDLine();
-//         }
-//         Sleep(500);
-//     }
-// }
 char* getDialPath(){
     char *pPath=getPath();
     char *fName[]={
@@ -31,23 +18,6 @@ char* getDialPath(){
         "resources\\dialoguefour.txt\0",
         "resources\\dialoguefive.txt\0"
     };
-    // switch(sLevel){
-    //     case 1:
-    //         strcpy(fName, "resources\\dialogueone.txt");
-    //         break;
-    //     case 2:
-    //         strcpy(fName, "resources\\dialoguetwo.txt");
-    //         break;
-    //     case 3:
-    //         strcpy(fName, "resources\\dialoguethree.txt");
-    //         break;
-    //     case 4:
-    //         strcpy(fName, "resources\\dialoguefour.txt");
-    //         break;
-    //     case 5:
-    //         strcpy(fName, "resources\\dialoguefive.txt");
-    //         break;
-    // }
     char *dialPath=(char *)malloc(max_path);
     strcpy(dialPath, pPath);
     if (dialPath[strlen(dialPath)] != '\\') {
@@ -119,12 +89,9 @@ void printOneDLine(){
         }
         wrefresh(dialogue);
     }
-    
-    
 }
 void reloadDialogue(){
     time_t countDwn=time(NULL);
-    int inputCh=0;
     SBHprint(dialogue, pContinue,1);
     nodelay(stdscr,TRUE);
     nclearBuff();

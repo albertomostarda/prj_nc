@@ -9,7 +9,7 @@ extern Pos choicePos[4];
 extern char *action_codename[];
 extern int levelLimitation;
 extern fullAction correctAction[17];
-extern int auPad, alPad;
+extern int auPad, alPad, isStart;
 
 void init_menu();
 char** init_map(int lPad, int uPad );
