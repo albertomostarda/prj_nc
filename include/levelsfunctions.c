@@ -628,7 +628,9 @@ void run_actions(int *fexit){
                     break;
                 case action_WHILE:
                 case action_DO:
+                    isWCicle=1;
                     i=cicle_run(action_buffer[i],action_buffer[i+1],i+1,&vidx);
+                    isWCicle=0;
                     break;
                 case action_WALK:
                     walk();

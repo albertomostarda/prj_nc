@@ -28,7 +28,7 @@ void SBHprint(WINDOW *tmp, char *pText, int padding);
 int csearch(char *sample,int start, char find);
 char* getPath(); // Da cambiare in caso di passaggio a windows
 int fCountLines(FILE *tmpFile);
-int fCountCols(FILE *tmpFile);
+//int fCountCols(FILE *tmpFile);
 void initColors();
 // void resize_handler();
 

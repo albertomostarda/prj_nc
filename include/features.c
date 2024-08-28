@@ -15,7 +15,7 @@
 //Mi devo ricordare di implementare una var globale per tenere traccia dello funzione in cui si trova il programma
 //state_t curState;
 const int max_path=8192;
-static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD e il tasto Q per tornare indietro nei menu'. Buona Programmazione";
+static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD e il tasto Q per tornare indietro nei menu'.";
 char *pContinue="Premi INVIO per continuare";
 static char *sizeWarn="Per favore evita di ridimensionare la finestra del terminale";
 // v Giacomo 5-1, avevo la necessita' di un testo abbastanza grande per il testing. v
@@ -47,6 +47,7 @@ void start(){
     wrefresh(stdscr);
     rStatus=1;
     Cprint(stdscr,initTxt,20,0,1);
+    Hprint(stdscr,"Buona Programmazione.",20,0);
     //Hprint(win, pContinue,20,0);
     mvwprintw(stdscr,24,(getmaxx(stdscr)/2)-halfContinue,"%s", pContinue);
     wmove(stdscr,25,11);

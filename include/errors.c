@@ -3,6 +3,7 @@
 #include "dialfunctions.h"
 #include "features.h"
 #include "initlevels.h"
+#include <time.h>
 #include <ncurses/ncurses.h>
 
 int endIFError(int lPos){
@@ -109,8 +110,13 @@ int endCicleError(int lPos){
     return CCount; // se =0 tutti i cicli chiusi, se >0 mancano dei cicli aperti, <0 troppi fin_cicli
 }
 void cOverflowErrMSG(){
+    time_t reactTme=time(NULL);
     werase(dialogue);
     box(dialogue,0,0);
     Cprint(dialogue, "Hai creato un ciclo infinito. L'ho bloccato per evitare che tu rimanga bloccato qui per sempre.",1,1,0);
-    dReload=1;
+    nodelay(stdscr,TRUE);
+    nclearBuff();
+    while(getch()!='\n'&&(time(NULL)-reactTme)>10);
+    nclearBuff();
+    nodelay(stdscr, FALSE);
 }
