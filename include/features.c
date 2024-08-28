@@ -15,7 +15,7 @@
 //Mi devo ricordare di implementare una var globale per tenere traccia dello funzione in cui si trova il programma
 //state_t curState;
 const int max_path=8192;
-static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD. Buona Programmazione";
+static char *initTxt="Per navigare durante tutto il gioco si possono utilizzare sia le freccette direzionali sia i tasti WASD e il tasto Q per tornare indietro nei menu'. Buona Programmazione";
 char *pContinue="Premi INVIO per continuare";
 static char *sizeWarn="Per favore evita di ridimensionare la finestra del terminale";
 // v Giacomo 5-1, avevo la necessita' di un testo abbastanza grande per il testing. v
@@ -28,7 +28,7 @@ void start(){
     time_t start_time;
     int halfContinue=strlen(pContinue)/2;
     // defaultSize.con_height=35;
-    // defaultSize.con_width=160;
+     // defaultSize.con_width=160ò
     SetConsoleTitle("Code Adventure");
     //system("resize -s 35 160 >/dev/null"); //per linux;
     //signal(SIGWINCH, handle_resize);
@@ -285,5 +285,5 @@ void initColors(){
     init_pair(6, COLOR_GREEN, COLOR_GREEN); // per il traguardo 4
     init_pair(7, COLOR_WHITE, COLOR_BLUE);   // per il personaggio
     init_pair(8, COLOR_WHITE, COLOR_GREEN); // per il personaggio sul traguardo
-    init_pair(9,COLOR_RED,COLOR_RED);       //red splash
+    init_pair(9,COLOR_RED,COLOR_RED);       //red splash ~ Inutilizzato
 }
