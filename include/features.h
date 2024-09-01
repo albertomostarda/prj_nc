@@ -17,7 +17,7 @@ extern int sLevel, rStatus, lvlToDo;
 
 void nclearBuff(void);
 void myPause(void);
-void handle_resize(int sig); // Da cambiare in caso di passaggio a Windows
+//void handle_resize(int sig); // Da cambiare in caso di passaggio a Windows
 void start();
 void run();
 void artHprint(WINDOW *tmp, int hSize, char**draw, int dHeight);

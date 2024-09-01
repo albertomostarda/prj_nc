@@ -7,7 +7,7 @@ extern int nSteps, nRot, isWalkEnd, isWCicle;
 // int if_run(int condition, int condPos, int *varPos, int *RCond);
 int if_run(int nxtPos, int *varPos, int *OnElse);
 int cicle_run(int cType,int condition, int condPos, int *varPos);
-int enable_else(int cond);
+// int enable_else(int cond);
 int else_run(int nxtPos, int *varPos, int *fEnable);
 //int do_run(int condition, int condPos, int *varPos);
 //void for_run(int condition);

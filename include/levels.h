@@ -81,5 +81,4 @@ extern HANDLE dialogueThread;
 
 void printLvl();
 void level_run();
-void freeabuffer();
 #endif

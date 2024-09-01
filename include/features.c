@@ -240,7 +240,7 @@ void SBHprint(WINDOW *tmp, char *pText, int padding){
     wmove(tmp, getbegy(tmp)+1, getmaxx(tmp)+1);
     wrefresh(tmp);
 }
-int csearch(  char *sample, int start, char find) {
+int csearch(char *sample, int start, char find) {
     for (int i = start; i < strlen(sample); i++) {
         if (sample[i] == find) {
             return i;

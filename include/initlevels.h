@@ -11,13 +11,11 @@ extern int levelLimitation;
 extern fullAction correctAction[17];
 extern int auPad, alPad, isStart;
 
-void init_menu();
 char** init_map(int lPad, int uPad );
 void init_action();
 void bond_action();
 void bondVar();
-void action_subrun(int status,int *EXITflag);
-void free_actionBND();
-void free_varBND();
+// void free_actionBND();
+// void free_varBND();
 
 #endif
