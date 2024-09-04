@@ -7,9 +7,6 @@
 int main(int argc, char **argv){
     start();
     run();
-    //stop(); da mettere in features.c
-    werase(stdscr);
-    wrefresh(stdscr);
-    myPause();
+    stop();
     return 0;
 }

@@ -10,7 +10,7 @@
 char *action_choice[]={"INSERISCI","ELIMINA","ESEGUI","ESCI"};
 fullAction correctAction[17];
 Pos choicePos[4];
-int alPad=5, auPad=3, isStart;
+int alPad=5, auPad=3;
 int levelLimitation=0;
 
 char** init_map(int lPad, int uPad){

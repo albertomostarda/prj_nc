@@ -1,6 +1,7 @@
 #include "features.h"
 #include "levels.h"
 #include "menufunctions.h"
+#include "dialfunctions.h"
 //#include "test.c" //Luogo felice per provare i codici senza intasare il codice
 #include <stdio.h>
 #include <stdlib.h>
@@ -87,6 +88,24 @@ void run(){
         }
     }
 }
+void stop(){
+    if (dialogue_buffer != NULL) {
+        for (int i = 0; dialogue_buffer[i] != NULL; i++) {
+            free(dialogue_buffer[i]);
+        }
+        free(dialogue_buffer);
+        dialogue_buffer = NULL;
+    }
+    if (action_buffer != NULL) {
+        free(action_buffer);
+        action_buffer = NULL;
+    }
+    if(var_buffer != NULL){
+        free(var_buffer);
+        var_buffer = NULL;
+    }
+    endwin();
+}
 void nclearBuff(void){
     int buff;
     nodelay(stdscr, TRUE);
@@ -94,7 +113,6 @@ void nclearBuff(void){
     nodelay(stdscr, FALSE);
 
 }
-
 char *getPath(){
     int pathsize=0, isFound=1;
     char *path=(char *)malloc(max_path*sizeof(char));

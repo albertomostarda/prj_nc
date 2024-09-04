@@ -2,7 +2,7 @@
 #define HEROFUNCTIONS_H
 #include <ncurses/ncurses.h>
 
-extern int nSteps, nRot, isWalkEnd, isWCicle;
+extern int nSteps, nRot, isWalkEnd;
 
 // int if_run(int condition, int condPos, int *varPos, int *RCond);
 int if_run(int nxtPos, int *varPos, int *OnElse);

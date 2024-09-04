@@ -7,7 +7,7 @@
 #include <ncurses/ncurses.h>
 #include <time.h>
 
-int nSteps,nRot=1, isWalkEnd=1, isWCicle=0; // non ancora usata
+int nSteps,nRot=1, isWalkEnd=1; // non ancora usata
 Pos lastEnemy;
 
 int checkObstacle(){

@@ -5,7 +5,6 @@
 
 //pulire mapArr
 
-typedef enum heroRot{UP,DOWN,RIGHT,LEFT}pgRot;
 typedef enum actionCode{
         action_START,       //0
         action_IF,          //1
@@ -77,7 +76,6 @@ extern int var_size, curAction_size, enemy_size;
 extern int *action_buffer;
 extern linked_var *var_buffer;
 extern char **mapArr;
-extern HANDLE dialogueThread;
 
 void printLvl();
 void level_run();

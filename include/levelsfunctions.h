@@ -11,6 +11,7 @@ void print_action();
 void print_add(int *limitact, int limit_size);
 //void action_add();
 void action_run();
+void action_subrun(int status, int *EXITflag);
 void addone();
 void addVar(int *qAdd);
 void print_addVar(int *var_limited, int lVar_size);

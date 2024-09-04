@@ -6,10 +6,9 @@
 
 extern char *action_choice[];
 extern Pos choicePos[4];
-extern char *action_codename[];
 extern int levelLimitation;
 extern fullAction correctAction[17];
-extern int auPad, alPad, isStart;
+extern int auPad, alPad;
 
 char** init_map(int lPad, int uPad );
 void init_action();
