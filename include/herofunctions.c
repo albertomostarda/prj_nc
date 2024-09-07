@@ -1,3 +1,13 @@
+/**
+ * @file herofunctions.c
+ * @author Alberto Mostarda (mostarda.alberto04@gmail.com)
+ * @brief in cui sono presenti le funzioni che servono per il funzionamento del personaggio
+ * @version 1.0
+ * @date 2024-09-04
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "herofunctions.h"
 #include "levels.h"
 #include "levelsfunctions.h"
@@ -10,6 +20,11 @@
 int nSteps,nRot=1, isWalkEnd=1; // non ancora usata
 Pos lastEnemy;
 
+/**
+ * @brief Funzione che verifica la presenza di ostacoli nella casella successiva al personaggio.
+ * 
+ * @return int 
+ */
 int checkObstacle(){
     switch(pg1.rotation){
         case 0:
@@ -42,6 +57,14 @@ int checkObstacle(){
             break;
     }
 }
+/**
+ * @brief Funzione che gestisce l’esecuzione della struttura “SE”.
+ * 
+ * @param condPos 
+ * @param varPos 
+ * @param RCond 
+ * @return int 
+ */
 int if_run(int condPos,int *varPos, int *RCond){
     int idx=condPos+1, isClear=0,lRCond=-1, condition=action_buffer[condPos];
     switch (condition)
@@ -55,7 +78,6 @@ int if_run(int condPos,int *varPos, int *RCond){
         case action_isNotGoal:
             isClear=checkNGoal();
             break;
-        // nel caso di piu' condizioni
     }
     if(isClear==1){
         *RCond=0;
@@ -109,6 +131,14 @@ int if_run(int condPos,int *varPos, int *RCond){
         return getEndStruct(condPos+1,1);
     }
 }
+/**
+ * @brief Funzione che gestisce l’esecuzione della struttura “ALTRIMENTI”.
+ * 
+ * @param nxtPos 
+ * @param varPos 
+ * @param lastCond 
+ * @return int 
+ */
 int else_run(int nxtPos, int *varPos, int *lastCond){
     int idx=nxtPos, passRCond=-1;
     if(*lastCond){
@@ -158,6 +188,13 @@ int else_run(int nxtPos, int *varPos, int *lastCond){
         return getEndStruct(nxtPos,2);
     }
 }
+/**
+ * @brief Funzione che restituisce la posizione delle strutture “FINE_SE”, ”FINE_CICLO” e “FINE_ALTRIMENTI”.
+ * 
+ * @param posi 
+ * @param type 
+ * @return int 
+ */
 int getEndStruct(int posi, int type){
     actionCode caseCode;
     switch(type){
@@ -177,7 +214,10 @@ int getEndStruct(int posi, int type){
     }
     return posi-1;
 }
-
+/**
+ * @brief Funzione che permette al personaggio di camminare nella mappa.
+ * 
+ */
 void walk(){
     int i=0;
     if(checkObstacle()!=1){
@@ -231,7 +271,8 @@ void walk(){
         time_t swait=time(NULL);
         werase(dialogue);
         box(dialogue,0,0);
-        Cprint(dialogue,"L'eroe non puo continuare per questa direzione.",1,1,0);    
+        Cprint(dialogue,"L'eroe non puo continuare per questa direzione.",1,1,0);
+        SBHprint(dialogue,pContinue,1);
         nodelay(stdscr,TRUE);
         nclearBuff();
         while(getch()!='\n'&&(time(NULL)-swait)>10);
@@ -240,65 +281,15 @@ void walk(){
         isWalkEnd=0;
     }
 }
-// void walk(){
-//     int i = 0, isObstacle = checkObstacle(), lastCheck = 0, tempFlg=0;
-//     while(isObstacle != 1 && i < nSteps){
-//         // Salva la posizione corrente del personaggio
-//         int oldX = pg1.locate.x;
-//         int oldY = pg1.locate.y;
-
-//         switch (pg1.rotation) {
-//             case 0: // Rotazione verso l'alto
-//                 pg1.locate.y -= 1;
-//                 break;
-//             case 1: // Rotazione verso destra
-//                 pg1.locate.x += 1;
-//                 break;
-//             case 2: // Rotazione verso il basso
-//                 pg1.locate.y += 1;
-//                 break;
-//             case 3: // Rotazione verso sinistra
-//                 pg1.locate.x -= 1;
-//                 break;
-//         }
-//         // Controlla se il personaggio è arrivato su un ostacolo o un elemento speciale
-//         if(mapArr[pg1.locate.y][pg1.locate.x] == '4'){
-//             mapArr[pg1.locate.y][pg1.locate.x] = '3';
-//         } else {
-//             mapArr[pg1.locate.y][pg1.locate.x] = '1';
-//         }
-//         if (mapArr[oldY][oldX] != '4') { // Evita di sovrascrivere un traguardo
-//             mapArr[oldY][oldX] = '2'; // Segna come visitata
-//         }
-
-//         run_anim(action);
-//         napms(500);
-//         print_map(map);
-//         lastCheck = isObstacle;
-//         isObstacle = checkObstacle();
-//         i++;
-//     }
-
-//     if(isWCicle||nSteps==1){
-//         tempFlg=lastCheck;
-//     }else{
-//         tempFlg=isObstacle;
-//     }
-//     if(tempFlg != 1){
-//         isWalkEnd = 1;
-//     } else {
-//         time_t swait=time(NULL);
-//         werase(dialogue);
-//         box(dialogue, 0, 0);
-//         Cprint(dialogue, "L'eroe non puo' continuare per questa direzione.", 1, 1, 0);
-//         nodelay(stdscr,TRUE);
-//         nclearBuff();
-//         while(getch()!='\n'&&(time(NULL)-swait)>10);
-//         nclearBuff();
-//         nodelay(stdscr, FALSE);
-//         isWalkEnd = 0;
-//     }
-// }
+/**
+ * @brief Funzione che gestisce l’esecuzione delle strutture “MENTRE” e “FAI MENTRE”.
+ * 
+ * @param cType 
+ * @param condition 
+ * @param condPos 
+ * @param varPos 
+ * @return int 
+ */
 int cicle_run(int cType, int condition, int condPos, int *varPos){
     int idx=condPos+1, isClear=0, tempVPos=*varPos, elsePassC=-1, InsTot=0;
     if(cType==action_WHILE){
@@ -313,7 +304,6 @@ int cicle_run(int cType, int condition, int condPos, int *varPos){
             case action_isNotGoal:
                 isClear=checkNGoal();
                 break;
-            // nel caso aggiungere piu' condizioni
         }
     }else if(cType==action_DO){
         isClear=1;
@@ -326,15 +316,12 @@ int cicle_run(int cType, int condition, int condPos, int *varPos){
             switch (action_buffer[idx])
             {
                 case action_IF:
-                    //elsePassC=enable_else(action_buffer[idx+1]);
                     idx=if_run(idx+1, varPos, &elsePassC);
                     break;
                 case action_ELSE:
                     idx=else_run(idx+1, varPos, &elsePassC);
                     break;
                 case action_WHILE:
-                    idx=cicle_run(action_buffer[idx],action_buffer[idx+1], idx+1,varPos);
-                    break;
                 case action_DO:
                     idx=cicle_run(action_buffer[idx],action_buffer[idx+1], idx+1,varPos);
                     break;
@@ -367,7 +354,6 @@ int cicle_run(int cType, int condition, int condPos, int *varPos){
                     break;
             }
             idx++;
-            //InsTot++;
         }
         switch (condition)
         {
@@ -380,9 +366,7 @@ int cicle_run(int cType, int condition, int condPos, int *varPos){
             case action_isNotGoal:
                 isClear=checkNGoal();
                 break;
-            // nel caso aggiungere piu' condizioni
         }
-        //InsTot++;
     }
     if(InsTot>=99){
         cOverflowErrMSG();
@@ -394,6 +378,10 @@ int cicle_run(int cType, int condition, int condPos, int *varPos){
         return getEndStruct(condPos+1,3);
     }
 }
+/**
+ * @brief Funzione che permette al personaggio di attaccare i nemici.
+ * 
+ */
 void attack(){
         char curEnemyHP=mapArr[lastEnemy.y][lastEnemy.x]-5;
         if((curEnemyHP-1)>'0'){
@@ -403,8 +391,11 @@ void attack(){
         }
         napms(1000);
         print_map(map);
-        //attack_splash();
 }
+/**
+ * @brief Funzione che ruota in senso antiorario la direzione in cui il personaggio deve proseguire.
+ * 
+ */
 void rotcclock(){
     for(int i=0;i<nRot;i++){
         if(pg1.rotation==0){
@@ -414,6 +405,10 @@ void rotcclock(){
         }
     }
 }
+/**
+ * @brief Funzione che ruota in senso orario la direzione in cui il personaggio deve proseguire.
+ * 
+ */
 void rotclock(){
     for(int i=0;i<nRot;i++){
         if(pg1.rotation==3){
@@ -423,12 +418,27 @@ void rotclock(){
         }
     }
 }
+/**
+ * @brief Funzione che imposta il numero di passi che il personaggio esegue.
+ * 
+ * @param value 
+ */
 void set_steps(int value){
     nSteps=value;
 }
+/**
+ * @brief Funzione che imposta il numero di rotazioni che il personaggio esegue.
+ * 
+ * @param value 
+ */
 void set_turns(int value){
     nRot=value;
 }
+/**
+ * @brief Funzione che verifica la presenza dei nemici nella casella successiva al personaggio.
+ * 
+ * @return int 
+ */
 int checkEnemy() {
     int y = pg1.locate.y;
     int x = pg1.locate.x;
@@ -468,6 +478,11 @@ int checkEnemy() {
     }
     return found;
 }
+/**
+ * @brief Funzione che verifica se il personaggio sia arrivato al traguardo.
+ * 
+ * @return int 
+ */
 int checkNGoal(){
     if(mapArr[pg1.locate.y][pg1.locate.x]=='3'){
         return 0;

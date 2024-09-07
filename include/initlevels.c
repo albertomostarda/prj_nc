@@ -1,3 +1,13 @@
+/**
+ * @file initlevels.c
+ * @author Alberto Mostarda (mostarda.alberto04@gmail.com)
+ * @brief in cui sono presenti funzioni per l’inizializzazione dei livelli
+ * @version 1.0
+ * @date 2024-09-04
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "initlevels.h"
 #include "features.h"
 #include "levels.h"
@@ -13,6 +23,13 @@ Pos choicePos[4];
 int alPad=5, auPad=3;
 int levelLimitation=0;
 
+/**
+ * @brief Funzione che inizializza la mappa del livello.
+ * 
+ * @param lPad 
+ * @param uPad 
+ * @return char** 
+ */
 char** init_map(int lPad, int uPad){
     FILE *fp;
     char *exePath=getPath();
@@ -41,10 +58,8 @@ char** init_map(int lPad, int uPad){
         wrefresh(dialogue);
         free(fullpath);
         return 0;
-        //aggiungere chiusura/ritorno al Menu
     }
     fLines=fCountLines(fp);
-    //fCols=fCountCols(fp);
     char **Mmap=(char**)malloc(fLines*sizeof(char*));
     if(Mmap ==NULL){
         fclose(fp);
@@ -63,9 +78,6 @@ char** init_map(int lPad, int uPad){
             }
         }
     }
-    // mvwprintw(dialogue, 1,1, "array creato");
-    // wrefresh(dialogue);
-    // getch();
     free(fullpath);
     fclose(fp);
     getbegyx(map,wBegy,wBegy);
@@ -88,6 +100,10 @@ char** init_map(int lPad, int uPad){
     }
     return Mmap;
 }
+/**
+ * @brief Funzione che associa a ogni azione esistente nel gioco  ( quelle utilizzabili dal giocatore ) un nome e una descrizione.
+ * 
+ */
 void bond_action(){
     actionCode i=0;
     for(int idx=0;idx<17;i++,idx++){
@@ -128,6 +144,10 @@ void bond_action(){
     strcpy(correctAction[16].name, "Variabile");
     strcpy(correctAction[16].descr, "Contenitore di valori (numeri).");
 }
+/**
+ * @brief Funzione che associa a ogni variabile esistente nel gioco ( quelle utilizzabili dal giocatore ) un nome e una descrizione.
+ * 
+ */
 void bondVar(){
     correctVar[0].id = var_nSteps;
     strcpy(correctVar[0].name, "Passi");
@@ -136,12 +156,14 @@ void bondVar(){
     strcpy(correctVar[1].name, "Giri");
     strcpy(correctVar[1].descr, "Variabile che indica quanti giri deve fare il personaggio.");
 }
+/**
+ * @brief Funzione che inizializza le azioni che il giocatore potrà effettuare nel livello.
+ * 
+ */
 void init_action(){
     int vSize=0,hSize=0;
     curAction_size=1;
-    // free_actionBND();
     bond_action();
-    // free_varBND();
     bondVar();
     action_buffer=(int *)realloc(action_buffer, curAction_size*sizeof(int));
     if(action_buffer == NULL){

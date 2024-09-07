@@ -1,3 +1,13 @@
+/**
+ * @file levels.c
+ * @author Alberto Mostarda (mostarda.alberto04@gmail.com)
+ * @brief in cui sono presenti le funzioni e le strutture di dati riguardanti i livelli
+ * @version 1.0
+ * @date 2024-09-04
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "levels.h"
 #include "features.h"
 #include "initlevels.h"
@@ -27,6 +37,10 @@ chtype walls=219|COLOR_PAIR(2);
 chtype road=219|COLOR_PAIR(4);
 chtype goal=219|COLOR_PAIR(6);
 
+/**
+ * @brief Funzione che permette la corretta stampa del livello.
+ * 
+ */
 void printLvl(){
     //ThreadParam passingTd;
     map=newwin(24,110,0,0);
@@ -51,6 +65,10 @@ void printLvl(){
     printOneDLine();
     //dialogueThread=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE) reloadDialogue, &passingTd,0,NULL);
 }
+/**
+ * @brief Funzione che permette l’esecuzione del livello.
+ * 
+ */
 void level_run(){
     action_run();
 }

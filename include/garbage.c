@@ -403,3 +403,63 @@
 //         Sleep(500);
 //     }
 // }
+// # herofunction.c
+// void walk(){
+//     int i = 0, isObstacle = checkObstacle(), lastCheck = 0, tempFlg=0;
+//     while(isObstacle != 1 && i < nSteps){
+//         // Salva la posizione corrente del personaggio
+//         int oldX = pg1.locate.x;
+//         int oldY = pg1.locate.y;
+
+//         switch (pg1.rotation) {
+//             case 0: // Rotazione verso l'alto
+//                 pg1.locate.y -= 1;
+//                 break;
+//             case 1: // Rotazione verso destra
+//                 pg1.locate.x += 1;
+//                 break;
+//             case 2: // Rotazione verso il basso
+//                 pg1.locate.y += 1;
+//                 break;
+//             case 3: // Rotazione verso sinistra
+//                 pg1.locate.x -= 1;
+//                 break;
+//         }
+//         // Controlla se il personaggio è arrivato su un ostacolo o un elemento speciale
+//         if(mapArr[pg1.locate.y][pg1.locate.x] == '4'){
+//             mapArr[pg1.locate.y][pg1.locate.x] = '3';
+//         } else {
+//             mapArr[pg1.locate.y][pg1.locate.x] = '1';
+//         }
+//         if (mapArr[oldY][oldX] != '4') { // Evita di sovrascrivere un traguardo
+//             mapArr[oldY][oldX] = '2'; // Segna come visitata
+//         }
+
+//         run_anim(action);
+//         napms(500);
+//         print_map(map);
+//         lastCheck = isObstacle;
+//         isObstacle = checkObstacle();
+//         i++;
+//     }
+
+//     if(isWCicle||nSteps==1){
+//         tempFlg=lastCheck;
+//     }else{
+//         tempFlg=isObstacle;
+//     }
+//     if(tempFlg != 1){
+//         isWalkEnd = 1;
+//     } else {
+//         time_t swait=time(NULL);
+//         werase(dialogue);
+//         box(dialogue, 0, 0);
+//         Cprint(dialogue, "L'eroe non puo' continuare per questa direzione.", 1, 1, 0);
+//         nodelay(stdscr,TRUE);
+//         nclearBuff();
+//         while(getch()!='\n'&&(time(NULL)-swait)>10);
+//         nclearBuff();
+//         nodelay(stdscr, FALSE);
+//         isWalkEnd = 0;
+//     }
+// }

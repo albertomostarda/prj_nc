@@ -1,6 +1,7 @@
 #ifndef MENUFUNCTIONS_H
 #define MENUFUNCTIONS_H
 
+
 void loadSaves();
 void createSaves();
 void init_menu();

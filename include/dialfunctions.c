@@ -1,3 +1,13 @@
+/**
+ * @file dialfunctions.c
+ * @author Alberto Mostarda (mostarda.alberto04@gmail.com)
+ * @brief in cui sono presenti le funzioni per la gestione dei dialoghi
+ * @version 1.0
+ * @date 2024-09-04
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "dialfunctions.h"
 #include "levels.h"
 #include "features.h"
@@ -9,6 +19,11 @@
 char **dialogue_buffer;
 int dialBuff_size=0, dialPos=0, isEmpty=1,dReload=0;
 
+/**
+ * @brief Funzione che restituisce il percorso del file dei dialoghi.
+ * 
+ * @return char* 
+ */
 char* getDialPath(){
     char *pPath=getPath();
     char *fName[]={
@@ -26,6 +41,10 @@ char* getDialPath(){
     strcat(dialPath, fName[sLevel-1]);
     return dialPath;
 }
+/**
+ * @brief Funzione che carica da file i dialoghi.
+ * 
+ */
 void loadDialogue(){
     FILE *fp;
     char *pDial=getDialPath(),buffer[2048];
@@ -45,7 +64,6 @@ void loadDialogue(){
         free(pDial);
         isEmpty=1;
         return ;
-        //aggiungere chiusura/ritorno al Menu
     }else
     dialBuff_size = fCountLines(fp);
     dialogue_buffer = (char **)realloc(dialogue_buffer, dialBuff_size * sizeof(char *));
@@ -67,6 +85,10 @@ void loadDialogue(){
     fclose(fp);
     free(pDial);
 }
+/**
+ * @brief Funzione che stampa una singola linea di dialogo al centro della finestra dei dialoghi.
+ * 
+ */
 void printOneDLine(){
     int maxDY=getmaxy(dialogue)-2, maxDX=getmaxx(dialogue)-1;
     if(isEmpty){
@@ -90,6 +112,10 @@ void printOneDLine(){
         wrefresh(dialogue);
     }
 }
+/**
+ * @brief Funzione che in caso di cambiamento della finestra dei dialoghi, mette in pausa il dialogo presente in quel momento per dieci secondi o fin quando non si preme INVIO ↵.
+ * 
+ */
 void reloadDialogue(){
     time_t countDwn=time(NULL);
     SBHprint(dialogue, pContinue,1);

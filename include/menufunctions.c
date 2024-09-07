@@ -1,3 +1,13 @@
+/**
+ * @file menufunctions.c
+ * @author Alberto Mostarda (mostarda.alberto04@gmail.com)
+ * @brief Libreria in cui sono presenti le funzioni per il funzionamento del menu principale e il caricamento e salvataggio dei progressi
+ * @version 1.0
+ * @date 2024-09-04
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "menufunctions.h"
 #include "features.h"
 #include <stdio.h>
@@ -18,6 +28,10 @@ static char* logo[]={
 "  \\_____\\___/ \\__,_|\\___| /_/    \\_\\__,_| \\_/ \\___|_| |_|\\__|\\__,_|_|  \\___|"
 };
 
+/**
+ * @brief Funzione che carica, se esistono, gli ultimi progressi salvati.
+ * 
+ */
 void loadSaves(){
     //se i livelli saranno piu di 9 modificare grandezza lvltxt e terminatore
     char *path=getPath(), lvltxt[2];
@@ -36,6 +50,10 @@ void loadSaves(){
         fclose(fp);
     }
 }
+/**
+ * @brief Funzione che crea un salvataggio dei progressi effettuati.
+ * 
+ */
 void createSaves(){
     char *path=getPath();
     int nLenght=strlen(path)+strlen("\\saves\\save.sav");
@@ -46,6 +64,10 @@ void createSaves(){
     fclose(fp);
     free(path);
 }
+/**
+ * @brief Funzione che inizializza il menu.
+ * 
+ */
 void init_menu(){
     int midScr=getmaxx(stdscr)/2,midCPos=(getmaxy(stdscr)/2)+2;
     if(lvlToDo==0){
@@ -62,6 +84,11 @@ void init_menu(){
     mvwprintw(stdscr,menupos_ch[2],midScr-(strlen(menu_choice[2])/2),"%s",menu_choice[2]);
     wrefresh(stdscr);
 }
+/**
+ * @brief Funzione che permette al menu di funzionare.
+ * 
+ * @param quit 
+ */
 void menu(int *quit){
     int midScr=getmaxx(stdscr)/2,rMenu=1, highlight=0,menuch=0;
     keypad(stdscr,TRUE);
@@ -106,6 +133,13 @@ void menu(int *quit){
     keypad(stdscr,FALSE);
     return;
 }
+/**
+ * @brief Funzione che esegue l’opzione selezionata nel menu.
+ * 
+ * @param mMode 
+ * @param pExit 
+ * @param lvlPass 
+ */
 void menu_subrun(int mMode, int *pExit, int *lvlPass){
     switch(mMode){
         case 0:
@@ -138,13 +172,20 @@ void menu_subrun(int mMode, int *pExit, int *lvlPass){
             werase(stdscr);
             box(stdscr,0,0);
             Cprint(stdscr, "Arrivederci!",1,1,0);
+            SBHprint(stdscr,"Premi un tasto qualsiasi per continuare",1);
+            nclearBuff();
             getch();
-            napms(100);
+            nclearBuff();
+            napms(50);
             *lvlPass=0;
             *pExit=0;
             break;
     }
 }
+/**
+ * @brief Funzione che inizializza il menu della scelta del livello.
+ * 
+ */
 void init_selectLvl(){
     int midScr=getmaxx(stdscr)/2, midPos=getmaxy(stdscr)/2,idx=0,fPrint=1;
     werase(stdscr);
@@ -157,6 +198,11 @@ void init_selectLvl(){
         mvwprintw(stdscr, selectpos[i], midScr-(strlen(lvl_choice[i])/2),"%s", lvl_choice[i]);
     }
 }
+/**
+ * @brief Funzione che permette alla selezione del livello di poter funzionare.
+ * 
+ * @param rQuit 
+ */
 void selectLvl(int *rQuit){
     int fBreak=1, focus=0, choice=0, midScr=getmaxx(stdscr)/2;
     while(fBreak)
@@ -207,6 +253,11 @@ void selectLvl(int *rQuit){
         }
     }
 }
+/**
+ * @brief Funzione che esegue l’opzione selezionata nel menu della selezione del livello.
+ * 
+ * @param mode 
+ */
 void selectLvl_subrun(int mode){
     switch(mode){
         case 1:

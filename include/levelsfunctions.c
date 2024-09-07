@@ -1,3 +1,13 @@
+/**
+ * @file levelsfunctions.c
+ * @author Alberto Mostarda (mostarda.alberto04@gmail.com)
+ * @brief Libreria in cui sono presenti le funzioni per il funzionamento dei livelli
+ * @version 1.0
+ * @date 2024-09-04
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "levelsfunctions.h"
 #include "initlevels.h"
 #include "levels.h"
@@ -7,11 +17,27 @@
 #include <ncurses/ncurses.h>
 #include <time.h>
 
+/**
+ * @brief Funzione che serve alla corretta stampa della mappa. Nello specifico questa funzione serve a suddividere la mappa in righe.
+ * 
+ * @param tWin 
+ * @param colStr 
+ * @param pLines 
+ * @param tmpY 
+ */
 void printcolor_str(WINDOW *tWin,char *colStr, int pLines, int tmpY){
     for(int i=0;i<pLines;i++){
         printcolor_char(tWin,colStr[i],i, tmpY);
     }
 }
+/**
+ * @brief Funzione che serve alla corretta stampa della mappa. Nello specifico questa funzione stampa i singoli caratteri delle righe generate da printcolor_str.
+ * 
+ * @param tWin 
+ * @param cch 
+ * @param locX 
+ * @param locY 
+ */
 void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
     switch(cch){
         case '#':
@@ -50,6 +76,10 @@ void printcolor_char(WINDOW *tWin,char cch, int locX, int locY){
             break;
     }
 }
+/**
+ * @brief Funzione che stampa le azioni ( che dovrà fare il personaggio) selezionate dal giocatore.
+ * 
+ */
 void print_action(){
     int conLenght=0, actY=0, indent=1, isCond=0,canGo=1, checkEnd=0, varPos=0, endStart=0, canElse=0, checkEndElse=0;//
     werase(action);
@@ -228,6 +258,11 @@ void print_action(){
         wrefresh(action);
     }
 }
+/**
+ * @brief Funzione che permette l’eliminazione dell’ultima azione inserita.
+ * 
+ * @param lim 
+ */
 void delete_action(int lim) {
     if(curAction_size<=lim){
         werase(dialogue);
@@ -243,8 +278,6 @@ void delete_action(int lim) {
 
         werase(action);
         box(action, 0, 0);
-        // txtLen = strlen("Stai per eliminare l'ultima istruzione inserita") / 2;
-        // mvwprintw(action, halfY - 1, halfX - txtLen, "Stai per eliminare l'ultima istruzione inserita");
         Cprint(action,"Stai per eliminare l'ultima istruzione inserita",1,2,0);
         txtLen = strlen("Sei sicuro?") / 2;
         mvwprintw(action, halfY + 1, halfX - txtLen, "Sei sicuro?");
@@ -299,6 +332,12 @@ void delete_action(int lim) {
         print_action();
     }
 }
+/**
+ * @brief Funzione che stampa il menu delle azioni che il giocatore può aggiungere per far muovere il personaggio.
+ * 
+ * @param limitact 
+ * @param limit_size 
+ */
 void print_add(int *limitact, int limit_size){
     werase(action);
     box(action, 0,0);
@@ -314,6 +353,12 @@ void print_add(int *limitact, int limit_size){
     }
     wrefresh(action);
 }
+/**
+ * @brief Funzione che in base al livello stabilisce quali azioni l’utente può utilizzare.
+ * 
+ * @param limSize 
+ * @return int* 
+ */
 int *createAlimit(int *limSize){
     int *aLimit=(int *)malloc(sizeof(int));
     switch(sLevel){
@@ -377,6 +422,10 @@ int *createAlimit(int *limSize){
     }
     return aLimit;
 }
+/**
+ * @brief Funzione che serve ad inserire le azioni che il personaggio dovrà eseguire.
+ * 
+ */
 void addone(){
     int addBreak=1, limitAction_size=0, onFocus=0, addchoice=0;
     //int limited_action[]={1, 2, 13, 14, 15, 16};
@@ -440,6 +489,11 @@ void addone(){
     }
     //aggiungere reset dialoghi
 }
+/**
+ * @brief Funzione che permette l’inserimento delle variabili di gioco.
+ * 
+ * @param qAdd 
+ */
 void addVar(int *qAdd){
     // menu di aggiunta delle variavili ad action_buffer se le varaibili sono attive nel livello
     int limvar_size=1, value=0, vBreak=1, var_val=0;
@@ -527,6 +581,12 @@ void addVar(int *qAdd){
         }
     }
 }
+/**
+ * @brief Funzione che stampa il menu dell’inserimento delle variabili.
+ * 
+ * @param var_limited 
+ * @param lVar_size 
+ */
 void print_addVar(int *var_limited, int lVar_size){
     int isFound=1;
     werase(action);
@@ -542,6 +602,12 @@ void print_addVar(int *var_limited, int lVar_size){
     }
     wrefresh(action);
 }
+/**
+ * @brief Funzione che stampa il menu della scelta del valore delle variabili.
+ * 
+ * @param val_limit 
+ * @param lVal_size 
+ */
 void print_addValue(int *val_limit, int lVal_size){
     werase(action);
     box(action,0,0);
@@ -550,6 +616,11 @@ void print_addValue(int *val_limit, int lVal_size){
     }
     wrefresh(action);
 }
+/**
+ * @brief Funzione che permette la scelta del valore che avrà la variabile scelta.
+ * 
+ * @return int 
+ */
 int addValue(){
     int valBreak=1, val_size=0, focus=0, valCho=0;
     int *val_lim=NULL;
@@ -613,10 +684,15 @@ int addValue(){
         }
     }
 }
+/**
+ * @brief Funzione che esegue le azioni scelte dall’utente.
+ * 
+ * @param fexit 
+ */
 void run_actions(int *fexit){
-    int i=1,vidx=0, lastIfCond=0;
+    int i=1,vidx=0, lastIfCond=0,emergencyBreak=1;
     if(action_buffer[curAction_size-1]==action_ENDSTART){
-        while(action_buffer[i]!=action_ENDSTART){
+        while(action_buffer[i]!=action_ENDSTART&&emergencyBreak){
             switch (action_buffer[i])
             {
                 case action_IF:
@@ -632,6 +708,9 @@ void run_actions(int *fexit){
                     break;
                 case action_WALK:
                     walk();
+                    if(isWalkEnd==0){
+                        emergencyBreak=0;
+                    }
                     break;
                 case action_RROTATE:
                     rotclock();
@@ -661,7 +740,6 @@ void run_actions(int *fexit){
         print_action();
         *fexit=checkEndLvl();
         nclearBuff();
-        // Cprint(dialogue,"eseguito con successo",1,1,0);
     }else{
         werase(dialogue);
         box(dialogue,0,0);
@@ -669,10 +747,13 @@ void run_actions(int *fexit){
         dReload=1;
     }
 }
+/**
+ * @brief Funzione che permette il funzionamento del menu delle azioni, ovvero inserire, eliminare ed eseguire le azioni oppure uscire dal livello.
+ * 
+ */
 void action_run(){
     int choice=0, highlight=0, fBreak=1;
     keypad(action, TRUE);
-    //nodelay(action, TRUE);
     while(fBreak){
         for(int i=0;i<4;i++){
             if(i==highlight){
@@ -732,8 +813,13 @@ void action_run(){
                 break;
         }
     }
-    //nodelay(action, FALSE);
 }
+/**
+ * @brief Funzione che esegue l’opzione selezionata nel menu delle azioni.
+ * 
+ * @param status 
+ * @param EXITflag 
+ */
 void action_subrun(int status,int *EXITflag){
     switch (status)
     {
@@ -752,6 +838,11 @@ void action_subrun(int status,int *EXITflag){
     }
     return ;
 }
+/**
+ * @brief Funzione che genera l’animazione d’esecuzione del programma.
+ * 
+ * @param tmp 
+ */
 void run_anim(WINDOW *tmp){
     napms(100);
     werase(tmp);
@@ -771,6 +862,11 @@ void run_anim(WINDOW *tmp){
     Cprint(tmp, "Esecuzione in corso -",1,1,0);
     wrefresh(tmp);
 }
+/**
+ * @brief Funzione che stampa la mappa di gioco.
+ * 
+ * @param tmp 
+ */
 void print_map(WINDOW *tmp){
     int wBegy=0,wBegx=0, uPad=1,lPad=26;
     getbegyx(tmp, wBegy, wBegx);
@@ -782,6 +878,11 @@ void print_map(WINDOW *tmp){
         wrefresh(tmp);
     }
 }
+/**
+ * @brief Funzione che imposta la direzione in cui il personaggio dovrà proseguire.
+ * 
+ * @param isEnd 
+ */
 void setRotation(int isEnd){
     if(isEnd){
         switch (pg1.rotation)
@@ -817,8 +918,12 @@ void setRotation(int isEnd){
         }
     }
 }
+/**
+ * @brief Funzione che controlla se il livello è stato completato o meno.
+ * 
+ * @return int 
+ */
 int checkEndLvl(){
-    //int cho='\0';
     time_t swait=time(NULL);
     if(mapArr[pg1.locate.y][pg1.locate.x]!='3'|| isWalkEnd==0){
         werase(dialogue);

@@ -1,3 +1,13 @@
+/**
+ * @file features.c
+ * @author Alberto Mostarda (mostarda.alberto04@gmail.com)
+ * @brief Libreria in cui sono presenti varie funzioni per il funzionamento del programma
+ * @version 1.0
+ * @date 2024-09-04
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "features.h"
 #include "levels.h"
 #include "menufunctions.h"
@@ -23,16 +33,14 @@ static char *sizeWarn="Per favore evita di ridimensionare la finestra del termin
 static char *testBible="Ora a voi, ricchi: piangete e gridate per le sciagure che cadranno su di voi! Le vostre ricchezze sono marce, i vostri vestiti sono mangiati dalle tarme. Il vostro oro e il vostro argento sono consumati dalla ruggine, la loro ruggine si alzerà ad accusarvi e divorerà le vostre carni come un fuoco.";
 int sLevel, rStatus, lvlToDo=0;
 
+/**
+ * @brief Il programma inizia l’inizializzazione terminale e in seguito stampa la schermata le avvertenze e i comandi per navigare durante il gioco.
+ * 
+ */
 void start(){
-    // HANDLE resizeThread;
-    // DWORD tid;
     time_t start_time;
     int halfContinue=strlen(pContinue)/2;
-    // defaultSize.con_height=35;
-     // defaultSize.con_width=160ò
     SetConsoleTitle("Code Adventure");
-    //system("resize -s 35 160 >/dev/null"); //per linux;
-    //signal(SIGWINCH, handle_resize);
     system("MODE 160,35");
     initscr();
     cbreak();
@@ -41,25 +49,14 @@ void start(){
     initColors();
     wresize(stdscr,35,160);
     refresh();
-    // resizeThread=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)resize_handler,NULL,0,&tid);
-    //while(getchar()!='q');
-    //win=newwin(35,160,0,0);
     box(stdscr,0,0);
     wrefresh(stdscr);
     rStatus=1;
     Cprint(stdscr,initTxt,20,0,1);
     Hprint(stdscr,"Buona Programmazione.",20,0);
-    //Hprint(win, pContinue,20,0);
     mvwprintw(stdscr,24,(getmaxx(stdscr)/2)-halfContinue,"%s", pContinue);
     wmove(stdscr,25,11);
     SBHprint(stdscr,sizeWarn,20);
-    // if(!can_change_color()){
-    //     mvwprintw(stdscr,1,1,"%d",COLORS);
-    //     getch();
-    // }else{
-    //     mvwprintw(stdscr,1,1,"supporta i colori");
-    //     getch();
-    // }
     start_time=time(NULL);
     nodelay(stdscr,TRUE);
     while(getch()!='\n'&&(time(NULL)-start_time)<10);
@@ -68,8 +65,11 @@ void start(){
     werase(stdscr);
     refresh();
 }
+/**
+ * @brief Il programma esegue le funzionalità di base per poter giocare.
+ * 
+ */
 void run(){
-    //setjmp(env);
     int isRun=1;
     while(isRun){
         switch(rStatus){
@@ -82,12 +82,14 @@ void run(){
                 level_run();
                 createSaves();
                 rStatus=1;
-                // TerminateThread(dialogueThread, 0);
-                // CloseHandle(dialogueThread);
                 break;
         }
     }
 }
+/**
+ * @brief Il programma libera tutta la memoria allocata dinamicamente e permette una chiusura sicura.
+ * 
+ */
 void stop(){
     if (dialogue_buffer != NULL) {
         for (int i = 0; dialogue_buffer[i] != NULL; i++) {
@@ -106,6 +108,10 @@ void stop(){
     }
     endwin();
 }
+/**
+ * @brief Funzione che ripulisce il buffer d’input adattata alla libreria di nCurses.
+ * 
+ */
 void nclearBuff(void){
     int buff;
     nodelay(stdscr, TRUE);
@@ -113,6 +119,11 @@ void nclearBuff(void){
     nodelay(stdscr, FALSE);
 
 }
+/**
+ * @brief Funzione che restituisce il percorso in cui si trova l’eseguibile del programma.
+ * 
+ * @return char* 
+ */
 char *getPath(){
     int pathsize=0, isFound=1;
     char *path=(char *)malloc(max_path*sizeof(char));
@@ -132,8 +143,16 @@ void myPause(void){
     refresh();
     getch();
 }
+/**
+ * @brief Funzione che stampa il testo al centro della finestra.
+ * 
+ * @param tmp 
+ * @param pText 
+ * @param hPad 
+ * @param vPad 
+ * @param fNL 
+ */
 void Cprint(WINDOW *tmp,  char *pText, int hPad, int vPad, int fNL){
-    //da aggiustare in vista di righe pari
     int hSize=getmaxx(tmp), vSize=getmaxy(tmp);
     int lidx=0, ridx=0, nStr=0, hStart=0,txtLength=0, midoff=0;
     char **final_txt=Hsplit(hSize,pText,NULL,hPad,fNL,&nStr);
@@ -151,11 +170,6 @@ void Cprint(WINDOW *tmp,  char *pText, int hPad, int vPad, int fNL){
         }
     }
     else{
-        //Gestione delle righe pari
-        // if(nStr%2==0){
-        //     midoff+1;
-        //     lidx--;
-        // }
         while(lidx>=0&&ridx<nStr){
             if(midoff==0){
                 txtLength=strlen(final_txt[nStr/2]);
@@ -197,6 +211,17 @@ void Cprint(WINDOW *tmp,  char *pText, int hPad, int vPad, int fNL){
     free(final_txt);
     wrefresh(tmp);
 }
+/**
+ * @brief Funzione che manda a capo il testo nel caso il testo sia più grande della finestra in cui verrà stampato.
+ * 
+ * @param HSIZE 
+ * @param pText 
+ * @param split_txt 
+ * @param padding 
+ * @param forceNL 
+ * @param nLines 
+ * @return char** 
+ */
 char** Hsplit(int HSIZE,  char *pText, char **split_txt,int padding, int forceNL, int *nLines) {
     int textLength = strlen(pText);
 
@@ -225,6 +250,14 @@ char** Hsplit(int HSIZE,  char *pText, char **split_txt,int padding, int forceNL
     }
     return split_txt;
 }
+/**
+ * @brief Funzione che stampa il testo centrato orizzontalmente nella finestra della console.
+ * 
+ * @param tmp 
+ * @param pText 
+ * @param padding 
+ * @param forceNL 
+ */
 void Hprint(WINDOW *tmp,  char *pText, int padding, int forceNL) {
     int hSize = getmaxx(tmp);
     int curY = getcury(tmp);
@@ -250,6 +283,13 @@ void Hprint(WINDOW *tmp,  char *pText, int padding, int forceNL) {
     }
     free(final_txt);
 }
+/**
+ * @brief Funzione che stampa solo i testi piccoli centrati orizzontalmente e nella parte inferiore della finestra.
+ * 
+ * @param tmp 
+ * @param pText 
+ * @param padding 
+ */
 void SBHprint(WINDOW *tmp, char *pText, int padding){
     int hSize= getmaxx(tmp)-getbegx(tmp), txtLength=strlen(pText);
     int cStart=0, curY=getmaxy(tmp)-2;
@@ -258,6 +298,14 @@ void SBHprint(WINDOW *tmp, char *pText, int padding){
     wmove(tmp, getbegy(tmp)+1, getmaxx(tmp)+1);
     wrefresh(tmp);
 }
+/**
+ * @brief Funzione che cerca un determinato carattere nella stringa e ne restituisce l’indice.
+ * 
+ * @param sample 
+ * @param start 
+ * @param find 
+ * @return int 
+ */
 int csearch(char *sample, int start, char find) {
     for (int i = start; i < strlen(sample); i++) {
         if (sample[i] == find) {
@@ -266,6 +314,14 @@ int csearch(char *sample, int start, char find) {
     }
     return -1;
 }
+/**
+ * @brief Funzione che stampa una qualsiasi ASCII art centrata orizzontalmente sullo schermo.
+ * 
+ * @param tmp 
+ * @param hSize 
+ * @param draw 
+ * @param dHeight 
+ */
 void artHprint(WINDOW *tmp, int hSize, char **draw, int dHeight){
     int avgL=0, cStart=0, curY=0;
 
@@ -284,6 +340,12 @@ void artHprint(WINDOW *tmp, int hSize, char **draw, int dHeight){
     }
     wrefresh(tmp);
 }
+/**
+ * @brief Funzione che conta le righe presenti in un file testuale.
+ * 
+ * @param tmpFile 
+ * @return int 
+ */
 int fCountLines(FILE *tmpFile){
     int fLines=0;
     char eFlag='\0';
@@ -295,6 +357,10 @@ int fCountLines(FILE *tmpFile){
     rewind(tmpFile);
     return fLines;
 }
+/**
+ * @brief Funzione che inizializza le coppie di colori per le diverse entità presenti nella mappa.
+ * 
+ */
 void initColors(){
     init_pair(1, COLOR_WHITE, COLOR_BLACK); //testo normale
     init_pair(2, COLOR_WHITE, COLOR_WHITE); // per #
