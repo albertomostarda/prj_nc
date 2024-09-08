@@ -625,6 +625,7 @@ int addValue(){
     int valBreak=1, val_size=0, focus=0, valCho=0;
     int *val_lim=NULL;
     switch(sLevel){
+        // valori massimo che la variabile puo' raggiungere
         case 1:
             val_size=2;
             break;
