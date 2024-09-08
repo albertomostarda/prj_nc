@@ -176,7 +176,6 @@ void menu_subrun(int mMode, int *pExit, int *lvlPass){
             nclearBuff();
             getch();
             nclearBuff();
-            napms(50);
             *lvlPass=0;
             *pExit=0;
             break;

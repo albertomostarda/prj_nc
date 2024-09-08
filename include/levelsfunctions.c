@@ -232,7 +232,7 @@ void print_action(){
                         }else{
                             werase(dialogue);
                             box(dialogue, 0, 0);
-                            Cprint(dialogue,"Questa e' una condizione e deve essere inserita solo dopo un 'IF','WHILE,'DO-WHILE'",1,1,0);
+                            Cprint(dialogue,"Questa e' una condizione e deve essere inserita solo dopo un 'SE','MENTRE,'FAI MENTRE'",1,1,0);
                             curAction_size--;
                             action_buffer=(int *)realloc(action_buffer,curAction_size*sizeof(int));
                             dReload=1;
